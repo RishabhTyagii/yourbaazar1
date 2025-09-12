@@ -1,0 +1,90 @@
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Create Your Account</h1>
+    <p class="subtitle">Join yourbaazar community today</p>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" class="registration-form">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group floating-label">
+              
+                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                 {{ field }}
+              
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if field.name == 'password1' %}
+                    <div class="password-strength"></div>
+                    <small class="password-hint">Use 8+ characters with a mix of letters, numbers & symbols</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn-register">
+            <span>Register</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </form>
+
+    <div class="divider">
+        <span>or</span>
+    </div>
+
+
+
+    <div class="login-link">
+        Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </div>
+</div>
+
+<script>
+    // Simple password strength indicator
+    document.querySelectorAll('input[type="password"]').forEach(input => {
+        input.addEventListener('input', function() {
+            const strengthIndicator = this.parentElement.querySelector('.password-strength');
+            if (!strengthIndicator) return;
+            
+            const value = this.value;
+            let strength = 0;
+            
+            if (value.length > 0) strength += 1;
+            if (value.length >= 8) strength += 1;
+            if (/[A-Z]/.test(value)) strength += 1;
+            if (/[0-9]/.test(value)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(value)) strength += 1;
+            
+            strengthIndicator.className = 'password-strength';
+            if (strength > 3) {
+                strengthIndicator.classList.add('strong');
+            } else if (strength > 1) {
+                strengthIndicator.classList.add('medium');
+            }
+        });
+    });
+</script>
+{% endblock %}

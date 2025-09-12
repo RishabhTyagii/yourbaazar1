@@ -1,0 +1,714 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seller Dashboard | YourBaazar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #6366f1;
+      --primary-dark: #4338ca;
+      --secondary: #ec4899;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --bg-gradient: linear-gradient(120deg, #f0f9ff 0%, #e0f2fe 100%);
+      --surface: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header & Navigation */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      background: var(--primary);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: var(--primary-light);
+    }
+
+    .btn-admin {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-admin:hover {
+      background: #0891b2;
+      transform: translateY(-2px);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      margin: 20px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 16px;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border-bottom: 3px solid transparent;
+    }
+
+    .nav-tab.active {
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+      background: rgba(79, 70, 229, 0.05);
+    }
+
+    .nav-tab.admin-tab.active {
+      border-bottom-color: var(--accent);
+      color: var(--accent);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      padding: 20px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    /* Main Content */
+    .main {
+      padding: 30px 0;
+    }
+
+    /* Welcome Panel */
+    .welcome-panel {
+      background: linear-gradient(120deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      color: white;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .welcome-content h1 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .welcome-content p {
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .welcome-image {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .welcome-image img {
+      max-width: 100%;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+    }
+
+    .blue {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary);
+
+         width: 248px;
+      height: 98px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+    }
+
+    .stat-icon.green {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .stat-icon.purple {
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+    }
+
+    .stat-icon.orange {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border);
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .action-btn:hover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.05);
+      transform: translateY(-3px);
+    }
+
+    .action-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+    }
+
+    .action-label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+      position: relative;
+      display: inline-block;
+    }
+
+    .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.7rem;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .welcome-panel {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-tabs {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <div class="logo-icon">
+             <img src="{% static 'icon/logo.png' %}" style="width: 50px; height: 50px;" alt="YourbaazarSellerHub"> 
+          </div>
+          <span>YourBaazar Seller</span>
+        </a>
+<button class="btn btn-success" >
+          <i class="fas fa-wallet"></i> ₹{{ wallet.available_balance }}
+        </button>
+
+        <a href="/" class="btn btn-primary">Home</a>
+
+
+        <div class="nav-actions">
+          {% if request.session.seller_id %}
+            <a href="{% url 'seller:seller_logout' %}" class="btn btn-secondary">Logout</a>
+          {% else %}
+            <a href="{% url 'seller:seller_login' %}" class="btn btn-secondary">Login</a>
+            <a href="{% url 'seller:seller_register' %}" class="btn btn-primary">Register</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <!-- Welcome Panel -->
+      <section class="welcome-panel">
+        <div class="welcome-content">
+          <h1>Start Selling on YourBaazar</h1>
+          <p>Zero setup fees. National reach. Fast payouts. No GST needed to get started.</p>
+          <a href="{% url 'seller_products:draft_create' %}" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255, 255, 255, 0.3);">
+            Start Selling
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="welcome-image">
+          <img src="https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Sales growth">
+        </div>
+      </section>
+
+      <!-- Seller Session Panel -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class=" blue">
+            <i class="fas fa-user"></i>
+            <a href="{% url 'seller:view_profile' %}" class="btn btn-secondary">View Profile</a>
+          </div>
+          <div class="stat-value">
+            {% if request.session.seller_id %}
+              {{ request.session.seller_username }}
+            {% else %}
+              Guest
+            {% endif %}
+          </div>
+          <div class="stat-label">Account Status</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <i class="fas fa-store"></i>
+          </div>
+          <div class="stat-value">{{ total_sellers }}</div>
+          <div class="stat-label">Sellers Joined</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="stat-value">{{ total_products }}</div>
+          <div class="stat-label">Products Listed</div>
+        </div>
+
+                <div class="stat-card">
+          <div class="stat-icon purple">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="stat-value">₹{{ wallet.available_balance }}</div>
+          <div class="stat-label">Available Balance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="stat-value">{{ total_orders }}</div>
+          <div class="stat-label">Orders Completed</div>
+        </div>
+      </div>
+
+
+      <!-- Navigation Tabs -->
+      <div class="nav-tabs">
+        <div class="nav-tab active" data-tab="seller">Seller Navigation</div>
+      {% if user.is_staff %}  <div class="nav-tab admin-tab" data-tab="admin">Admin Navigation</div>
+      {% endif %}
+      </div>
+
+      <!-- Seller Navigation -->
+      <div class="tab-content active" id="seller-tab">
+        <div class="quick-actions">
+          <a href="{% url 'seller_products:draft_create' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+            <span class="action-label">Add Product</span>
+          </a>
+          <a href="{% url 'seller_products:product_list' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-list"></i>
+            </div>
+            <span class="action-label">Seller Products</span>
+          </a>
+          <a href="{% url 'seller_products:draft_list' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <span class="action-label">Drafts</span>
+          </a>
+          <a href="{% url 'seller:seller_order_list' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <span class="action-label">Orders</span>
+          </a>
+          <a href="{% url 'seller:seller_notifications' %}" class="action-btn notification-badge">
+            <div class="action-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            {% if unread_count > 0 %}
+              <span class="badge">{{ unread_count }}</span>
+            {% endif %}
+            <span class="action-label">Notifications</span>
+          </a>
+          <a href="{% url 'wallet:wallet_dashboard' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <span class="action-label">Seller Wallet</span>
+          </a>
+          <a href="{% url 'seller_reports:profit_dashboard' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <span class="action-label">Profit Analysis</span>
+          </a>
+          <a href="{% url 'seller_reviews:testimonial_create' %}" class="action-btn">
+            <div class="action-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <span class="action-label">Share Review</span>
+          </a>
+        </div>
+      </div>
+
+      {% if user.is_staff %}
+      <!-- Admin Navigation -->
+      <div class="tab-content" id="admin-tab">
+        <div class="quick-actions">
+          <a href="{% url 'seller_products:admin_draft_list' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <span class="action-label">Admin Product List</span>
+          </a>
+          <a href="{% url 'wallet:admin_transactions' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <span class="action-label">Admin Transactions</span>
+          </a>
+          <a href="{% url 'seller_products:admin_seller_orders' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-truck"></i>
+            </div>
+            <span class="action-label">Order Status Management</span>
+          </a>
+          <a href="{% url 'seller:admin_seller_list' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <span class="action-label">Seller Approval</span>
+          </a>
+          <a href="{% url 'seller:seller_list_admin' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-users-cog"></i>
+            </div>
+            <span class="action-label">Seller Management</span>
+          </a>
+          <a href="{% url 'seller_reviews:testimonial_list' %}" class="action-btn">
+            <div class="action-icon" style="background: var(--accent);">
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <span class="action-label">Review Management</span>
+          </a>
+        </div>
+      </div>
+{% endif %}
+      <!-- Additional Content -->
+      <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+        <h2 style="margin-bottom: 16px; color: var(--primary);">How It Works</h2>
+        <ol style="padding-left: 20px; line-height: 1.8;">
+          <li>Create your seller account</li>
+          <li>Complete KYC: GST/PAN, pickup address, bank details</li>
+          <li>List your products with images and pricing</li>
+          <li>Ship orders using our logistics partners</li>
+          <li>Get paid directly to your bank account</li>
+        </ol>
+      </div>
+
+      <!-- Testimonials Section -->
+      <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-bottom: 16px; color: var(--primary);">What Sellers Say</h2>
+        {% if carousel_reviews %}
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            {% for r in carousel_reviews|slice:":3" %}
+            <div style="padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+              <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                {% if r.photo %}
+                  <img src="{{ r.photo.url }}" style="width:48px;height:48px;object-fit:cover;border-radius:50%;margin-right:12px;">
+                {% else %}
+                  <div style="width:48px;height:48px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;margin-right:12px;">
+                    <i class="fas fa-user"></i>
+                  </div>
+                {% endif %}
+                <div>
+                  <div style="font-weight:600;">{{ r.display_name|default:r.seller.username }}</div>
+                  <div style="color: var(--text-light); font-size: 0.9rem;">{{ r.business_name }}</div>
+                </div>
+              </div>
+              <div style="color: gold; margin-bottom: 8px;">
+                {% for i in "12345" %}
+                  {% if r.rating|default:0 >= i|add:"0" %}
+                    ★
+                  {% else %}
+                    ☆
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p style="margin-bottom: 12px;">{{ r.experience|truncatechars:120 }}</p>
+              <div style="color: var(--text-light); font-size: 0.8rem;">{{ r.created_at|date:"M d, Y" }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="color: var(--text-light); text-align: center; padding: 20px;">No seller reviews yet.</p>
+        {% endif %}
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="{% url 'seller_reviews:testimonial_list' %}" class="btn btn-secondary">View All Reviews</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2023 YourBaazar Seller Center. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Tab switching functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.nav-tab');
+      const contents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabId = tab.getAttribute('data-tab');
+          
+          // Update active tab
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Show corresponding content
+          contents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === `${tabId}-tab`) {
+              content.classList.add('active');
+            }
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

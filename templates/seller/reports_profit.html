@@ -1,0 +1,130 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+<div class="container mx-auto py-6">
+  <h1 class="text-2xl font-semibold mb-4">Profit & Sales Analysis</h1>
+
+  <form method="get" class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-3">
+    <input type="date" name="start" value="{{ start }}" class="p-2 border rounded" />
+    <input type="date" name="end" value="{{ end }}" class="p-2 border rounded" />
+    <select name="payment_method" class="p-2 border rounded">
+      <option value="">All Payment Methods</option>
+      <option value="cod" {% if payment_method_filter == 'cod' %}selected{% endif %}>Cash on Delivery</option>
+      <option value="card" {% if payment_method_filter == 'card' %}selected{% endif %}>Card</option>
+      <option value="upi" {% if payment_method_filter == 'upi' %}selected{% endif %}>UPI</option>
+      <option value="wallet" {% if payment_method_filter == 'wallet' %}selected{% endif %}>Wallet</option>
+    </select>
+
+    <select name="status" class="p-2 border rounded">
+      <option value="">All Statuses</option>
+      <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>Delivered</option>
+      <option value="Processing" {% if status_filter == 'Processing' %}selected{% endif %}>Processing</option>
+      <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+      <option value="Returned" {% if status_filter == 'Returned' %}selected{% endif %}>Returned</option>
+    </select>
+
+    <div class="md:col-span-5 flex gap-2 mt-2">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Apply Filters</button>
+      <a href="{% url 'seller_reports:profit_export_csv' %}?start={{start}}&end={{end}}&payment_method={{payment_method_filter}}&status={{status_filter}}" class="px-4 py-2 bg-green-600 text-white rounded">Export CSV</a>
+    </div>
+  </form>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Total Orders (All)</div>
+      <div class="text-2xl font-bold">{{ total_orders_all }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Total Sales (All)</div>
+      <div class="text-2xl font-bold">₹{{ total_sales_all }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Net Sales (Eligible)</div>
+      <div class="text-2xl font-bold">₹{{ total_sales_net }}</div>
+    </div>
+
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Commission Paid (est.)</div>
+      <div class="text-xl">₹{{ commission_total }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">PG Fees (est.)</div>
+      <div class="text-xl">₹{{ pg_fee_total }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Refunds/Returns</div>
+      <div class="text-xl">₹{{ refunds_total }}</div>
+    </div>
+
+    <div class="p-4 bg-white rounded shadow md:col-span-3">
+      <div class="text-sm text-gray-500">Net Profit</div>
+      <div class="text-3xl font-bold">₹{{ net_profit }}</div>
+    </div>
+  </div>
+
+  <div class="mb-6 p-4 bg-white rounded shadow">
+    <canvas id="profitChart" height="120"></canvas>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow">
+    <h3 class="text-lg font-semibold mb-3">Top Products by Profit</h3>
+    <ul>
+      {% for row in top_products_page %}
+        <li class="py-2 border-b flex justify-between items-center">
+          <div>
+            <a href="{{ row.product.get_absolute_url }}" class="font-medium">{{ row.product.name }}</a>
+            <div class="text-sm text-gray-500">{{ row.product.sku }}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold">₹{{ row.profit }}</div>
+          </div>
+        </li>
+      {% empty %}
+        <li>No product data</li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-4">
+      {% if top_products_page.has_other_pages %}
+        <div class="flex gap-2">
+          {% if top_products_page.has_previous %}
+            <a href="?page={{ top_products_page.previous_page_number }}&start={{start}}&end={{end}}&payment_method={{payment_method_filter}}&status={{status_filter}}" class="px-3 py-1 border rounded">Previous</a>
+          {% endif %}
+          <span class="px-3 py-1 border rounded">Page {{ top_products_page.number }} / {{ top_products_page.paginator.num_pages }}</span>
+          {% if top_products_page.has_next %}
+            <a href="?page={{ top_products_page.next_page_number }}&start={{start}}&end={{end}}&payment_method={{payment_method_filter}}&status={{status_filter}}" class="px-3 py-1 border rounded">Next</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  async function loadChart() {
+    const params = new URLSearchParams({
+      start: "{{ start|default_if_none:'' }}",
+      end: "{{ end|default_if_none:'' }}"
+    });
+    const res = await fetch("{% url 'seller_reports:profit_chart_data' %}?" + params.toString());
+    const data = await res.json();
+    const ctx = document.getElementById('profitChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [
+          { label: 'Gross', data: data.gross, fill: false, tension: 0.2 },
+          { label: 'Commission', data: data.commission, fill: false, tension: 0.2 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } }
+      }
+    });
+  }
+  loadChart();
+</script>
+{% endblock %}

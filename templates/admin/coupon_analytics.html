@@ -1,0 +1,389 @@
+{% load static %}
+    {% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="{% static 'css/couponanalysis.css' %}">
+
+{% endblock %}
+{% block content %}
+
+
+
+    <div class="dashboard-header">
+        <h1>📊 Coupon Analytics Dashboard</h1>
+        <div class="stat-card total-revenue">
+            <div class="stat-value money">₹{{ stats.total_revenue|floatformat:2 }}</div>
+            <div class="stat-label">Total Revenue Generated</div>
+        </div>
+        <div class="stat-card net-profit">
+            <div class="stat-value money">₹{{ stats.net_profit|floatformat:2 }}</div>
+            <div class="stat-label">Net Profit</div>
+            <div class="detail">(Revenue - Discounts)</div>
+        </div>
+        <div class="stat-card total-discount">
+            <div class="stat-value money">₹{{ stats.total_discount|floatformat:2 }}</div>
+            <div class="stat-label">Total Discounts Given</div>
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_coupons }}</div>
+            <div class="stat-label">Total Coupons</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_used }}</div>
+            <div class="stat-label">Total Uses</div>
+            <div class="detail">{{ stats.total_used|floatformat:2 }}% redemption rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_fixed_discount|floatformat:2 }}</div>
+            <div class="stat-label">Fixed Discounts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_percent_discount|floatformat:2 }}</div>
+            <div class="stat-label">% Discounts</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--tertiary);">
+            <div class="stat-value money">₹{{ stats.total_free_product_value|floatformat:2 }}</div>
+            <div class="stat-label">Free Products Cost</div>
+            <div class="detail">{{ coupons|length }} free product coupons</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_revenue_fixed|floatformat:2 }}</div>
+            <div class="stat-label">Revenue: Fixed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_revenue_percent|floatformat:2 }}</div>
+            <div class="stat-label">Revenue: %</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_revenue_free|floatformat:2 }}</div>
+            <div class="stat-label">Revenue: Free</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_revenue_shipping|floatformat:2 }}</div>
+            <div class="stat-label">Revenue: Shipping</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value money">₹{{ stats.total_revenue_cashback|floatformat:2 }}</div>
+            <div class="stat-label">Revenue: Cashback</div>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3 class="chart-title">Coupon Utilization</h3>
+            <canvas id="utilizationChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title">Daily Usage Trend</h3>
+            <canvas id="usageTrendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title">Revenue by Coupon Type</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <div style="background: var(--dark-bg); border-radius: 10px; padding: 20px; margin-top: 20px;">
+        <h3 style="margin-top: 0;">Coupon Performance Details</h3>
+        <table id="couponTable" class="display nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Uses</th>
+                    <th>Discount Value</th>
+                    <th>Fixed Discount</th>
+                    <th>% Discount</th>
+                    <th>Free Product</th>
+                    <th>Applicable Products</th>
+                    <th>Total Value</th>
+                    <th>Total Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coupon in coupons %}
+                <tr>
+                    <td><strong>{{ coupon.code }}</strong></td>
+                    <td>
+                        <span class="badge badge-{{ coupon.type }}">
+                            {{ coupon.get_type_display }}
+                        </span>
+                    </td>
+                    <td>{{ coupon.usage_count }}</td>
+                    <td>
+                        {% if coupon.type == 'fixed' %}
+                            ₹{{ coupon.discount_value|floatformat:2 }}
+                        {% elif coupon.type == 'percent' %}
+                            {{ coupon.discount_value|floatformat:2 }}%
+                        {% elif coupon.type == 'free_product' and coupon.free_product %}
+                            {{ coupon.free_product.name }}
+                        {% else %}
+                            {{ coupon.get_type_display }}
+                        {% endif %}
+                    </td>
+                    <td class="money">
+                        {% if coupon.type == 'fixed' %}
+                            ₹{{ coupon.total_value|floatformat:2 }}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td class="money">
+                        {% if coupon.type == 'percent' %}
+                            ₹{{ coupon.total_value|floatformat:2 }}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>
+                        {% if coupon.type == 'free_product' %}
+                            {% if coupon.free_product %}
+                                {{ coupon.free_product.name }}
+                                <span class="detail">(₹{{ coupon.free_product.base_price|floatformat:2 }} each)</span>
+                            {% else %}-{% endif %}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>
+                        {% if coupon.products.all %}
+                            {% for product in coupon.products.all|slice:":3" %}
+                                {{ product.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                            {% if coupon.products.all.count > 3 %}...{% endif %}
+                        {% else %}All Products{% endif %}
+                    </td>
+                    <td class="money">
+                        ₹{{ coupon.total_value|floatformat:2 }}
+                    </td>
+                    <td class="money">
+                        ₹{{ coupon.total_revenue|floatformat:2 }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+ 
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script> $(document).ready(function () {
+            // Initialize DataTable with export buttons
+            $('#couponTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Export Excel',
+                        className: 'btn-excel',
+                        title: 'Coupon_Analytics_' + new Date().toISOString().slice(0,10),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'Export CSV',
+                        className: 'btn-csv',
+                        title: 'Coupon_Analytics_' + new Date().toISOString().slice(0,10),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ],
+                responsive: true,
+                pageLength: 10,
+                scrollX: true,
+                order: [[2, 'desc']],  // Sort by usage count by default
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search coupons..."
+                },
+                createdRow: function(row, data, dataIndex) {
+                    // Highlight rows with high usage
+                    if (parseInt(data[2]) > 50) {  // If usage count > 50
+                        $(row).addClass('highlight');
+                    }
+                }
+            });
+
+            // Chart colors from CSS variables
+            function getCssVar(name) {
+                return getComputedStyle(document.documentElement)
+                    .getPropertyValue(name).trim();
+            }
+
+            const colors = {
+                primary: getCssVar('--primary'),
+                secondary: getCssVar('--secondary'),
+                tertiary: getCssVar('--tertiary'),
+                quaternary: getCssVar('--quaternary'),
+                cashback: getCssVar('--cashback'),
+                danger: getCssVar('--danger')
+            };
+
+            // Utilization Chart (Used vs Unused)
+            const usedUnusedData = JSON.parse('{{ used_unused_data|escapejs }}');
+            new Chart(document.getElementById('utilizationChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Used Coupons', 'Unused Coupons'],
+                    datasets: [{
+                        data: [usedUnusedData.used, usedUnusedData.unused],
+                        backgroundColor: [colors.primary, colors.danger],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw;
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Daily Usage Trend Chart
+            const dailyDates = JSON.parse('{{ daily_dates|escapejs }}');
+            const dailyCounts = JSON.parse('{{ daily_counts|escapejs }}');
+            new Chart(document.getElementById('usageTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: dailyDates,
+                    datasets: [{
+                        label: 'Daily Coupon Uses',
+                        data: dailyCounts,
+                        borderColor: colors.secondary,
+                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: colors.secondary,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Revenue by Type Chart
+            const revenueTypes = JSON.parse('{{ revenue_types|escapejs }}');
+            const revenueValues = JSON.parse('{{ revenue_values|escapejs }}');
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: revenueTypes,
+                    datasets: [{
+                        label: 'Revenue Generated',
+                        data: revenueValues,
+                        backgroundColor: [
+                            colors.primary,
+                            colors.secondary,
+                            colors.tertiary,
+                            colors.quaternary,
+                            colors.cashback
+                        ],
+                        borderColor: [
+                            '#388E3C',
+                            '#1976D2',
+                            '#FFA000',
+                            '#7B1FA2',
+                            '#455A64'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Revenue: ₹${context.raw.toLocaleString('en-IN')}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#fff',
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString('en-IN');
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+        });</script> 
+
+
+{% endblock %}

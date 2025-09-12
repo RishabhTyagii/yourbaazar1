@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+    <title>{% block title %} {{ category.name }} {{ product_type.name }}{% endblock %}</title>
+
+{% block seo %}
+<meta name="title" content="{{ category.name }} - Buy Online at YourBaazar">
+<meta name="description" content="Explore {{ category.name }} collection at YourBaazar. Best prices, latest trends, and fast delivery across India.">
+<meta name="keywords" content="{{ category.name }}, buy {{ category.name }} online, best {{ category.name }}, YourBaazar {{ category.name }}">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ category.name }} - YourBaazar">
+<meta property="og:description" content="Explore {{ category.name }} collection at YourBaazar. Best prices, latest trends, and fast delivery across India.">
+<meta property="og:image" content="{% static 'icon/website_logo.png' %}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ category.name }}",
+  "description": "Explore {{ category.name }} at YourBaazar.",
+  "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/productlist.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="sort-options">
+            <span class="sort-label">Sort By:</span>
+            <select id="sortBy" class="sort-select">
+                <option value="default">Recommended</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="newest">Newest First</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+        {% for variant in variants %}
+        <div class="product-card" 
+             data-price="{{ variant.price_after_discount }}"
+             data-date="{{ variant.color.product.created_at|date:'Y-m-d' }}">
+            
+            {% if variant.discount_percentage > 15 %}
+            <div class="product-badge">-{{ variant.discount_percentage }}%</div>
+            {% endif %}
+            
+            <div class="product-image-container">
+                <img src="{{ variant.color.image_main.url }}" alt="{{ variant.color.product.name }} " class="product-image">
+            </div>
+            
+            <div class="product-details">
+                <div class="product-brand">{{ variant.color.product.brand }}</div>
+                <h3 class="product-title">{{ variant.color.product.name }}  {{ variant.color.color_name }} {{ variant.size }} </h3>
+                
+                <div class="product-price">
+                    <span class="current-price">₹{{ variant.price_after_discount }}</span>
+                    {% if variant.price_before_discount > variant.price_after_discount %}
+                    <span class="original-price">₹{{ variant.price_before_discount }}</span>
+                    <span class="discount-badge">SAVE {{ variant.discount|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-actions" style="text-decoration: none;">
+                    
+                    <a href="{% url 'product:product_detail' variant.color.product.id %}" style="text-decoration: none;" class="action-btn buy-now-btn">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="pagination">
+    <ul class="pagination-list">
+        {% if variants.has_previous %}
+            <li><a href="?page={{ variants.previous_page_number }}">« Prev</a></li>
+        {% endif %}
+
+        {% for num in variants.paginator.page_range %}
+            {% if variants.number == num %}
+                <li class="active"><span>{{ num }}</span></li>
+            {% elif num > variants.number|add:'-3' and num < variants.number|add:'3' %}
+                <li><a href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if variants.has_next %}
+            <li><a href="?page={{ variants.next_page_number }}">Next »</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+
+{% endblock %}
+   {% block extra_js %} <script src="{% static 'js/productlist.js' %}"></script>
+ {% endblock %}

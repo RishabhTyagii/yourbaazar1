@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice - Order #{{ order.id }}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      padding: 40px;
+    }
+
+    .invoice-box {
+      background-color: #fff;
+      max-width: 850px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #333;
+    }
+
+    .company-details {
+      text-align: right;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin: 30px 0 10px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+      color: #444;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    td, th {
+      padding: 12px;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #f7f7f7;
+    }
+
+    .summary {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .summary span {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .print-button {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .print-button button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .print-button button:hover {
+      background-color: #0056b3;
+    }
+
+    @media print {
+      .print-button {
+        display: none;
+      }
+      body {
+        padding: 0;
+        background-color: white;
+      }
+      .invoice-box {
+        box-shadow: none;
+        border: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-box">
+    <!-- Header -->
+    <div class="header">
+      <h1>INVOICE</h1>
+       <div class="company-details">
+        <strong>YourBaazar</strong><br>
+        288 Mahmandpur-Kadmim Modinagar<br>
+         Ghaziabad Uttar Perdesh<br>
+        support@yourbaazar.com<br>
+        +91-8979023121 <br>+91-9758464721
+      </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="section-title">Customer Details</div>
+    <table>
+      <tr>
+        <td><strong>Name:</strong> {{ order.customer_name }}</td>
+        <td><strong>Email:</strong> {{ order.customer_email }}</td>
+      </tr>
+      <tr>
+        <td><strong>Phone:</strong> {{ order.customer_phone }}</td>
+        <td><strong>Address:</strong> {{ order.shipping_address }}, {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip_code }}</td>
+      </tr>
+      <tr>
+        <td><strong>Order Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}</td>
+        <td><strong>Order ID:</strong> #{{ order.id }}</td>
+      </tr>
+    </table>
+
+    <!-- Product Table -->
+    <div class="section-title">Product Summary</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Variant</th>
+          <th>Quantity</th>
+          <th>Unit Price (₹)</th>
+          <th>Total Price (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>
+            {% if item.variant %}
+              Color: {{ item.variant.color.name }}<br>
+              Size: {{ item.variant.size }}
+            {% else %}
+              Default
+            {% endif %}
+          </td>
+          <td>{{ item.quantity }}</td>
+          <td>₹{{ item.price|floatformat:2 }}</td>
+          <td>₹{{ item.get_total_price|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Summary -->
+    <div class="summary">
+      <span><strong>Subtotal:</strong> ₹{{ subtotal|floatformat:2 }}</span>
+      <span><strong>Shipping:</strong> ₹{{ shipping|floatformat:2 }}</span>
+      <span><strong>Grand Total:</strong> ₹{{ grand_total|floatformat:2 }}</span>
+    </div>
+
+    <!-- Payment Info -->
+    <div class="section-title">Payment Details</div>
+    <p><strong>Method:</strong> {{ order.payment_method|title }}</p>
+    {% if order.payment_method == "ONLINE" and order.razorpay_payment_id %}
+    <p><strong>Payment ID:</strong> {{ order.razorpay_payment_id }}</p>
+    {% endif %}
+
+    <!-- Print Button -->
+    <div class="print-button">
+      <button onclick="window.print()">🖨️ Print Invoice</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block title %}Profit Analysis{% endblock %}
+    
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/profitanalysis.css' %}">
+{% endblock %}
+
+ 
+{% block content %}
+  <h1>📊 Profit Analysis (Delivered Orders Only)</h1>
+  
+  <div class="summary-cards">
+    <div class="summary-card">
+      <h3>Total Orders</h3>
+      <div class="value">{{ order_count }}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Total Revenue</h3>
+      <div class="value">₹{{ total_revenue }}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Total Cost</h3>
+      <div class="value">₹{{ total_cost }}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Gross Profit (before shipping)</h3>
+      <div class="value {% if gross_profit >= 0 %}positive{% else %}negative{% endif %}">
+        ₹{{ gross_profit }}
+      </div>
+    </div>
+    <div class="summary-card">
+      <h3>Shipping Charges</h3>
+      <div class="value neutral">₹{{ total_shipping }}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Net Profit (after shipping)</h3>
+      <div class="value {% if total_profit >= 0 %}positive{% else %}negative{% endif %}">
+        ₹{{ total_profit }}
+      </div>
+    </div>
+  </div>
+
+  {% if data %}
+  <h2>🧾 Order Item Breakdown</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Date</th>
+        <th>Product</th>
+        <th>Variant</th>
+        <th>Qty</th>
+        <th>Selling Price</th>
+        <th>Cost Price</th>
+        <th>Shipping Share</th>
+        <th>Revenue</th>
+        <th>Cost</th>
+        <th>Profit (before shipping)</th>
+        <th>Profit (after shipping)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in data %}
+      <tr>
+        <td>{{ item.order_number }}</td>
+        <td class="nowrap">{{ item.order_date }}</td>
+        <td>{{ item.product }}</td>
+        <td>{{ item.variant }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ item.selling_price }}</td>
+        <td>₹{{ item.cost_price }}</td>
+        <td>₹{{ item.shipping_share }}</td>
+        <td>₹{{ item.total_revenue }}</td>
+        <td>₹{{ item.total_cost }}</td>
+        <td class="{% if item.profit_before_shipping >= 0 %}positive{% else %}negative{% endif %}">₹{{ item.profit_before_shipping }}</td>
+        <td class="{% if item.profit_after_shipping >= 0 %}positive{% else %}negative{% endif %}">₹{{ item.profit_after_shipping }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="8">Totals</td>
+        <td>₹{{ total_revenue }}</td>
+        <td>₹{{ total_cost }}</td>
+        <td>₹{{ gross_profit }}</td>
+        <td class="{% if total_profit >= 0 %}positive{% else %}negative{% endif %}">₹{{ total_profit }}</td>
+      </tr>
+    </tfoot>
+  </table>
+  {% else %}
+    <p>No profit data available for delivered orders. Make sure cost price is set for variants.</p>
+  {% endif %}
+
+  {% if variant_data %}
+  <h2>📦 Profit by Product Variant</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Variant</th>
+        <th>Total Qty Sold</th>
+        <th>Total Revenue</th>
+        <th>Total Cost</th>
+        <th>Shipping Allocated</th>
+        <th>Profit Before Shipping</th>
+        <th>Profit After Shipping</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in variant_data %}
+      <tr>
+        <td>{{ item.product }}</td>
+        <td>{{ item.variant }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ item.revenue }}</td>
+        <td>₹{{ item.cost }}</td>
+        <td>₹{{ item.shipping }}</td>
+        <td class="{% if item.profit_before_shipping >= 0 %}positive{% else %}negative{% endif %}">₹{{ item.profit_before_shipping }}</td>
+        <td class="{% if item.profit_after_shipping >= 0 %}positive{% else %}negative{% endif %}">₹{{ item.profit_after_shipping }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+{% endblock %}

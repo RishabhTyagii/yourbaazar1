@@ -1,0 +1,1340 @@
+    {% extends "base.html" %}
+    {% load static %}
+
+
+    {% block extra_css %}
+ <style>
+    :root {
+    --primary: #6c5ce7;
+    --primary-dark: #5649c7;
+    --primary-light: #a29bfe;
+    --secondary: #fd79a8;
+    --accent: #00cec9;
+    --dark: #2d3436;
+    --light: #f8f9fa;
+    --success: #00b894;
+    --danger: #d63031;
+    --warning: #fdcb6e;
+    --info: #0984e3;
+    --gray: #dfe6e9;
+    --dark-gray: #636e72;
+    --neon: #00f2fe;
+    }
+
+    /* Base Styles */
+    .coupon-vault {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    position: relative;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Premium Header */
+    .vault-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .header-content {
+    flex: 1;
+    }
+
+    .vault-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    }
+
+    .icon-sparkle {
+    font-size: 2.5rem;
+    animation: sparkle 2s infinite alternate;
+    }
+
+    @keyframes sparkle {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .text-neon {
+    background: linear-gradient(135deg, var(--primary), var(--neon));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+    }
+
+    .vault-subtitle {
+    color: var(--dark-gray);
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    }
+
+    .vault-stats {
+    display: flex;
+    gap: 1rem;
+    }
+
+    .stat-pill {
+    background: white;
+    border-radius: 2rem;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .stat-count {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+    }
+
+    .stat-label {
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    }
+
+    .header-illustration {
+    width: 300px;
+    }
+
+    .vault-img {
+    width: 100%;
+    height: auto;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    }
+
+    .filter-group {
+    display: flex;
+    gap: 0.75rem;
+    }
+
+    .filter-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    border: none;
+    background: white;
+    color: var(--dark-gray);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid var(--gray);
+    }
+
+    .filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    }
+
+    .filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 300px;
+    }
+
+    .search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dark-gray);
+    }
+
+    .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border-radius: 2rem;
+    border: 1px solid var(--gray);
+    font-size: 1rem;
+    transition: all 0.2s;
+    }
+
+    .search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
+
+    /* Coupon Grid */
+    .coupon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+    }
+
+    /* Coupon Card */
+    .coupon-card {
+    background: white;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+
+    .coupon-card:nth-child(1) { animation-delay: 0.1s; }
+    .coupon-card:nth-child(2) { animation-delay: 0.2s; }
+    .coupon-card:nth-child(3) { animation-delay: 0.3s; }
+    .coupon-card:nth-child(4) { animation-delay: 0.4s; }
+    .coupon-card:nth-child(5) { animation-delay: 0.5s; }
+    .coupon-card:nth-child(n+6) { animation-delay: 0.6s; }
+
+    .coupon-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+
+    /* Card Ribbon */
+    .card-ribbon {
+    position: absolute;
+    top: 1rem;
+    right: -1.5rem;
+    padding: 0.5rem 2rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    }
+
+    .card-ribbon i {
+    font-size: 0.9rem;
+    }
+
+    .ribbon-expired {
+    background: var(--danger);
+    }
+
+    .ribbon-inactive {
+    background: var(--warning);
+    color: var(--dark);
+    }
+
+    /* Card Visual */
+    .card-visual {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .coupon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    }
+
+    .visual-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    }
+
+    .value-display {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .value-display span {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    display: block;
+    }
+
+    .value-display small {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    }
+
+    /* Card Content */
+    .card-content {
+    padding: 1.5rem;
+    }
+
+    .coupon-code {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    }
+
+    .coupon-code span {
+    color: var(--dark-gray);
+    }
+
+    .coupon-code strong {
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: 0.5px;
+    }
+
+    .copy-btn {
+    background: rgba(108, 92, 231, 0.1);
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    padding: 0.5rem 0.75rem;
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    }
+
+    .copy-btn:hover {
+    background: rgba(108, 92, 231, 0.2);
+    }
+
+    .coupon-meta {
+    margin-bottom: 1.5rem;
+    }
+
+    .meta-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    gap: 0.75rem;
+    }
+
+    .meta-row i {
+    color: var(--primary);
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    }
+
+    .products-list {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+
+    /* Card Actions */
+    .card-actions {
+    display: flex;
+    gap: 0.75rem;
+    }
+
+    .use-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    }
+
+    .use-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    }
+
+    .disabled-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: var(--gray);
+    color: var(--dark-gray);
+    font-weight: 600;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    }
+
+    .details-btn {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--gray);
+    background: white;
+    color: var(--dark);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    }
+
+    .details-btn:hover {
+    background: #f5f5f5;
+    border-color: var(--primary);
+    color: var(--primary);
+    }
+
+    /* Empty State */
+    .empty-vault {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    margin-top: 2rem;
+    }
+
+    .empty-illustration {
+    margin-bottom: 1.5rem;
+    }
+
+    .empty-img {
+    width: 200px;
+    height: auto;
+    margin: 0 auto;
+    }
+
+    .empty-vault h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    color: var(--dark);
+    }
+
+    .empty-vault p {
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    }
+
+    .explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 2rem;
+    border-radius: 2rem;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+    }
+
+    .explore-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+    background: var(--primary-dark);
+    }
+
+    /* FAB Button */
+    .fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    }
+
+    .fab-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .fab-btn:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    .fab-tooltip {
+    position: absolute;
+    right: 70px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--dark);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    white-space: nowrap;
+    }
+
+    .fab-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid var(--dark);
+    }
+
+    .fab-btn:hover + .fab-tooltip {
+    opacity: 1;
+    right: 80px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    }
+
+    .modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+    }
+
+    .modal-content {
+    background: white;
+    border-radius: 1.5rem;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    }
+
+    .modal-overlay.active .modal-content {
+    transform: translateY(0);
+    }
+
+    .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--dark-gray);
+    transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+    color: var(--danger);
+    }
+
+    .modal-body {
+    padding: 2rem;
+    }
+
+    .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    }
+
+    .modal-title {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin: 0;
+    }
+
+    .coupon-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    }
+
+    .coupon-status-badge.active {
+    background: rgba(0, 184, 148, 0.15);
+    color: var(--success);
+    }
+
+    .coupon-status-badge.expired {
+    background: rgba(214, 48, 49, 0.15);
+    color: var(--danger);
+    }
+
+    .coupon-status-badge.inactive {
+    background: rgba(253, 203, 110, 0.15);
+    color: var(--warning);
+    }
+
+    .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    }
+
+    .modal-visual {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 250px;
+    }
+
+    .modal-image-container {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    }
+
+    .modal-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    }
+
+    .modal-value {
+    color: white;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .modal-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    }
+
+    .detail-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    }
+
+    .detail-section h4 i {
+    color: var(--primary);
+    }
+
+    .product-list, .terms-list {
+    padding-left: 1.5rem;
+    color: var(--dark-gray);
+    }
+
+    .product-list li, .terms-list li {
+    margin-bottom: 0.5rem;
+    }
+
+    .modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    }
+
+    .modal-copy-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    }
+
+    .modal-copy-btn:hover {
+    background: rgba(108, 92, 231, 0.1);
+    }
+
+    .modal-use-btn {
+    flex: 2;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    }
+
+    .modal-use-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    }
+
+    .toast-notification.show {
+    opacity: 1;
+    }
+
+    .toast-notification i {
+    color: var(--success);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+    .vault-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+    
+    .header-illustration {
+        width: 200px;
+        margin-top: 1.5rem;
+    }
+    
+    .vault-stats {
+        justify-content: center;
+    }
+    }
+
+    @media (max-width: 768px) {
+    .coupon-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+    
+    .vault-title {
+        font-size: 2.2rem;
+    }
+    
+    .modal-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-visual {
+        min-height: 200px;
+    }
+    }
+
+    @media (max-width: 480px) {
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .use-btn, .disabled-btn, .details-btn {
+        width: 100%;
+    }
+    
+    .coupon-code {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .copy-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-copy-btn, .modal-use-btn {
+        width: 100%;
+    }
+    }
+</style>
+{% endblock %}
+
+    {% block content %}
+    <section>
+<div class="coupon-vault">
+    <!-- Premium Header -->
+    <div class="vault-header">
+        <div class="header-content">
+        <h1 class="vault-title">
+            <span class="icon-sparkle">✨</span>
+            <span class="text-neon">My Coupon Vault</span>
+        </h1>
+        <p class="vault-subtitle">Unlocked rewards & exclusive discounts</p>
+        
+        <div class="vault-stats">
+            <div class="stat-pill">
+            <span class="stat-count">{{ usages|length }}</span>
+            <span class="stat-label">Total Coupons</span>
+            </div>
+            <div class="stat-pill">
+            <span class="stat-count">{{ active_count }}</span>
+            <span class="stat-label">Active</span>
+            </div>
+            <div class="stat-pill">
+            <span class="stat-count">{{ expired_count }}</span>
+            <span class="stat-label">Expired</span>
+            </div>
+        </div>
+        </div>
+        <div class="header-illustration">
+        <img src="{% static 'icon/coupon.png' %}" alt="Coupon Vault" class="vault-img">
+        </div>
+    </div>
+
+    <!-- Interactive Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All Coupons</button>
+        <button class="filter-btn" data-filter="active">Active</button>
+        <button class="filter-btn" data-filter="expired">Expired</button>
+        </div>
+        <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search coupons..." class="search-input">
+        </div>
+    </div>
+
+    {% if usages %}
+    <!-- Modern Card Grid -->
+    <div class="coupon-grid">
+        {% for usage in usages %}
+        <div class="coupon-card {% if usage.coupon.status == 'Expired' %}expired{% elif usage.coupon.status == 'Inactive' %}inactive{% endif %}" 
+            data-status="{% if usage.coupon.status == 'Expired' %}expired{% else %}active{% endif %}"
+            data-type="{{ usage.coupon.type }}">
+        
+        <!-- Card Ribbon -->
+        <div class="card-ribbon {% if usage.coupon.status == 'Expired' %}ribbon-expired{% elif usage.coupon.status == 'Inactive' %}ribbon-inactive{% endif %}">
+            {% if usage.coupon.status == 'Expired' %}
+            <i class="fas fa-clock"></i> Expired
+            {% elif usage.coupon.status == 'Inactive' %}
+            <i class="fas fa-pause-circle"></i> Inactive
+            {% else %}
+            <i class="fas fa-bolt"></i> Active
+            {% endif %}
+        </div>
+        
+        <!-- Card Visual -->
+        <div class="card-visual" style="background: {% cycle '#8E2DE2' '#4A00E0' '#FF416C' '#FF4B2B' as cardcolors %}">
+            {% if usage.coupon.image %}
+            <img src="{{ usage.coupon.image.url }}" alt="{{ usage.coupon.code }}" class="coupon-img">
+            {% else %}
+            <div class="visual-placeholder">
+            {{ usage.coupon.code|slice:":3" }}
+            </div>
+            {% endif %}
+            
+            <div class="value-display">
+            {% if usage.coupon.type == 'fixed' %}
+            <span>₹{{ usage.coupon.discount_value }}</span>
+            <small>DISCOUNT</small>
+            {% elif usage.coupon.type == 'percent' %}
+            <span>{{ usage.coupon.discount_value }}%</span>
+            <small>OFF</small>
+            {% elif usage.coupon.type == 'free_shipping' %}
+            <span>FREE</span>
+            <small>SHIPPING</small>
+            {% elif usage.coupon.type == 'free_product' %}
+            <span>FREE</span>
+            <small>{{ usage.coupon.free_product.name|truncatechars:15 }}</small>
+            {% elif usage.coupon.type == 'cashback' %}
+            <span>₹{{ usage.coupon.cashback_amount }}</span>
+            <small>CASHBACK</small>
+            {% endif %}
+            </div>
+        </div>
+        
+        <!-- Card Content -->
+        <div class="card-content">
+            <div class="coupon-code">
+            <span>CODE:</span>
+            <strong>{{ usage.coupon.code }}</strong>
+            <button class="copy-btn" data-code="{{ usage.coupon.code }}">
+                <i class="far fa-copy"></i> Copy
+            </button>
+            </div>
+            
+            <div class="coupon-meta">
+            <div class="meta-row">
+                <i class="far fa-calendar"></i>
+                <span>{{ usage.coupon.valid_from|date:"M d" }} - {{ usage.coupon.valid_to|date:"M d, Y" }}</span>
+            </div>
+            
+            <div class="meta-row">
+                <i class="fas fa-tags"></i>
+                <span class="products-list">
+                {% if usage.coupon.products.all %}
+                    {% for prod in usage.coupon.products.all|slice:":2" %}
+                    {{ prod.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    {% if usage.coupon.products.all.count > 2 %}
+                    +{{ usage.coupon.products.all.count|add:"-2" }} more
+                    {% endif %}
+                {% else %}
+                    All Products
+                {% endif %}
+                </span>
+            </div>
+            
+            <div class="meta-row">
+                <i class="fas fa-shopping-bag"></i>
+                <span>
+                {% if usage.order %}
+                    Used in #{{ usage.order.order_number }}
+                {% else %}
+                    <span class="text-muted">Not used yet</span>
+                {% endif %}
+                </span>
+            </div>
+            </div>
+            
+            <div class="card-actions">
+            {% if usage.coupon.status != 'Expired' and usage.coupon.status != 'Inactive' %}
+            <a href="/" class="use-btn">
+                <i class="fas fa-shopping-cart"></i> Use Now
+            </a>
+            {% else %}
+            <button class="disabled-btn">
+                {% if usage.coupon.status == 'Expired' %}
+                <i class="fas fa-clock"></i> Expired
+                {% else %}
+                <i class="fas fa-lock"></i> Inactive
+                {% endif %}
+            </button>
+            {% endif %}
+            
+            <button class="details-btn" data-coupon-id="{{ usage.coupon.id }}">
+                <i class="fas fa-info-circle"></i> Details
+            </button>
+            </div>
+        </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Premium Empty State -->
+    <div class="empty-vault">
+        <div class="empty-illustration">
+        <img src="{% static 'icon/coupon.png' %}" alt="Empty Vault" class="empty-img">
+        </div>
+        <h3>Your Coupon Vault is Empty</h3>
+        <p>Complete purchases to unlock premium rewards</p>
+        <a href="/shop" class="explore-btn">
+        <span>Explore Products</span>
+        <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Floating Action Button -->
+ 
+    <
+
+    <!-- Coupon Details Modal -->
+    <div class="modal-overlay" id="couponModal">
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <div class="modal-body" id="couponDetails">
+        <div class="modal-header">
+            <h3 class="modal-title" id="couponModalTitle"></h3>
+            <div class="coupon-status-badge" id="couponModalStatus"></div>
+        </div>
+        
+        <div class="modal-grid">
+            <div class="modal-visual">
+            <div class="modal-image-container" id="couponModalImage"></div>
+            <div class="modal-value" id="couponModalValue"></div>
+            </div>
+            
+            <div class="modal-details">
+            <div class="detail-section">
+                <h4><i class="fas fa-info-circle"></i> Description</h4>
+                <p id="couponDescription"></p>
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-calendar-alt"></i> Validity Period</h4>
+                <p id="couponValidity"></p>
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-tags"></i> Applicable Products</h4>
+                <ul class="product-list" id="couponProducts"></ul>
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-file-alt"></i> Terms & Conditions</h4>
+                <ul class="terms-list" id="couponTerms"></ul>
+            </div>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="modal-copy-btn" id="modalCopyBtn">
+            <i class="far fa-copy"></i> Copy Code
+            </button>
+            <a href="/shop" class="modal-use-btn" id="modalUseBtn">
+            <i class="fas fa-shopping-cart"></i> Use Coupon
+            </a>
+        </div>
+        </div>
+    </div>
+</div>
+
+</section>
+
+
+ 
+
+    {% endblock %}   {% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Copy coupon code with toast notification
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        const code = this.getAttribute('data-code');
+        navigator.clipboard.writeText(code).then(() => {
+            showToast(`<i class="fas fa-check-circle"></i> Copied: ${code}`);
+        });
+        });
+    });
+    
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const couponCards = document.querySelectorAll('.coupon-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        const filter = this.getAttribute('data-filter');
+        
+        couponCards.forEach(card => {
+            if (filter === 'all') {
+            card.style.display = 'block';
+            } else {
+            const status = card.getAttribute('data-status');
+            if (status === filter) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+            }
+        });
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        couponCards.forEach(card => {
+        const code = card.querySelector('.coupon-code strong').textContent.toLowerCase();
+        const type = card.getAttribute('data-type').toLowerCase();
+        
+        if (code.includes(searchTerm) || type.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+        });
+    });
+    
+    // Details modal
+    const detailButtons = document.querySelectorAll('.details-btn');
+    const modal = document.getElementById('couponModal');
+    const modalClose = document.querySelector('.modal-close');
+    
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        const couponId = this.getAttribute('data-coupon-id');
+        loadCouponDetails(couponId);
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
+    });
+    
+    modalClose.addEventListener('click', function() {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    });
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+        this.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+        }
+    });
+    
+    // Enhanced loadCouponDetails function
+    function loadCouponDetails(couponId) {
+        // Find the coupon data from the existing cards
+        const couponCard = document.querySelector(`.details-btn[data-coupon-id="${couponId}"]`).closest('.coupon-card');
+        
+        // Extract data from the card
+        const couponCode = couponCard.querySelector('.coupon-code strong').textContent;
+        const couponType = couponCard.getAttribute('data-type');
+        const couponStatus = couponCard.querySelector('.card-ribbon').textContent.trim();
+        const couponValue = couponCard.querySelector('.value-display').innerHTML;
+        const couponImage = couponCard.querySelector('.coupon-img');
+        const validFrom = couponCard.querySelectorAll('.meta-row')[0].querySelector('span').textContent.split(' - ')[0];
+        const validTo = couponCard.querySelectorAll('.meta-row')[0].querySelector('span').textContent.split(' - ')[1];
+        const products = couponCard.querySelector('.products-list').textContent;
+        const isUsed = couponCard.querySelectorAll('.meta-row')[2].querySelector('span').textContent.includes('Used');
+        
+        // Generate description based on type
+        let description = '';
+        let terms = [];
+        
+        switch(couponType) {
+        case 'fixed':
+            description = `Get ₹${couponCard.querySelector('.value-display span').textContent.replace('₹','')} off on your purchase.`;
+            terms = [
+            'Valid on minimum purchase of ₹500',
+            'Cannot be combined with other offers',
+            'One-time use only'
+            ];
+            break;
+        case 'percent':
+            description = `Get ${couponCard.querySelector('.value-display span').textContent} off on your purchase.`;
+            terms = [
+            'Valid on all products',
+            'Maximum discount ₹1000',
+            'Cannot be used with other percentage discounts'
+            ];
+            break;
+        case 'free_shipping':
+            description = 'Free shipping on your order';
+            terms = [
+            'Valid on all orders',
+            'No minimum order value required',
+            'Domestic shipping only'
+            ];
+            break;
+        case 'free_product':
+            description = `Free ${couponCard.querySelector('.value-display small').textContent} with your order`;
+            terms = [
+            'Requires purchase of qualifying products',
+            'Limited to one free item per order',
+            'While supplies last'
+            ];
+            break;
+        case 'cashback':
+            description = `Get ₹${couponCard.querySelector('.value-display span').textContent.replace('₹','')} cashback on your purchase`;
+            terms = [
+            'Cashback will be credited within 24 hours',
+            'Valid on payments via selected methods',
+            'Maximum cashback ₹500 per order'
+            ];
+            break;
+        default:
+            description = 'Special discount coupon';
+            terms = [
+            'Terms and conditions apply',
+            'See website for complete details'
+            ];
+        }
+        
+        // Populate modal
+        document.getElementById('couponModalTitle').textContent = couponCode;
+        document.getElementById('couponModalStatus').textContent = couponStatus;
+        document.getElementById('couponModalStatus').className = 'coupon-status-badge ' + 
+        (couponStatus.includes('Active') ? 'active' : couponStatus.includes('Expired') ? 'expired' : 'inactive');
+        
+        document.getElementById('couponModalValue').innerHTML = couponValue;
+        
+        const imageContainer = document.getElementById('couponModalImage');
+        if (couponImage && couponImage.src) {
+        imageContainer.innerHTML = `<img src="${couponImage.src}" alt="${couponCode}">`;
+        } else {
+        imageContainer.innerHTML = `<div class="visual-placeholder">${couponCode.slice(0, 3)}</div>`;
+        }
+        
+        document.getElementById('couponDescription').textContent = description;
+        document.getElementById('couponValidity').textContent = `From ${validFrom} to ${validTo}`;
+        
+        const productsList = document.getElementById('couponProducts');
+        if (products.includes('All Products')) {
+        productsList.innerHTML = '<li>Applicable to all products</li>';
+        } else {
+        productsList.innerHTML = products.split(',').map(p => `<li>${p.trim()}</li>`).join('');
+        }
+        
+        document.getElementById('couponTerms').innerHTML = terms.map(t => `<li>${t}</li>`).join('');
+        
+        // Set up modal buttons
+        const copyBtn = document.getElementById('modalCopyBtn');
+        copyBtn.onclick = function() {
+        navigator.clipboard.writeText(couponCode).then(() => {
+            showToast(`<i class="fas fa-check-circle"></i> Copied: ${couponCode}`);
+        });
+        };
+        
+        const useBtn = document.getElementById('modalUseBtn');
+        if (couponStatus.includes('Active')) {
+        useBtn.href = `/shop?coupon=${couponCode}`;
+        useBtn.style.display = 'flex';
+        } else {
+        useBtn.style.display = 'none';
+        }
+    }
+    
+    // Show toast notification
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+        toast.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+        }, 3000);
+    }
+ });
+</script>
+{% endblock %}

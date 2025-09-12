@@ -1,0 +1,570 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- ========== HERO SECTION ========== -->
+ 
+
+<section class="xxx-course-carousel-section">
+  <div class="xxx-course-carousel-container">
+    <h3 class="xxx-carousel-title">Grab The latest deal on yourbaazar at your doorstep</h3>
+        
+    <div class="xxx-course-carousel">
+      <div class="xxx-carousel-track">
+        {% for imgc in hero %}
+          <div class="xxx-carousel-item {% if forloop.first %}xxx-active{% endif %}">
+            <img src="{{ imgc.image.url }}" alt="Course">
+          </div>
+        {% empty %}
+          <p>No hero images found</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CATEGORIES SECTION ========== -->
+<section class="categories-section section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Shop by Categories</h2>
+            <p class="section-subtitle">Browse products by your favorite categories</p>
+        </div>
+        
+        <div class="category-grid">
+            {% for category in categories %}
+            <div class="category-card">
+                <a  style="text-decoration: none;"  href="{% url 'product:subcategory_list' category.id %}" class="category-link">
+                    <div class="category-image-container">
+                        <img loading="lazy" src="{{ category.image.url }}" alt="{{ category.name }}" class="category-image">
+                        <div class="category-overlay">
+                            <span class="shop-now-text">Shop Now</span>
+                           
+                        </div>
+                    </div>
+                    <div class="category-info">
+                        <h3 style="text-decoration: none; font-size: 1rem;" class="category-name section-title">{{ category.name }}</h3>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+
+{% comment %} ============recent_products start==========    {% endcomment %}
+
+
+
+
+{% if recent_products %}
+<section class="fpsc-product-carousel-section">
+  <div class="fpsc-product-carousel-container">
+    <h3 class="fpsc-carousel-title">Recently Viewed</h3>
+    
+    <div class="fpsc-product-carousel fpsc-owl-theme">
+      
+      <div class="fpsc-carousel-track">
+    
+               {% for product in recent_products %}
+        <!-- Product 5 -->
+        <div class="fpsc-product-card">
+          <div class="fpsc-product-image">
+          
+                        <img src="{{ product.thumbnail.url }}" class="tq12-card-img" alt="{{ prod.name }}">
+                    
+          </div>
+          <div class="fpsc-product-details">
+            <h4 class="fpsc-product-title">{{ product.name }}</h4>
+            <div class="fpsc-price-container">
+                {% if product.get_default_variant %}
+              <span class="fpsc-current-price">  ₹{{ product.get_default_variant.price_after_discount|floatformat:2 }}</span>   {% if product.get_default_variant.discount > 0 %}
+              <span class="fpsc-original-price">₹{{ product.get_default_variant.price_before_discount|floatformat:2 }}</span>
+            </div> {% endif %}
+                        
+            <a href="{{ product.get_absolute_url }}" class="fpsc-view-btn" style="text-decoration:none">View Product</a>
+          </div>
+        </div>
+            {% endif %}
+         {% endfor %}
+      </div>
+      
+     
+    </div>
+  </div>
+
+
+
+</section>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ===============suggested for you ================== -->
+
+<section class="fpsc1-product-carousel-section">
+  <div class="fpsc1-product-carousel-container">
+    <h3 class="fpsc1-carousel-title">Suggested for You</h3>
+    
+    <div class="fpsc1-product-carousel fpsc1-owl-theme">
+      
+      <div class="fpsc1-carousel-track">
+    
+          {% for prod in suggested_products %}
+        <!-- Product 5 -->
+        <div class="fpsc1-product-card">
+          <div class="fpsc1-product-image">
+           {% if prod.thumbnail %}
+                        <img src="{{ prod.thumbnail.url }}" class="tq12-card-img" alt="{{ prod.name }}">
+                    {% else %}
+                        <img src="{% static 'images/no-image.jpg' %}" class="tq12-card-img" alt="No image">
+                    {% endif %}
+          </div>
+          <div class="fpsc1-product-details">
+            <h4 class="fpsc1-product-title">{{ prod.name }}</h4>
+            <div class="fpsc1-price-container">
+                  {% with prod.get_default_variant as variant %} {% if variant %}
+              <span class="fpsc1-current-price">₹{{ variant.price_after_discount|floatformat:2 }}</span>
+              <span class="fpsc1-original-price">₹{{ variant.price_before_discount|floatformat:2 }}</span>
+            </div> {% endif %}
+                        {% endwith %}
+            <a href="{{ prod.get_absolute_url }}" class="fpsc1-view-btn" style="text-decoration:none">View Product</a>
+          </div>
+        </div>
+           
+         {% endfor %}
+      </div>
+      
+     
+    </div>
+  </div>
+
+
+
+</section>
+
+{% if kitchen_appliances %}
+ <section class="fpsc2-product-carousel-section">
+  <div class="fpsc2-product-carousel-container">
+    <h3 class="fpsc2-carousel-title">Kitchen Appliances</h3>
+    
+    <div class="fpsc2-product-carousel fpsc2-owl-theme">
+      
+      <div class="fpsc2-carousel-track">
+    
+          {% for product in products %}
+        <!-- Product 5 -->
+        <div class="fpsc2-product-card">
+          <div class="fpsc2-product-image">
+         
+
+   {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail.url }}" class="tq12-card-img" alt="{{ product.name }}">
+                {% elif product.image %}
+                    <img src="{{ product.image.url }}" class="tq12-card-img" alt="{{ product.name }}">
+                {% else %}
+                    <img src="/static/images/no-image.png" class="tq12-card-img" alt="No image available">
+                {% endif %}
+
+          </div>
+          <div class="fpsc2-product-details">
+            <h4 class="fpsc2-product-title">{{ product.name }}</h4>
+            <div class="fpsc2-price-container">
+                  {% with default_variant=product.get_default_variant %}
+                    {% if default_variant %}
+                        {% if default_variant.discount > 0 %}
+              <span class="fpsc2-current-price">₹{{ default_variant.price_before_discount }}</span>
+              <span class="fpsc2-original-price"> ₹{{ default_variant.price_after_discount }}</span>
+            </div> {% else %}
+                            <p>₹{{ default_variant.price_before_discount }}</p>
+                        {% endif %}{% else %}
+                        <p>Price not available</p>
+                    {% endif %}{% endwith %}
+            <a href="{{ product.get_absolute_url }}" class="fpsc2-view-btn" style="text-decoration:none">View Product</a>
+          </div>
+        </div>
+           
+         {% endfor %}
+      </div>
+      
+     
+    </div>
+  </div>
+
+
+{% else %}
+    <p>No kitchen appliances found.</p>
+{% endif %}
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== SALE PRODUCTS SECTION ========== -->
+<section class="sale-section section">
+    <div class="container">
+        <div class="sale-header">
+            <h2 class="section-title">Sale Products</h2>
+            <a  style="text-decoration: none;" href="{% url 'product:sales_products' %}" class="view-all-link">View All</a>
+        </div>
+        
+        <div class="product-grid">
+            {% for variant in sale_products|slice:":8" %}
+                <div class="product-card">
+                    <div class="product-badge">SALE</div>
+                    <div class="product-image-container">
+                        <img src="{{ variant.color.product.image.url }}" 
+                             alt="{{ variant.color.product.name }}" 
+                             class="product-image" 
+                             loading="lazy">
+                    </div>
+                    <div class="product-info">
+                        <p class="shoe-title">{{ variant.color.product.name }}</p>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ variant.price_after_discount|floatformat:2 }}</span>
+                                                       <span class="discount-percent">{{ variant.discount|floatformat:0 }}% OFF</span>
+
+                            <span class="original-price">₹{{ variant.price_before_discount|floatformat:2 }}</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{% url 'product:product_detail' variant.color.product.id %}" class="shoe-btn" style="text-decoration: none; padding: 10px 35px;" >
+                                <i class="fas fa-eye"></i>  View
+                            </a>
+                         
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+<!-- ========== FESTIVAL SECTION ========== -->
+<section class="festival2-section section">
+    <div class="container">
+        <div class="festival2-content">
+            <h2>Festival Sale</h2>
+            <p>Celebrate  with exclusive discounts and offers on yourbaazar</p>
+            <a href="{% url 'product:sales_products' %}" class="btn btn-primary">Shop the Sale</a>
+
+            <div class="festival2-offers">
+                {% for sale in sales %}
+                    <div class="festival2-offer">
+                        {% if sale.sale_image %}
+                            <img src="{{ sale.sale_image.url }}" alt="{{ sale.sale_heading }}" class="sale-img" style="width: 100%; max-height: 150px; object-fit: cover;">
+                        {% endif %}
+                        <h3>{{ sale.sale_heading }}</h3>
+                        <div class="discount">{{ sale.sale_discount }}</div>
+                        <p class="offer-desc">{{ sale.sale_paragraph }}</p>
+                    </div>
+                {% empty %}
+                    <p>No sales available at the moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== SHOES SECTION ========== -->
+<section class="shoes-section section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Trending Footwear</h2>
+            <p class="section-subtitle">Step out in style with our premium collection</p>
+        </div>
+
+        <div class="shoes-tabs">
+            <button class="shoes-tab active" data-category="all">All Shoes</button>
+            <button class="shoes-tab" data-category="mens">Men's Sneakers</button>
+            <button class="shoes-tab" data-category="womens">Women's Sneakers</button>
+            <button class="shoes-tab" data-category="kids">Kids Sneakers</button>
+        </div>
+
+        <div class="shoes-grid">
+            {% for variant in mens_sneakers %}
+            <div class="shoe-card" data-category="mens">
+                
+                <div class="shoe-image-container">
+                    <img src="{{ variant.color.image_main.url }}" alt="{{ variant.color.product.name }}" class="shoe-image" loading="lazy">
+                    
+                </div>
+                <div class="shoe-info">
+                    <h3 class="shoe-title">{{ variant.color.product.name }}</h3>
+                    <div class="shoe-price">₹{{ variant.price_after_discount|floatformat:1 }}</div>
+                 
+                    <button  style="text-decoration: none;" class="shoe-btn">
+                     <i class="fas fa-eye"></i> View
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for variant in womens_sneakers %}
+            <div class="shoe-card" data-category="womens">
+                <div class="shoe-image-container">
+                    <img src="{{ variant.color.image_main.url }}" alt="{{ variant.color.product.name }}" class="shoe-image" loading="lazy">
+                   
+                </div>
+                <div class="shoe-info">
+                    <h3 class="shoe-title">{{ variant.color.product.name }}</h3>
+                    <div class="shoe-price">₹{{ variant.price_after_discount|floatformat:1 }}</div>
+                  
+                    <a href="{% url 'product:product_detail' variant.color.product.id %}"  style="text-decoration: none;"  class="shoe-btn">
+<i class="fas fa-eye"></i>View
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for variant in kids_sneakers %}
+            <div class="shoe-card" data-category="kids">
+                <div class="shoe-image-container">
+                    <img src="{{ variant.color.image_main.url }}" alt="{{ variant.color.product.name }}" class="shoe-image" loading="lazy">
+                   
+                </div>
+                <div class="shoe-info">
+                    <h3 class="shoe-title">{{ variant.color.product.name }}</h3>
+                    <div class="shoe-price">₹{{ variant.price_after_discount|floatformat:1 }}</div>
+                   
+                    <button  style="text-decoration: none;" class="shoe-btn">
+                       <i class="fas fa-eye"></i>View
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ========== BANNER SECTION ========== -->
+<section class="banner-section section"  id="banner">
+    <div class="container">
+        <div class="banner-grid">
+
+            <!-- Women's Collection -->
+            <div class="banner-card">
+                {% if collection.womens_image %}
+                    <img loading="lazy" src="{{ collection.womens_image.url }}" alt="Women's Fashion" class="banner-img">
+                {% else %}
+                    <img loading="lazy" src="{% static 'images/placeholder.jpg' %}" alt="Women's Fashion" class="banner-img">
+                {% endif %}
+                <div class="banner-content">
+                    <h3>{{ collection.womens_heading }}</h3>
+                    <p>{{ collection.womens_paragraph }}</p>
+                    <a href="{% url 'product:collection_view' 'women' %}" style="text-decoration: none;" class="shoe-btn">Shop Now</a>
+                </div>
+            </div>
+
+            <!-- Men's Collection -->
+            <div class="banner-card">
+                {% if collection.mens_image %}
+                    <img loading="lazy" src="{{ collection.mens_image.url }}" alt="Men's Fashion" class="banner-img">
+                {% else %}
+                    <img loading="lazy" src="{% static 'images/placeholder.jpg' %}" alt="Men's Fashion" class="banner-img">
+                {% endif %}
+                <div class="banner-content">
+                    <h3>{{ collection.mens_heading }}</h3>
+                    <p>{{ collection.mens_paragraph }}</p>
+                    <a href="{% url 'product:collection_view' 'men' %}" style="text-decoration: none;" class="shoe-btn">Shop Now</a>
+                </div>
+            </div>
+
+            <!-- Accessories Collection -->
+            <div class="banner-card">
+                {% if collection.accessories_image %}
+                    <img loading="lazy" src="{{ collection.accessories_image.url }}" alt="Accessories" class="banner-img">
+                {% else %}
+                    <img loading="lazy" src="{% static 'images/placeholder.jpg' %}" alt="Accessories" class="banner-img">
+                {% endif %}
+                <div class="banner-content">
+                    <h3>{{ collection.accessories_heading }}</h3>
+                    <p>{{ collection.accessories_paragraph }}</p>
+                    <a href="{% url 'product:collection_view' 'accessories' %}" style="text-decoration: none;" class="shoe-btn">Shop Now</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========== FEATURES SECTION ========== -->
+<section class="features-section section">
+    <div class="container">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3>Free Shipping</h3>
+                <p>Free shipping on all orders over ₹1500</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-undo"></i>
+                </div>
+                <h3>Easy Returns</h3>
+                <p>Product only Return within 2 days after Delivery</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Secure Payment</h3>
+                <p>Your payment information is secure through Razorpay Payment Gateway</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Friendly customer support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ========== BACK TO TOP ========== -->
+<a href="#"  style="text-decoration: none;" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</a>
+{% if new_coupons or request.session.order_success_data %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // First check if we have order success data
+  {% if request.session.order_success_data %}
+    Swal.fire({
+      title: '🚀 Order Confirmed!',
+      html: `
+        <div class="order-success-card">
+          <div class="order-icon">📦</div>
+          <div class="order-details">
+            <p><b>Order ID:</b> #{{ request.session.order_success_data.order_id }}</p>
+            <p><b>Payment ID:</b> {{ request.session.order_success_data.payment_id|default:"COD" }}</p>
+            <p class="thank-you">Thank you for choosing <strong>YourBaazar</strong>!</p>
+          </div>
+        </div>
+      `,
+      icon: 'success',
+      background: '#f8f9fa',
+      confirmButtonText: 'continue shopping',
+      confirmButtonColor: '#4e73df',
+      showCloseButton: true,
+      footer: 'Your items will arrive soon!'
+    }).then((result) => {
+      // After order success is acknowledged, show coupons if available
+      {% if new_coupons %}
+        Swal.fire({
+          title: '✨ Unlocked Rewards!',
+          text: "You've earned special coupons: {{ new_coupons|join:', ' }}",
+          icon: 'success',
+          background: '#f8f9fa',
+          confirmButtonText: 'Claim Rewards',
+          confirmButtonColor: '#4e73df'
+        });
+      {% endif %}
+      
+      // Clear the session data via AJAX
+      fetch('/clear-order-success/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+  
+  {% elif new_coupons %}
+    // If only coupons are available (no order success)
+    Swal.fire({
+      title: '✨ Unlocked Rewards!',
+      text: "You've earned special coupons: {{ new_coupons|join:', ' }}",
+      icon: 'success',
+      background: '#f8f9fa',
+      confirmButtonText: 'Claim Rewards',
+      confirmButtonColor: '#4e73df'
+    });
+  {% endif %}
+});
+
+// CSS for styling
+const style = document.createElement('style');
+style.textContent = `
+  .order-success-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+  }
+  .order-icon {
+    font-size: 2.5rem;
+    background: #4e73df;
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .order-details {
+    text-align: left;
+  }
+  .thank-you {
+    margin-top: 10px;
+    color: #4e73df;
+    font-style: italic;
+  }
+  .swal2-popup {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+  }
+`;
+document.head.appendChild(style);
+</script>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+ <script src="{% static 'js/index.js' %}"></script>
+
+{% endblock %}

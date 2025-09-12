@@ -1,0 +1,136 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% load static %}
+{% block title %}Admin Oder Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orderdetails.css' %}">
+
+{% endblock %}
+{% block content %}
+<div class="order-detail-container">
+    <div class="order-header">
+        <h1>Order #{{ order.order_number }}</h1>  <!-- Changed from order.id to order.order_number -->
+        <p>Thank you for your purchase!</p>
+        <div class="order-status-badge">
+            <i class="fas fa-{% if order.status == 'Delivered' %}check-circle{% elif order.status == 'Cancelled' %}times-circle{% else %}shipping-fast{% endif %} status-icon"></i>
+            {{ order.get_status_display }}  <!-- Changed to use get_status_display -->
+        </div>
+    </div>
+    
+    <div class="order-card">
+        <div class="order-section">
+            <h3 class="section-title">Order Details</h3>
+            
+            {% for item in order.items.all %}  <!-- Updated to handle multiple order items -->
+            <div class="order-product-detail">
+                        {% if item.variant and item.variant.color and item.variant.color.image_main %}
+    <img src="{{ item.variant.color.image_main.url }}" class="product-image" alt="{{ item.product.name }}">
+{% elif item.product.image %}
+    <img src="{{ item.product.image.url }}" class="product-image" alt="{{ item.product.name }}">
+{% else %}
+<img src="{% static 'images/default-product.png' %}" class="product-image" alt="No Image">
+{% endif %}
+
+                <div class="product-info">
+                    <h4>{{ item.product.name }}</h4>
+                    <p>{{ item.product.description|truncatewords:20 }}</p>
+                    <div class="product-meta">
+                        <span><strong>Quantity:</strong> {{ item.quantity }}</span>
+                        <span><strong>Price:</strong> ₹{{ item.price|floatformat:2 }}</span>
+                        {% if item.variant %}
+                        <span><strong>Variant:</strong> {{ item.variant.size }}/{{ item.variant.color.color_name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="tracking-info">
+                <div>
+                    <p style="margin-bottom: 0.5rem; color: #7f8c8d;">Tracking Number</p>
+                    <div class="tracking-id">{{ order.tracking_id }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="section-title">Shipping Information</h3>
+                    <div class="address-card">
+                        <h5>{{ order.customer_name }}</h5>  <!-- Updated field name -->
+                        <p>{{ order.shipping_address }}</p>  <!-- Updated field name -->
+                        <p>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip_code }}</p>  <!-- Updated field names -->
+                        <p><strong>Phone:</strong> {{ order.customer_phone }}</p>  <!-- Updated field name -->
+                        <p><strong>Email:</strong> {{ order.customer_email }}</p>  <!-- Updated field name -->
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h3 class="section-title">Order Summary</h3>
+                    <table class="summary-table">
+                        <tr>
+                            <td>Subtotal</td>
+                            <td>₹{{ order.subtotal|floatformat:2 }}</td>  <!-- Updated to use order.subtotal -->
+                        </tr>
+                        <tr>
+                            <td>Shipping</td>
+                            <td>₹{{ order.shipping_cost|floatformat:2 }}</td>  <!-- Updated to use order.shipping_cost -->
+                        </tr>
+                        {% comment %} <tr>
+                            <td>Tax</td>
+                            <td>₹{{ order.tax_amount|floatformat:2 }}</td>  <!-- Updated to use order.tax_amount -->
+                        </tr> {% endcomment %}
+                        <tr>
+                            <td>Discount</td>
+                            <td>₹{{ order.discount_amount|floatformat:2 }}</td>  <!-- Updated to use order.discount_amount -->
+                        </tr>
+                        {% if order.coupon %}
+    <div class="applied-coupon">
+        Applied Coupon Code: <strong>{{ order.coupon.code }}</strong>
+    </div>
+{% else %}
+    <div class="no-coupon">
+        No coupon was applied for this order.
+    </div>
+{% endif %}
+
+                        <tr>
+                            <td>Total</td>
+                            <td>₹{{ order.total_amount|floatformat:2 }}</td>  <!-- Updated to use order.total_amount -->
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="payment-info">
+                    <p><strong>Payment Method:</strong>
+                        {% if order.payment_method == 'cod' %}
+                            <span class="badge bg-success">Cash on Delivery</span>
+                        {% else %}
+                            <span class="badge bg-primary">{{ order.get_payment_method_display }}</span>
+                        {% endif %}
+                    </p>
+                    {% if order.payment_id %}
+                        <p><strong>Payment ID:</strong> {{ order.payment_id }}</p>
+                    {% endif %}
+                    <p><strong>Payment Status:</strong> {{ order.get_payment_status_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="button-group">
+        <a href="{% url 'order_list' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+        <a href="{% url 'invoice' order.id %}" class="print-btn" id="printBillBtn">
+            <i class="fas fa-print"></i> Print Invoice
+        </a>
+        {% if request.user.is_staff %}
+        <a href="{% url 'delivery_receipt' order.id %}" class="print-btn" style="background: linear-gradient(90deg, #9b59b6, #8e44ad);">
+            <i class="fas fa-truck"></i> Delivery Receipt
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,636 @@
+{% extends "seller/sellerbase.html" %}
+{% block content %}
+
+<style>
+    /* ============== Light theme tokens ============== */
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --accent: #4f46e5;
+      --accent-2: #6366f1;
+      --ok: #10b981;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+      --radius: 12px;
+      --gap: 20px;
+      --transition: all 0.2s ease;
+    }
+
+    /* ============== Page scaffolding ============== */
+    .page {
+      background: var(--bg);
+      color: var(--text);
+            width: 100%;
+
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    .containerrr {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ============== Toolbar ============== */
+    .toolbar {
+   
+      z-index: 10;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .toolbar-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .toolbar-row { 
+        grid-template-columns: 1fr; 
+        gap: 12px;
+      }
+    }
+
+    .search-containerrr {
+      display: flex; 
+      gap: 12px;
+      flex: 1;
+    }
+    .input {
+      flex: 1;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 0 16px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .btn {
+      height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      padding: 0 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover { 
+      background: var(--accent-2); 
+      transform: translateY(-1px);
+    }
+    .btn:active { 
+      transform: translateY(0); 
+    }
+
+    .view-toggle {
+      display: inline-flex; 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      overflow: hidden; 
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .view-toggle a {
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center;
+      min-width: 100px; 
+      height: 48px; 
+      padding: 0 16px; 
+      text-decoration: none; 
+      color: var(--muted); 
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .view-toggle a.active { 
+      background: var(--accent); 
+      color: white; 
+    }
+    .view-toggle a:not(.active):hover {
+      background: #f1f5f9;
+    }
+
+    /* ============== Stats ============== */
+    .stats {
+      display: grid; 
+      gap: var(--gap);
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      margin-top: 20px;
+    }
+    @media (max-width: 1024px) { 
+      .stats { 
+        grid-template-columns: repeat(2, 1fr); 
+      } 
+    }
+    @media (max-width: 640px) { 
+      .stats { 
+        grid-template-columns: 1fr; 
+      } 
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      transition: var(--transition);
+    }
+    .stat:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .stat h4 { 
+      margin: 0 0 8px 0; 
+      font-size: 14px; 
+      text-transform: uppercase; 
+      color: var(--muted); 
+      letter-spacing: .05em; 
+      font-weight: 600;
+    }
+    .stat .num { 
+      font-size: 28px; 
+      font-weight: 800; 
+      line-height: 1.2;
+    }
+    .stat.ok .num { color: var(--ok); }
+    .stat.warn .num { color: var(--warn); }
+    .stat.bad .num { color: var(--bad); }
+
+    /* ============== Grid view ============== */
+    .grid {
+      display: grid; 
+      gap: var(--gap);
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      margin-top: 24px;
+    }
+
+    .card {
+      display: flex; 
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+    }
+    .card:hover { 
+      transform: translateY(-5px); 
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-head {
+      display: grid; 
+      grid-template-columns: 60px 1fr auto; 
+      gap: 12px;
+      padding: 16px; 
+      align-items: center; 
+      border-bottom: 1px solid var(--border);
+    }
+    .thumb { 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 10px; 
+      object-fit: cover; 
+      background: #f1f5f9; 
+      border: 1px solid var(--border); 
+    }
+    .title { 
+      min-width: 0; 
+    }
+    .name { 
+      font-weight: 700; 
+      line-height: 1.3; 
+      font-size: 16px; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      margin-bottom: 4px;
+    }
+    .sku { 
+      font-size: 13px; 
+      color: var(--muted); 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
+
+    .badge {
+      font-size: 12px; 
+      font-weight: 700; 
+      padding: 6px 12px; 
+      border-radius: 999px;
+      border: 1px solid var(--border); 
+      background: #fff; 
+      color: var(--text);
+    }
+    .badge.ok { 
+      color: var(--ok); 
+      border-color: rgba(16,185,129,.3); 
+      background: rgba(16,185,129,.1); 
+    }
+    .badge.warn { 
+      color: var(--warn); 
+      border-color: rgba(245,158,11,.3); 
+      background: rgba(245,158,11,.1); 
+    }
+    .badge.bad { 
+      color: var(--bad); 
+      border-color: rgba(239,68,68,.3); 
+      background: rgba(239,68,68,.1); 
+    }
+
+    .card-body { 
+      display: grid; 
+      grid-template-columns: repeat(2,minmax(0,1fr)); 
+      gap: 12px; 
+      padding: 16px; 
+    }
+    .row { 
+      display: flex; 
+      gap: 8px; 
+      align-items: center; 
+      font-size: 14px; 
+      color: var(--muted); 
+    }
+    .row b { 
+      color: var(--text); 
+      font-weight: 700; 
+      font-size: 14px; 
+    }
+    .color-dot { 
+      width: 16px; 
+      height: 16px; 
+      border-radius: 50%; 
+      border: 1px solid #d1d5db; 
+      flex-shrink: 0;
+    }
+
+    .card-actions {
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 10px;
+      padding: 16px; 
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .link {
+      display: inline-flex; 
+      align-items: center;
+      justify-content: center;
+      text-align: center; 
+      border: 1px solid var(--border);
+      background: #fff; 
+      padding: 10px 12px; 
+      border-radius: 10px; 
+      color: var(--text);
+      font-weight: 600; 
+      font-size: 13px; 
+      text-decoration: none; 
+      transition: var(--transition);
+      gap: 4px;
+    }
+    .link:hover { 
+      background: var(--accent); 
+      color: white; 
+      border-color: var(--accent);
+    }
+    .link:active { 
+      transform: translateY(1px); 
+    }
+
+    /* ============== List view ============== */
+    .table-wrap {
+      margin-top: 24px; 
+      overflow-x: auto; 
+      background: var(--card);
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      box-shadow: var(--shadow);
+    }
+    .table {
+      width: 100%; 
+      border-collapse: separate; 
+      border-spacing: 0;
+      min-width: 1000px;
+    }
+    .table thead th {
+      text-align: left; 
+      padding: 16px; 
+      font-size: 13px; 
+      text-transform: uppercase; 
+      letter-spacing: .05em; 
+      color: var(--muted);
+      border-bottom: 1px solid var(--border); 
+      background: #f8fafc;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    .table tbody td {
+      padding: 16px; 
+      border-bottom: 1px solid var(--border); 
+      vertical-align: middle; 
+      font-size: 14px;
+    }
+    .table tbody tr {
+      transition: var(--transition);
+    }
+    .table tbody tr:hover {
+      background: #f1f5f9;
+    }
+    .table .prod {
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      min-width: 260px;
+    }
+    .table .prod img { 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 8px; 
+      object-fit: cover; 
+      border: 1px solid var(--border); 
+      background: #f1f5f9; 
+    }
+    .kit { 
+      display: inline-flex; 
+      gap: 8px; 
+      align-items: center; 
+    }
+
+    /* ============== Pagination ============== */
+    .pager {
+      margin: 24px 0 10px; 
+      display: flex; 
+      width: 100%;
+      align-items: center; 
+      justify-content: center; 
+      gap: 12px;
+    }
+    .pager a, .pager span {
+      padding: 10px 16px; 
+      border-radius: 10px; 
+      border: 1px solid var(--border);
+      background: #fff; 
+      color: var(--text); 
+      font-weight: 600; 
+      font-size: 14px; 
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .pager a:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .pager .curr { 
+      background: var(--accent); 
+      color: white;
+      border-color: var(--accent); 
+    }
+
+    /* ============== Empty state ============== */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .empty-state i {
+      font-size: 48px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .empty-state h3 {
+      margin: 0 0 8px 0;
+      color: var(--text);
+    }
+    .empty-state p {
+      margin: 0;
+      color: var(--muted);
+    }
+</style>
+
+<div >
+  <div class="containerrr">
+
+    <!-- Toolbar -->
+    <div class="toolbar" role="region" aria-label="Controls">
+      <form method="get" class="toolbar-row" role="search" aria-label="Search variants">
+        <div class="search-containerrr">
+          <input class="input" type="text" name="q" value="{{ query }}" placeholder="Search product, SKU, color, size" />
+          <button class="btn" type="submit">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </div>
+
+        {# view toggle preserves q param #}
+        {% with view=request.GET.view|default_if_none:'grid' %}
+        <div class="view-toggle" role="tablist" aria-label="View switch">
+          <a role="tab"
+             aria-selected="{% if view != 'list' %}true{% else %}false{% endif %}"
+             class="{% if view != 'list' %}active{% endif %}"
+             href="?q={{ query }}&view=grid">
+            <i class="fas fa-th-large"></i> Grid
+          </a>
+          <a role="tab"
+             aria-selected="{% if view == 'list' %}true{% else %}false{% endif %}"
+             class="{% if view == 'list' %}active{% endif %}"
+             href="?q={{ query }}&view=list">
+            <i class="fas fa-list"></i> List
+          </a>
+        </div>
+        {% endwith %}
+      </form>
+
+      <div class="stats" role="region" aria-label="Inventory summary">
+        <div class="stat"><h4>Total variants</h4><div class="num">{{ cards.total }}</div></div>
+        <div class="stat ok"><h4>In stock</h4><div class="num">{{ cards.in_stock }}</div></div>
+        <div class="stat warn"><h4>Low stock ≤ {{ cards.low_stock_threshold }}</h4><div class="num">{{ cards.low_stock }}</div></div>
+        <div class="stat bad"><h4>Out of stock</h4><div class="num">{{ cards.out_of_stock }}</div></div>
+      </div>
+    </div>
+
+    {% with view=request.GET.view|default_if_none:'grid' %}
+      {% if view == 'list' %}
+        <!-- List view -->
+        <div class="table-wrap" role="region" aria-label="Variant list">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Color</th>
+                <th>Size</th>
+                <th>Stock</th>
+                <th>MRP</th>
+                <th>Discount</th>
+                <th>Cost</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% if variants %}
+              {% for v in variants %}
+                {% with p=v.color.product c=v.color %}
+                <tr>
+                  <td>#{{ p.id }}</td>
+<td class="prod">
+  {% if c.image_main %}
+    <img src="{{ c.image_main.url }}" alt="{{ p.name }}">
+  {% else %}
+    <div class="thumb" style="width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:var(--muted);">
+      <i class="fas fa-image"></i>
+    </div>
+  {% endif %}
+  <div>
+    <div class="name">{{ p.name }} {% if p.brand %}· {{ p.brand }}{% endif %}</div>
+    <div class="sku">#{{ p.id }} · {{ p.sku }}</div>
+  </div>
+</td>
+
+                  <td>{{ p.sku }}</td>
+                  <td class="kit">
+                    <span class="color-dot" style="background: {{ c.color_code|default:'#94a3b8' }}"></span>
+                    <span>{{ c.color_name }}</span>
+                  </td>
+                  <td>{{ v.size }}</td>
+                  <td>
+                    {% if v.stock|add:0 <= 0 %}
+                      <span class="badge bad">Out · {{ v.stock }}</span>
+                    {% elif v.stock|add:0 <= cards.low_stock_threshold %}
+                      <span class="badge warn">Low · {{ v.stock }}</span>
+                    {% else %}
+                      <span class="badge ok">In · {{ v.stock }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ v.price_before_discount }}</td>
+                  <td>{{ v.discount }}%</td>
+                  <td>{{ v.price_we_buy }}</td>
+                  <td>
+                    <div style="display:flex;gap:8px;">
+                      <a class="link" href="{% url 'seller_products:product_detail' p.id %}"><i class="fas fa-eye"></i></a>
+                      <a class="link" href="{% url 'seller_products:product_edit' p.id %}"><i class="fas fa-edit"></i></a>
+                      <a class="link" href="{% url 'seller_products:product_reviews' p.id %}"><i class="fas fa-star"></i></a>
+                    </div>
+                  </td>
+                </tr>
+                {% endwith %}
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="10">
+                  <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No variants found</h3>
+                    <p>Try adjusting your search criteria</p>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <!-- Grid view -->
+        <div class="grid" role="list" aria-label="Variant grid">
+          {% if variants %}
+            {% for v in variants %}
+              {% with p=v.color.product c=v.color %}
+              <article class="card" role="listitem" aria-label="Variant">
+                <header class="card-head">
+                  {% if c.image_main %}
+                    <img class="thumb" src="{{ c.image_main.url }}" alt="{{ p.name }}">
+                  {% elif p.thumbnail %}
+                    <img class="thumb" src="{{ p.thumbnail.url }}" alt="{{ p.name }}">
+                  {% else %}
+                    <div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--muted);">
+                      <i class="fas fa-image"></i>
+                    </div>
+                  {% endif %}
+                  <div class="title">
+                    <div class="name" title="{{ p.name }}">{{ p.name }} {% if p.brand %}· {{ p.brand }}{% endif %}</div>
+                    <div class="sku" title="{{ p.sku }}">#{{ p.id }} · {{ p.sku }}</div>
+                  </div>
+                  …
+                </header>
+
+
+                <div class="card-body">
+               
+                  <div class="row">Color <b> {{ c.color_name }}</b></div>
+                  <div class="row">Size <b>{{ v.size }}</b></div>
+                  <div class="row">MRP <b>{{ v.price_before_discount }}</b></div>
+                  <div class="row">Discount <b>{{ v.discount }}%</b></div>
+                  <div class="row">Cost <b>{{ v.price_we_buy }}</b></div>
+                  <div class="row">Final Price <b>₹{{ v.final_price }}</b></div>
+
+                </div>
+
+                <div class="card-actions">
+                  <a class="link" href="{% url 'seller_products:product_detail' p.id %}"><i class="fas fa-eye"></i> View</a>
+                  <a class="link" href="{% url 'seller_products:product_edit' p.id %}"><i class="fas fa-edit"></i> Edit</a>
+                  <a class="link" href="{% url 'seller_products:product_reviews' p.id %}"><i class="fas fa-star"></i> Reviews</a>
+                </div>
+              </article>
+              {% endwith %}
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <i class="fas fa-search"></i>
+              <h3>No variants found</h3>
+              <p>Try adjusting your search criteria</p>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if page_obj and page_obj.has_other_pages %}
+      <nav class="pager" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+          <a href="?q={{ query }}&view={{ request.GET.view|default:'grid' }}&page={{ page_obj.previous_page_number }}">
+            <i class="fas fa-chevron-left"></i> Prev
+          </a>
+        {% endif %}
+        <span class="curr">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?q={{ query }}&view={{ request.GET.view|default:'grid' }}&page={{ page_obj.next_page_number }}">
+            Next <i class="fas fa-chevron-right"></i>
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

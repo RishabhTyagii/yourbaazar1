@@ -1,0 +1,157 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+
+<section class="reviews-wrap">
+  <header class="reviews-header">
+    <h1 class="title">Seller Reviews</h1>
+    <div class="actions">
+      <a class="btn btn-primary" href="{% url 'seller_reviews:testimonial_create' %}">Write/Update your review</a>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <form method="get" class="searchbar" role="search" aria-label="Search reviews">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search name, business, comment" aria-label="Search input">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+
+    <div class="view-toggle" role="group" aria-label="View switch">
+      <input type="radio" id="view-grid" name="view" value="grid" checked>
+      <label for="view-grid" class="chip">Grid</label>
+      <input type="radio" id="view-list" name="view" value="list">
+      <label for="view-list" class="chip">Wide list</label>
+    </div>
+  </div>
+
+  <div class="reviews-grid" id="reviewsGrid">
+    {% for r in testimonials %}
+      <article class="review-card">
+        <div class="avatar">
+          {% if r.photo %}
+            <img src="{{ r.photo.url }}" alt="{{ r.display_name|default:r.seller.username }} photo">
+          {% else %}
+            <div class="avatar-fallback" aria-hidden="true">👤</div>
+          {% endif %}
+        </div>
+        <div class="content">
+          <div class="header">
+            <div class="who">
+              <div class="name">{{ r.display_name|default:r.seller.username }}</div>
+              {% if r.business_name %}
+                <div class="biz">{{ r.business_name }}</div>
+              {% endif %}
+            </div>
+            <div class="rating" aria-label="Rating {{ r.rating|default:0 }} out of 5">
+              {% for i in "12345" %}
+                {% if r.rating|default:0 >= i|add:"0" %}
+                  <span class="star filled">★</span>
+                {% else %}
+                  <span class="star">★</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <p class="text">{{ r.experience }}</p>
+          <footer class="meta">
+            <time class="date">{{ r.created_at|date:"M d, Y" }}</time>
+          </footer>
+        </div>
+      </article>
+    {% empty %}
+      <div class="empty">No reviews yet.</div>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+    <nav class="pager" aria-label="Testimonials pagination">
+      {% if page_obj.has_previous %}
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}">Previous</a>
+      {% else %}
+        <span class="page-link disabled">Previous</span>
+      {% endif %}
+
+      <span class="page-indicator">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+      {% if page_obj.has_next %}
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}">Next</a>
+      {% else %}
+        <span class="page-link disabled">Next</span>
+      {% endif %}
+    </nav>
+  {% endif %}
+</section>
+
+<style>
+/* === Tera original CSS === */
+/* layout, toolbar, cards, grid/list, avatar, meta, pager etc. */
+:root{ --bg:#0b1220; --bg-50:#f7f8fb; --surface:#ffffff; --text:#0b1220; --muted:#556070; --muted-2:#6b7280; --border:#e5e7eb; --border-strong:#d1d5db; --primary:#2563eb; --primary-600:#1d4ed8; --primary-700:#1e40af; --success:#16a34a; --radius-lg:16px; --radius-md:12px; --radius-sm:10px; --shadow-xs:0 1px 3px rgba(1, 14, 36, 0.06); --shadow-sm:0 4px 12px rgba(16,19,24,.08); --shadow-md:0 12px 28px rgba(16,19,24,.10); }
+.reviews-wrap{ max-width: 1100px; margin: 0 auto; padding: clamp(16px, 2vw, 24px); }
+.reviews-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+.title{ margin:0; font-size:clamp(1.25rem, 2.5vw, 1.75rem); font-weight:800; letter-spacing:.2px; }
+.actions .btn{ white-space:nowrap; }
+.toolbar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow: var(--shadow-sm); position:sticky; top:10px; z-index:5; }
+.searchbar{ display:flex; gap:8px; flex:1 1 360px; }
+.searchbar input{ flex:1; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font:inherit; outline:none; }
+.searchbar input:focus{ border-color: var(--primary-600); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; border:1px solid transparent; font-weight:700; cursor:pointer; transition:.15s ease; }
+.btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.btn-primary:hover{ filter:brightness(.96) }
+.btn-secondary{ background:#eef2ff; color:var(--primary-700); border-color:#e0e7ff; }
+.btn-secondary:hover{ background:#e0e7ff; }
+.view-toggle{ display:flex; gap:8px; align-items:center; white-space:nowrap; }
+.view-toggle input{ display:none }
+.chip{ display:inline-flex; align-items:center; padding:8px 12px; border:1px solid var(--border); border-radius:999px; color:#334155; background:#fff; cursor:pointer; user-select:none; font-weight:600; }
+#view-grid:checked + label, #view-list:checked + label{ border-color:var(--primary-600); color:var(--primary-700); background:#eef2ff; }
+.reviews-grid{ display:grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap:14px; margin-top:14px; }
+@media (min-width:600px){ .reviews-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (min-width:980px){ .reviews-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.reviews-grid.list{ grid-template-columns: 1fr; }
+.review-card{ display:grid; grid-template-columns: 64px 1fr; gap:12px; background:#fff; border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow: var(--shadow-sm); transition: box-shadow .2s ease, transform .06s ease; }
+.review-card:hover{ box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.avatar img, .avatar-fallback{ width:64px;height:64px;border-radius:50%; object-fit:cover; display:block; }
+.avatar-fallback{ background:#f1f5f9; display:flex;align-items:center;justify-content:center; font-size:28px; }
+.content{ min-width:0 }
+.header{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.name{ font-weight:700; line-height:1.2; }
+.biz{ color:var(--muted-2); font-size:.9rem; }
+.rating{ font-size:1.05rem; line-height:1; white-space:nowrap; }
+.star{ color:#dcdfe4 }
+.star.filled{ color:#f5b301 }
+.text{ margin:.5rem 0 0; color:#334155; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+.reviews-grid.list .text{ -webkit-line-clamp:10; }
+.meta{ display:flex; align-items:center; justify-content:space-between; margin-top:.6rem; color:#64748b; font-size:.9rem; }
+.empty{ background:#fff; border:1px dashed var(--border-strong); border-radius:12px; padding:18px; color:#64748b; text-align:center; }
+.pager{ margin-top:14px; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+.page-link{ display:inline-flex; align-items:center; justify-content:center; padding:8px 12px; border-radius:10px; border:1px solid var(--border); color:#334155; background:#fff; text-decoration:none; min-width:90px; text-align:center; }
+.page-link:hover{ border-color: var(--primary-600); color: var(--primary-700) }
+.page-link.disabled{ opacity:.55; pointer-events:none; }
+.page-indicator{ color:#64748b; padding:6px 10px; }
+@media (prefers-reduced-motion:reduce){ .btn, .review-card{ transition:none } }
+@media (max-width:480px){ .review-card{ grid-template-columns: 52px 1fr; padding:12px; gap:10px; } .avatar img, .avatar-fallback{ width:52px; height:52px } .toolbar{ position:sticky; top:0 } }
+</style>
+
+<script>
+(function(){
+  const grid = document.getElementById('reviewsGrid');
+  const gridRadio = document.getElementById('view-grid');
+  const listRadio = document.getElementById('view-list');
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('view');
+
+  if(initial === 'list'){ grid.classList.add('list'); listRadio.checked = true; }
+  if(initial === 'grid'){ grid.classList.remove('list'); gridRadio.checked = true; }
+
+  function updateView(mode){
+    if(mode === 'list'){ grid.classList.add('list'); params.set('view', 'list'); }
+    else{ grid.classList.remove('list'); params.set('view', 'grid'); }
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }
+
+  gridRadio.addEventListener('change', ()=>updateView('grid'));
+  listRadio.addEventListener('change', ()=>updateView('list'));
+})();
+</script>
+
+{% endblock %}

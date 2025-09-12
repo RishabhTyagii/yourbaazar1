@@ -1,0 +1,591 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}YourBaazar Seller Panel - Sell Online in India{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" href="{% static 'icons/logo.png' %}">
+
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="YourBaazar Seller Panel - Sell Online, Manage Orders & Grow Business in India">
+    <meta name="description" content="YourBaazar Seller: Register & Login to India's fastest growing e-commerce marketplace. Manage orders, add products, track sales & grow your business with YourBaazar Seller Panel.">
+    <meta name="keywords" content="YourBaazar Seller, Sell Online India, YourBaazar Seller Panel, Register Seller Account, Seller Login, Start Selling, Ecommerce Seller India, Marketplace for Sellers, Sell Products Online, YourBaazar Seller Dashboard">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="YourBaazar Seller">
+    <!-- Favicon -->
+<link rel="icon" type="image/png"  href="{% static 'icons/logo.png' %}">
+
+<link rel="apple-touch-icon" href="{% static 'icons/logo.png' %}">
+<link rel="shortcut icon" href="{% static 'icons/logo.png' %}">
+
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourbaazarseller.shop/">
+    <meta property="og:title" content="YourBaazar Seller Panel - Sell Online in India">
+    <meta property="og:description" content="Register now on YourBaazar Seller Panel and start selling online across India. Easy seller login, order management & payment tracking.">
+    <meta property="og:image" content="https://yourbaazarseller.shop/static/icons/logo.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://yourbaazarseller.shop/">
+    <meta property="twitter:title" content="YourBaazar Seller Panel - Grow Your Business Online">
+    <meta property="twitter:description" content="Sell online in India with YourBaazar Seller Panel. Manage products, orders, and payments in one place. Join today!">
+    <meta property="twitter:image" content="https://yourbaazarseller.shop/static/icons/logo.jpg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yourbaazarseller.shop/">
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "YourBaazar Seller",
+      "url": "https://yourbaazarseller.shop",
+      "logo": "https://yourbaazarseller.shop/static/icons/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-9758464721",
+        "contactType": "customer service",
+        "availableLanguage": "English, Hindi"
+      },
+      "sameAs": [
+        "https://www.facebook.com/yourbaazar",
+        "https://www.instagram.com/yourbaazarofficial",
+        "https://www.linkedin.com/company/yourbaazarseller"
+      ]
+    }
+    </script>
+
+    <!-- Website Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "YourBaazar Seller",
+      "url": "https://yourbaazarseller.shop/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://yourbaazarseller.shop/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- FAQ Schema (SEO Boost) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I register as a seller on YourBaazar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Go to yourbaazarseller.shop, click on Register, fill in your details, and upload KYC documents to start selling."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a fee to join YourBaazar Seller?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Registration is FREE. You only pay a small commission per order sold."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I manage my orders on YourBaazar Seller?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Login to the Seller Panel, go to the Orders section, and track, ship, or manage payments easily."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+
+</head>
+<body>
+
+<!-- ===== Sidebar ===== -->
+<aside class="sidebar">
+    <div class="sidebar-brand"><span><img src="{% static 'icon/logo.png' %}" style="width: 70px; height: 70px;" alt="Logo" /></span> YourBaazar</div>
+
+    <ul class="sidebar-nav">
+            {% if user.is_staff %}
+                <li class="sidebar-item">
+                    <a href="{% url 'admin:index' %}" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-tachometer-alt"></i></span>
+                        Admin Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'seller:seller_landing' %}" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'wallet:admin_transactions' %}" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-wallet"></i></span>
+                        Add Transaction
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'seller_products:admin_seller_orders' %}" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-truck"></i></span>
+                        Order Status Management
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'seller_products:admin_draft_list' %}" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-box"></i></span>
+                        Product Approval
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+    <a href="{% url 'basicinfo:contactus' %}" class="sidebar-link">
+        <span class="sidebar-icon"><i class="fas fa-envelope"></i></span>
+        Contact Us
+    </a>
+    </li>
+    <li class="sidebar-item">
+        <a href="{% url 'seller:view_profile' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-user-circle"></i></span>
+            View Profile
+        </a>
+    </li>
+
+        <li class="sidebar-item">
+            <a href="{% url 'basicinfo:contact_query_list' %}" class="sidebar-link">
+                <span class="sidebar-icon"><i class="fas fa-user-circle"></i></span>
+                contact_query_list
+            </a>
+        </li>
+
+
+        <li class="sidebar-item">
+            <a href="{% url 'basicinfo:about_us' %}" class="sidebar-link">
+                <span class="sidebar-icon"><i class="fas fa-info-circle"></i></span>
+                About Us
+            </a>
+        </li>
+
+                {% else %}
+                    <li class="sidebar-item">
+                        <a href="{% url 'seller:seller_landing' %}" class="sidebar-link">
+                            <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'wallet:wallet_dashboard' %}" class="sidebar-link">
+                            <span class="sidebar-icon"><i class="fas fa-wallet"></i></span>
+                            My Wallet
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'wallet:withdraw_request' %}" class="sidebar-link">
+                            <span class="sidebar-icon"><i class="fas fa-money-bill-wave"></i></span>
+                             Raise Withdrawal Ticket
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'seller:seller_order_list' %}" class="sidebar-link">
+                            <span class="sidebar-icon"><i class="fas fa-shopping-cart"></i></span>
+                            My Orders
+                        </a>
+                    </li><hr>
+                        <li class="sidebar-item">
+        <a href="{% url 'seller_products:draft_create' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-plus-circle"></i></span>
+            Add Product
+        </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a href="{% url 'seller_products:product_list' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-boxes"></i></span>
+            My Products
+        </a>
+    </li>
+
+    <hr>
+
+    <li class="sidebar-item">
+        <a href="{% url 'seller_products:draft_list' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-file-alt"></i></span>
+            Drafts
+        </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a href="{% url 'seller:seller_notifications' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-bell"></i></span>
+             {% if unread_count > 0 %}
+              <span class="badge">{{ unread_count }}</span>
+            {% endif %}
+            Notifications
+        </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a href="{% url 'seller_reports:profit_dashboard' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
+            Profit Analysis
+        </a>
+    </li>
+
+      <li class="sidebar-item">
+        <a href="{% url 'seller_reviews:testimonial_create' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-star"></i></span>
+            Share Review
+        </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a href="{% url 'basicinfo:contactus' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-envelope"></i></span>
+            Contact Us
+        </a>
+    </li>
+    <li class="sidebar-item">
+        <a href="{% url 'seller:view_profile' %}" class="sidebar-link">
+            <span class="sidebar-icon"><i class="fas fa-user-circle"></i></span>
+            View Profile
+        </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {% endif %}
+    </ul>
+    
+    <div class="user-dropdown">
+        <ul class="sidebar-nav">
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="fas fa-user"></i></span>
+                                {% if request.session.seller_id %}
+              {{ request.session.seller_username }}
+          
+                </a>
+            </li>
+
+
+            <li class="sidebar-item">
+                <form method="post" action="{% url 'seller:seller_logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-link w-100 text-start border-0 bg-transparent">
+                        <span class="sidebar-icon"><i class="fas fa-sign-out-alt"></i></span>
+                        Logout
+                    </button>
+                </form>
+            </li>
+              {% else %}
+              Guest
+        </ul>
+    </div>
+    <div class="user-dropdown">
+        <ul class="sidebar-nav">
+            <li class="sidebar-item">
+                <a href="{% url 'seller:seller_login' %}" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="fas fa-sign-in-alt"></i></span>
+                    Login
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'seller:seller_register' %}" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="fas fa-user-plus"></i></span>
+                    Signup
+                </a>
+            </li>            {% endif %}
+
+        </ul>
+    </div>
+</aside>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+
+<!-- ===== Bottom Navigation (Mobile Only) ===== -->
+<nav class="bottom-nav">
+    <ul class="bottom-nav-list">
+            {% if user.is_staff %}
+                <li class="bottom-nav-item">
+                    <a href="{% url 'admin:index' %}" class="bottom-nav-link">
+                        <i class="fas fa-tachometer-alt bottom-nav-icon"></i>
+                        <span>Admin</span>
+                    </a>
+                </li>
+                <li class="bottom-nav-item">
+                    <a href="{% url 'seller:seller_landing' %}" class="bottom-nav-link">
+                        <i class="fas fa-chart-line bottom-nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="bottom-nav-item">
+                    <a href="{% url 'wallet:admin_transactions' %}" class="bottom-nav-link">
+                        <i class="fas fa-wallet bottom-nav-icon"></i>
+                        <span>Admin Transaction</span>
+                    </a>
+                </li>
+                <li class="bottom-nav-item">
+                    <a href="{% url 'seller_products:admin_draft_list' %}" class="bottom-nav-link">
+                        <i class="fas fa-box bottom-nav-icon"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                                     <li class="bottom-nav-item">
+                    <div href="" class="sidebar-toggle bottom-nav-link">
+                        <i class="fas fa-bars bottom-nav-icon"></i>
+                        <span>More</span>
+                    </div>
+                </li>
+            {% else %}
+                <li class="bottom-nav-item">
+                    <a href="{% url 'seller:seller_landing' %}" class="bottom-nav-link">
+                        <i class="fas fa-chart-line bottom-nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="bottom-nav-item">
+                    <a href="{% url 'wallet:wallet_dashboard' %}" class="bottom-nav-link">
+                        <i class="fas fa-wallet bottom-nav-icon"></i>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li class="bottom-nav-item">
+                    <a href="{% url 'seller:seller_order_list' %}" class="bottom-nav-link">
+                        <i class="fas fa-shopping-cart bottom-nav-icon"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
+
+                <li class="bottom-nav-item">
+                    <a href="{% url 'seller_products:product_list' %}" class="bottom-nav-link">
+                        <i class="fas fa-box bottom-nav-icon"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+
+                     <li class="bottom-nav-item">
+                    <div href="" class="sidebar-toggle bottom-nav-link">
+                        <i class="fas fa-bars bottom-nav-icon"></i>
+                        <span>More</span>
+                    </div>
+                </li>
+
+
+          
+
+
+
+          
+      
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- ===== Sidebar Toggle Button (Mobile Only) ===== -->
+
+   <!-- Install App Button -->
+    <button id="installBtn" style="display:none; position:fixed; bottom:10rem; right:5px; z-index:1000; padding:10px 16px; background:#98c0f8; color:white; border:none; border-radius:8px; font-weight:bold;">
+        <i class="fa fa-download"></i> Install App
+    </button>
+<!-- ===== Footer ===== -->
+<footer class="bg-secondary text-white mt-5">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3 text-white">YourBaazar Seller</h5>
+                <p class="text-white">Sell your products to millions of customers across India. Grow your business with India's fastest growing e-commerce marketplace.</p>
+                <div class="d-flex mt-3">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-md-2 mb-4">
+                <h6 class="fw-bold mb-3 text-white">SELLER</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{% url 'seller:seller_register' %}" class="text-white text-decoration-none">Register</a></li>
+                    <li class="mb-2"><a href="{% url 'seller:seller_login' %}" class="text-white text-decoration-none">Login</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Add Products</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Manage Orders</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-md-2 mb-4 text-white">
+                <h6 class="fw-bold mb-3">SUPPORT</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{% url 'basicinfo:contactus' %}" class="text-white text-decoration-none">Contact Us</a></li>
+                    <li class="mb-2"><a href="{% url 'basicinfo:contactus' %}" class="text-white text-decoration-none">Help Center</a></li>
+                    <li class="mb-2"><a href="{% url 'basicinfo:privacy_policy' %}" class="text-white text-decoration-none">Seller Policy</a></li>
+                    <li class="mb-2"><a href="{% url 'basicinfo:about_us' %}" class="text-white text-decoration-none">About Us</a></li>
+
+                </ul>
+            </div>
+            
+            <div class="col-md-4 mb-4 text-white">
+                <h6 class="fw-bold mb-3">CONTACT INFO</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-phone me-2"></i> +91-9899761091</li>
+                    <li class="mb-2"><i class="fas fa-envelope me-2"></i> support@yourbaazarseller.shop</li>
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> India</li>
+                </ul>
+                
+                <div class="mt-4">
+                    <h6 class="fw-bold mb-3">DOWNLOAD OUR APP</h6>
+
+                </div>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2025 YourBaazar. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                <a href="#" class="text-white text-decoration-none me-3">Terms of Service</a>
+                <a href="#" class="text-white text-decoration-none">Returns & Refunds</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+
+    <!-- PWA Installation Handler -->
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+            console.log("PWA install prompt available");
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    alert("App is already installed!");
+                } else {
+                    alert("Your browser doesn't support PWA installation or requirements aren't met");
+                }
+                return;
+            }
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted install');
+                installBtn.style.display = 'none';
+            } else {
+                console.log('User declined install');
+            }
+            
+            deferredPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed');
+            installBtn.style.display = 'none';
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'none';
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        
+        // Toggle sidebar on button click
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth < 992 && 
+                sidebar.classList.contains('show') && 
+                !sidebar.contains(event.target) && 
+                event.target !== sidebarToggle &&
+                !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+        
+        // Add active class to current page link
+        const currentLocation = location.href;
+        const navLinks = document.querySelectorAll('.sidebar-link, .bottom-nav-link');
+        
+        navLinks.forEach(link => {
+            if (link.href === currentLocation) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

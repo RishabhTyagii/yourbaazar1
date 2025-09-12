@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delivery Information - YourBaazar{% endblock %}
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/deliveryinfo.css' %}">
+{% endblock %}
+{% block content %}
+
+
+<div class="delivery-page">
+    <header class="delivery-header">
+        <div class="delivery-header-content">
+            <div class="delivery-logo">YourBaazar</div>
+            <h1>Fast & Reliable Delivery</h1>
+            <p class="delivery-tagline">Your satisfaction is our delivery promise</p>
+        </div>
+    </header>
+
+    <section class="delivery-section">
+        <div class="container">
+            <div class="delivery-section-title">
+                <h2>Our Delivery Process</h2>
+                <p>Simple, transparent, and efficient - just how delivery should be</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="process-step fade-in">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h3>Order Processing</h3>
+                    <p>We verify and pack your order within 24 hours of purchase. Most orders are processed same day if placed before 2PM.</p>
+                </div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3>Shipping</h3>
+                    <p>Your package is handed to our trusted logistics partners with real-time tracking updates sent to your email.</p>
+                </div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Delivery</h3>
+                    <p>Fast doorstep delivery with contactless options available. You'll receive an ETA and delivery notifications.</p>
+                </div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3>Happy Customer</h3>
+                    <p>Enjoy your purchase! Our support team is always available if you need any assistance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="delivery-section shipping-options">
+        <div class="container">
+            <div class="delivery-section-title">
+                <h2>Shipping Options</h2>
+                <p>Flexible delivery methods to suit your needs</p>
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card fade-in">
+                    <h3><i class="fas fa-rocket option-icon"></i> Express Delivery</h3>
+                    <div class="option-highlight">Delivery in 1-2 business days</div>
+                    <p>Our fastest shipping option for when you need your items quickly. Available for most locations with order processing within 6 hours.</p>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li>Order before 12PM for same-day dispatch</li>
+                        <li>Real-time tracking</li>
+                        <li>Priority handling</li>
+                        <li>No Extra charges</li>
+
+                    </ul>
+                    <h3>Only For Available Pincodes</h3>
+                                        <h3>Selected by default  For Available Pincodes</h3>
+
+                </div>
+                
+                <div class="option-card fade-in">
+                    <h3><i class="fas fa-truck option-icon"></i> Standard Delivery</h3>
+                    <div class="option-highlight">Delivery in 3-5 business days</div>
+                    <p>Our most popular and economical shipping option. Reliable delivery with tracking for all orders.</p>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li>Order processed within 24 hours</li>
+                        <li>Full tracking information</li>
+                        <li>Delivery Monday-Sunday</li>
+                    </ul>
+                </div>
+                
+                <div class="option-card fade-in">
+                    <h3><i class="fas fa-store option-icon"></i> Store Pickup</h3>
+                    <div class="option-highlight">Ready in 24 hours</div>
+                    <p>Save on shipping costs by picking up your order from our partner stores. Perfect for local customers.</p>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li>Get notified when order is ready</li>
+                        <li>No shipping fees</li>
+                        <li>Convenient locations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="delivery-section">
+        <div class="container">
+            <div class="delivery-section-title">
+                <h2>Delivery Coverage & Times</h2>
+                <p>We deliver across India with flexible time slots</p>
+            </div>
+            
+            <div class="coverage-map fade-in">
+                <div class="map-placeholder">
+                    <div>
+                        <i class="fas fa-map-marked-alt fa-3x" style="margin-bottom: 20px; color: var(--primary);"></i>
+                        <p>Delivery coverage across all major Indian cities</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Metro Cities</h3>
+                    <p>Next day-2day delivery available for orders placed before 2PM</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Delhi NCR</li>
+                        <li>Mumbai</li>
+                        <li>Bangalore</li>
+                        <li>Hyderabad</li>
+                        <li>Chennai</li>
+                        <li>Kolkata</li>
+                    </ul>
+                </div>
+                
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Tier 2 Cities</h3>
+                    <p>2-3 day delivery for most locations</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Pune</li>
+                        <li>Ahmedabad</li>
+                        <li>Jaipur</li>
+                        <li>Lucknow</li>
+                        <li>Chandigarh</li>
+                        <li>Bhopal</li>
+                    </ul>
+                </div>
+                
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Other Locations</h3>
+                    <p>6-8 day delivery depending on location</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Service to 15000+ pin codes</li>
+                        <li>Rural delivery available</li>
+                        <li>Some remote areas may take longer</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="delivery-section" style="background-color: #f0f2f5;">
+        <div class="container">
+            <div class="delivery-section-title">
+                <h2>Delivery FAQs</h2>
+                <p>Answers to common questions about our delivery services</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        How long does delivery take?
+                        <i class="fas fa-chevron-down faq-toggle"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Delivery times vary based on your location and the shipping method you choose. Standard delivery takes 3-5 business days, while express delivery reaches you in 1-2 business days. Metro cities typically have faster delivery times.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        Can I track my order?
+                        <i class="fas fa-chevron-down faq-toggle"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Once your order is shipped, you'll receive a tracking number via email and SMS. You can track your package in real-time through our website or the courier company's tracking system.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        Do you deliver on weekends?
+                        <i class="fas fa-chevron-down faq-toggle"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We deliver on Saturdays in most locations. Sunday delivery is available in select metro cities for express shipments. You'll be notified about delivery days when your order ships.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        What are your delivery charges?
+                        <i class="fas fa-chevron-down faq-toggle"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Delivery charges vary based on order value, weight, and destination. We offer free standard shipping on orders over ₹999. Exact shipping costs are calculated at checkout before you complete your purchase.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        Can I change my delivery address after ordering?
+                        <i class="fas fa-chevron-down faq-toggle"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Address changes are possible if your order hasn't been shipped yet. Contact our customer support immediately with your order number and new address. Once shipped, we cannot guarantee address changes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // FAQ functionality
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const faqItem = question.parentElement;
+            faqItem.classList.toggle('active');
+        });
+    });
+    
+    // Scroll animation
+    function checkVisibility() {
+        const elements = document.querySelectorAll('.fade-in');
+        
+        elements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (elementTop < windowHeight - 100) {
+                element.classList.add('visible');
+            }
+        });
+    }
+    
+    // Initialize
+    window.addEventListener('load', checkVisibility);
+    window.addEventListener('scroll', checkVisibility);
+</script>
+{% endblock %}

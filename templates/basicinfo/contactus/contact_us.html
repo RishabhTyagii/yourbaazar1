@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .contact-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-header h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .contact-header p {
+            color: #6c757d;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #3a5ccc;
+            transform: translateY(-2px);
+        }
+        
+        .contact-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-container">
+        <div class="contact-header">
+            <h2>Get in Touch</h2>
+            <p>Have questions? Fill out the form below and we'll get back to you soon.</p>
+        </div>
+        
+        <form method="post" action="{% url 'basicinfo:contactus' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject">
+                </div>
+            </div>
+            
+            <textarea class="form-control" id="message" name="message" placeholder="Your Message" required></textarea>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn submit-btn">Send Message</button>
+            </div>
+        </form>
+        
+        <div class="contact-info text-center">
+            <p class="mb-1"><i class="bi bi-envelope me-2"></i> yourbaazar1@gmail.com</p>
+            <p><i class="bi bi-phone me-2"></i> +919758464721</p>
+            <p><i class="bi bi-phone me-2"></i> +918979023121</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

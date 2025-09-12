@@ -1,0 +1,323 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}{% load humanize %}
+
+<style>
+    /* General Page Styling */
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .containerr {
+        max-width: 1800px;
+        
+        background: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    h3 {
+        margin-bottom: 1.5rem;
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    h4 {
+        color: #333;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    /* Seller Dropdown */
+    form select {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        font-size: 1rem;
+    }
+
+    form label {
+        margin-right: 10px;
+        font-weight: 500;
+    }
+
+    /* Cards */
+    .card-section {
+        margin-top: 2rem;
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #007bff;
+        color: #fff;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 12px 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover {
+        background: #f1f1f1;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .bg-warning { background: #ffc107; color: #212529; }
+    .bg-success { background: #28a745; }
+    .bg-danger { background: #dc3545; }
+    .bg-secondary { background: #6c757d; }
+
+    /* Buttons */
+    .btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        border: none;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-sm { font-size: 0.8rem; padding: 5px 10px; }
+
+    .btn-success { background: #28a745; }
+    .btn-success:hover { background: #218838; transform: translateY(-2px); }
+
+    .btn-danger { background: #dc3545; }
+    .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    .pagination .page-item .page-link {
+        display: block;
+        padding: 8px 14px;
+        border-radius: 6px;
+        background: #f1f1f1;
+        color: #333;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .pagination .page-link:hover {
+        background: #007bff;
+        color: #fff;
+    }
+
+    .pagination .disabled .page-link {
+        background: #dee2e6;
+        color: #6c757d;
+        pointer-events: none;
+    }
+
+    /* Responsive Tables */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Muted Text */
+    .text-muted { color: #6c757d; font-style: italic; }
+
+</style>
+
+<div class="containerr my-4">
+
+    <!-- Seller Dropdown -->
+    <form method="get" class="mb-4">
+        <label for="seller">Select Seller:</label>
+        <select name="seller" id="seller" onchange="this.form.submit()">
+            <option value="">-- Select Seller --</option>
+            {% for seller in sellers %}
+                <option value="{{ seller.id }}" {% if selected_seller and seller.id == selected_seller.id %}selected{% endif %}>
+                    {{ seller.business_name }} ({{ seller.username }})
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_seller %}
+        <h3>Wallet & Transactions for: 
+            <span class="text-dark">Username->{{ selected_seller.username }}</span> -| |-
+            <span class="text-muted">business_name->{{ selected_seller.business_name }}</span>
+        </h3>
+
+        <!-- Withdrawal Requests -->
+        <div class="card-section">
+            <h4>Pending Withdrawal Requests</h4>
+            {% if pending_requests %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Requested At</th>
+                                <th>Account Holder</th>
+                        <th>Account NO</th>
+                        <th>UPI ID</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in pending_requests %}
+                            <tr>
+                                <td>₹{{ req.amount }}</td>
+                                <td>{{ req.requested_at|date:"d M Y H:i" }}</td>
+                                 <td>{{ req.account_holder_name|default:"-" }}</td>
+                        <td>{{ req.bank_account_no|default:"-" }}</td>
+                        
+                        <td>{{ req.upi_id|default:"-" }}</td>
+                                <td>
+                                    {% if req.status == "requested" %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif req.status == "completed" %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif req.status == "rejected" %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ req.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if req.status == "requested" %}
+                                        <a href="{% url 'wallet:admin_approve_withdrawal' req.id %}" class="btn btn-success btn-sm">Approve</a>
+                                        <form method="post" action="{% url 'wallet:admin_reject_withdrawal' req.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="note" value="Rejected by admin">
+                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No pending withdrawal requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Withdrawal History -->
+<div class="card-section">
+    <h4>Withdrawal History (Approved / Rejected)</h4>
+    {% if withdrawal_history %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Requested At</th>
+                        <th>Status</th>
+                        <th>Account Holder</th>
+                        <th>Account NO</th>
+                        <th>UPI ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wr in withdrawal_history %}
+                        <tr>
+                            <td>₹{{ wr.amount }}</td>
+                            <td>{{ wr.requested_at|date:"d M Y H:i" }}</td>
+                            <td>
+                                {% if wr.status == "completed" %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif wr.status == "rejected" %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ wr.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ wr.account_holder_name|default:"-" }}</td>
+                            <td>{{ wr.bank_account_no|default:"-" }}</td>
+                            <td>{{ wr.upi_id|default:"-" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted">No approved/rejected withdrawal requests yet.</p>
+    {% endif %}
+</div>
+
+
+        <!-- Transactions -->
+        <div class="card-section">
+            <h4>Transactions</h4>
+            {% if transactions %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in transactions %}
+                            <tr>
+                                <td>{{ txn.created_at|date:"d M Y H:i" }}</td>
+                                <td>{{ txn.txn_type|title }}</td>
+                                <td>₹{{ txn.amount }}</td>
+                                <td>{{ txn.source }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination">
+                        {% if transactions.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?seller={{ selected_seller.id }}&page={{ transactions.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}</span></li>
+                        {% if transactions.has_next %}
+                            <li class="page-item"><a class="page-link" href="?seller={{ selected_seller.id }}&page={{ transactions.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <p class="text-muted">No transactions found.</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="text-muted">Please select a seller to view details.</p>
+    {% endif %}
+</div>
+{% endblock %}

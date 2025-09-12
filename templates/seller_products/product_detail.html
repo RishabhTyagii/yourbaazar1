@@ -1,0 +1,288 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+<style>
+  :root{
+    --bg:#f7f8fb;
+    --surface:#ffffff;
+    --text:#0b1220;
+    --muted:#64748b;
+    --border:#e5e7eb;
+    --border-strong:#d1d5db;
+    --primary:#2563eb;
+    --primary-600:#1d4ed8;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --radius:14px;
+    --radius-sm:10px;
+    --shadow-sm:0 6px 14px rgba(16,19,24,.08);
+    --shadow-md:0 14px 32px rgba(16,19,24,.12);
+  }
+
+  /* Base */
+  .pd-container{max-width:1120px;margin:0 auto;padding:20px 16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+  .card-body{padding:18px}
+  .card-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafafa;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius)}
+  .mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mb-0{margin-bottom:0}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+  .text-muted{color:var(--muted)}
+  .fw-600{font-weight:600}.fw-700{font-weight:700}
+  .grid{display:grid}.flex{display:flex}.wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-1{gap:6px}.gap-2{gap:10px}.gap-3{gap:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-weight:600;transition:transform .06s ease,filter .15s ease,background-color .15s ease,border-color .15s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .btn-secondary{background:#e5e7eb;color:#0b1220;border-color:#e5e7eb}
+  .btn-ghost{background:transparent;color:var(--primary-600)}
+  .badge{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:999px;border:1px solid var(--border-strong);font-size:.8rem;font-weight:700;background:#eef2ff;color:#1e40af}
+  .pill{border-radius:999px}
+  .divider{height:1px;background:var(--border);margin:16px 0}
+
+  /* Hero layout */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px}
+  .hero-media{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#f3f4f6}
+  .hero-media img{width:100%;height:auto;display:block;object-fit:cover;max-height:460px}
+  .thumbs{display:flex;gap:8px;flex-wrap:wrap}
+  .thumb{width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#fff;cursor:pointer}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb:hover{box-shadow:var(--shadow-sm)}
+  .meta-grid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:12px}
+  .meta-item .label{font-size:.9rem;color:var(--muted)}
+  .meta-item .value{font-weight:600}
+
+  /* Color blocks */
+  .swatch{width:18px;height:18px;border-radius:50%;border:1px solid var(--border)}
+  .collapse-toggle{display:none}
+
+  /* Table */
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+  .table thead th{background:#fafafa;font-weight:700}
+  .badge-success{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+  .badge-danger{background:#fef2f2;color:#7f1d1d;border-color:#fecaca}
+
+  /* Hover helpers */
+  .hover-elevate:hover{box-shadow:var(--shadow-md)}
+
+  /* Responsive */
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr}
+    .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:640px){
+    .meta-grid{grid-template-columns:1fr}
+    .card-body{padding:14px}
+    .card-header{padding:10px 14px}
+    .btn{padding:10px 12px}
+    /* Collapse behavior for color sections */
+    .collapse-toggle{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+  }
+
+  /* Mobile-friendly variant cards */
+  @media (max-width:560px){
+    .table thead{display:none}
+    .table tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem;padding:.8rem;border:1px solid var(--border);border-radius:10px;margin-bottom:.6rem}
+    .table td{border:none !important;padding:0 !important}
+    .table td:nth-child(1)::before{content:"Size";display:block;font-weight:700;color:var(--muted)}
+    .table td:nth-child(2)::before{content:"Stock";display:block;font-weight:700;color:var(--muted)}
+    .table td:nth-child(3)::before{content:"MRP (₹)";display:block;font-weight:700;color:var(--muted)}
+    .table td:nth-child(4)::before{content:"Discount (₹)";display:block;font-weight:700;color:var(--muted)}
+    .table td:nth-child(5)::before{content:"Price We Buy (₹)";display:block;font-weight:700;color:var(--muted)}
+  }
+
+  /* Utility for visually-hidden but accessible */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+
+<div class="pd-container">
+
+  <!-- Header / Back -->
+  <div class="flex items-center justify-between mb-3">
+    <div class="text-muted" style="font-size:.9rem">
+      <a href="{% url 'seller_products:product_list' %}" style="color:var(--primary)">Products</a> · <span>{{ product.name }}</span>
+    </div>
+    <a href="{% url 'seller_products:product_list' %}" class="btn btn-secondary">Back</a>
+  </div>
+
+  <!-- Product Hero -->
+  <section class="card hover-elevate mb-4">
+    <div class="card-body">
+      <div class="hero">
+        <!-- Media -->
+        <div>
+          <div class="hero-media">
+            {% if product.thumbnail %}
+              <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
+            {% else %}
+              <div style="aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--muted)">No image</div>
+            {% endif %}
+          </div>
+          {% if colors_with_images %}
+            <div class="mt-3 thumbs">
+              {% for item in colors_with_images %}
+                {% if item.images and item.images.0 %}
+                <button class="thumb" title="{{ item.color.color_name }}" type="button">
+                  <img src="{{ item.images.0.url }}" alt="{{ item.color.color_name }} thumbnail">
+                </button>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Details -->
+        <div>
+          <div class="flex wrap items-center gap-2">
+            <h1 class="mb-0" style="font-size:1.25rem">{{ product.name }}</h1>
+            <span class="badge">SKU: {{ product.sku }}</span>
+            {% if product.cod_available %}
+              <span class="badge" style="background:#e8f8ee;color:#065f46;border-color:#a7f3d0">COD</span>
+            {% else %}
+              <span class="badge" style="background:#f3f4f6;color:#374151;border-color:#e5e7eb">No COD</span>
+            {% endif %}
+          </div>
+
+          {% if product.short_description %}
+            <p class="text-muted mt-2 mb-0">{{ product.short_description }}</p>
+          {% endif %}
+
+          <div class="meta-grid mt-3">
+            <div class="meta-item">
+              <div class="label">Brand</div>
+              <div class="value">{{ product.brand }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="label">Shipping by</div>
+              <div class="value">{{ meta.shipping_by }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="label">Payment mode</div>
+              <div class="value">{{ meta.payment_mode }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="label">Minimum shipping</div>
+              <div class="value">₹{{ meta.minimum_shipping }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="label">Dimensions (cm)</div>
+              <div class="value">{{ meta.length_cm }} × {{ meta.width_cm }} × {{ meta.height_cm }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="label">Weight</div>
+              <div class="value">{{ meta.weight_kg }} kg</div>
+            </div>
+          </div>
+
+          {% if meta.size_price_explanation %}
+            <div class="card mt-3" style="border-style:dashed">
+              <div class="card-body" style="padding:10px 12px">
+                <strong>Size/Price info:</strong> <span class="text-muted">{{ meta.size_price_explanation }}</span>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if product.description %}
+            <div class="divider"></div>
+            <div>
+              <div class="fw-600 mb-2">Description</div>
+              <p class="text-muted mb-0">{{ product.description }}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Colors & Variants -->
+  {% for item in colors_with_images %}
+  <section class="card hover-elevate mb-4">
+    <div class="card-header">
+      <div class="flex items-center gap-2">
+        <span class="fw-600">Color:</span>
+        <span>{{ item.color.color_name }}</span>
+        <span class="badge">Code: {{ item.color.color_code }}</span>
+        <span class="swatch" style="background: {{ item.color.color_code }}"></span>
+      </div>
+      <button class="collapse-toggle" type="button" aria-expanded="true" aria-controls="color-{{ forloop.counter }}" onclick="
+        var el=document.getElementById('color-{{ forloop.counter }}');
+        var open = el.getAttribute('data-open')==='true';
+        el.style.display = open ? 'none':'block';
+        el.setAttribute('data-open', open ? 'false':'true');
+        this.setAttribute('aria-expanded', open ? 'false':'true');
+      ">
+        Toggle
+      </button>
+    </div>
+
+    <div id="color-{{ forloop.counter }}" class="card-body" data-open="true">
+      {% if item.images %}
+        <div class="grid mb-3" style="grid-template-columns:repeat(6,1fr);gap:8px">
+          {% for img in item.images %}
+            <div class="hover-elevate" style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;aspect-ratio:1/1">
+              <img src="{{ img.url }}" alt="{{ item.color.color_name }} image {{ forloop.counter }}" style="width:100%;height:100%;object-fit:cover">
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Variants -->
+      <div class="flex items-center justify-between mb-2">
+        <div class="fw-600">Variants</div>
+        <div class="text-muted" style="font-size:.9rem">Prices in ₹</div>
+      </div>
+
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Size</th>
+              <th>Stock</th>
+              <th>MRP (₹)</th>
+              <th>Discount (₹)</th>
+              <th>Price We Buy (₹)</th>
+              <th>Final Price (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for variant in item.variants %}
+            <tr>
+              <td class="fw-600">{{ variant.size }}</td>
+              <td>
+                {% if variant.stock|default:0 > 0 %}
+                  <span class="badge badge-success">{{ variant.stock }}</span>
+                {% else %}
+                  <span class="badge badge-danger">Out</span>
+                {% endif %}
+              </td>
+              <td>₹{{ variant.price_before_discount }}</td>
+              <td>
+                {% if variant.discount and variant.discount|floatformat != '0' %}
+                  <span style="color:#059669">-{{ variant.discount }}%</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="fw-600">₹{{ variant.price_we_buy }}</td>
+              <td class="fw-600">₹{{ variant.final_price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-muted">No variants found for this color.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+  {% empty %}
+    <p class="text-muted" style="text-align:center">No colors found for this product.</p>
+  {% endfor %}
+
+  <!-- Bottom actions -->
+  <div class="flex justify-between wrap gap-2 mt-3">
+    <a href="{% url 'seller_products:product_list' %}" class="btn btn-secondary">Back to Product List</a>
+  </div>
+</div>
+{% endblock %}

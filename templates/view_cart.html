@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Cart - DesiBazaar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/view_cart.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+  <div class="cart-items">
+    <div class="cart-header">My Cart</div>
+    {% if cart_items %}
+    <form id="cart-form" novalidate>
+      <table class="cart-table">
+        <tbody>
+        {% for item in cart_items %}
+          <tr data-item-id="{{ item.id }}" style="display: flex; flex-wrap: wrap;">
+            <td>
+              <div class="product-info">
+                <img class="product-img" src="{% if item.product.thumbnail.url %}{{ item.product.thumbnail.url }}{% else %}{% static 'img/no-image.png' %}{% endif %}" alt="{{ item.product.name }}">
+                <div>
+                  <div class="product-name">{{ item.product.name }}</div>
+                  {% if item.variant %}
+                    <div class="variant-details">
+                      {% if item.variant.color.color_name %}Color: {{ item.variant.color.color_name }}{% endif %}
+                      {% if item.variant.size %}<span>Size: {{ item.variant.size }}</span>{% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="qty-selector">
+                <button type="button" class="qty-btn qty-minus" data-item-id="{{ item.id }}" {% if item.quantity <= 1 %}disabled{% endif %}>-</button>
+                <input type="text" class="qty-input" value="{{ item.quantity }}" id="qty-input-{{ item.id }}" readonly>
+                <button type="button" class="qty-btn qty-plus" data-item-id="{{ item.id }}">+</button>
+              </div>
+            </td>
+            <td class="col-price">₹{{ item.price|floatformat:2 }}</td>
+            <td class="col-subtotal">₹{{ item.get_total_price|floatformat:2 }}</td>
+            <td><button type="button" class="remove-btn remove-cart-item" data-item-id="{{ item.id }}" title="Remove">&#128465;</button></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </form>
+    <div id="coupon-section">
+      {% if applied_coupon %}
+        <span class="coupon-msg">Coupon "<strong>{{ applied_coupon.code }}</strong>" applied!</span>
+        <button type="button" id="remove-coupon-btn">Remove Coupon</button>
+      {% else %}
+        <input type="text" id="coupon-code-input" placeholder="Apply coupon">
+        <button type="button" id="apply-coupon-btn">Apply</button>
+      {% endif %}
+    </div>
+    <div id="message" class="message"></div>
+    {% else %}
+      <div class="empty-cart">
+        <img src="https://yourbaazar.s3.ap-south-1.amazonaws.com/shopping.png" alt="Empty Cart"/>
+        <div>Your cart is empty.</div>
+        <a href="{% url 'product:indexpage' %}" class="checkout-link" style="width:180px;margin:22px auto 0 auto;">Continue shopping</a>
+      </div>
+    {% endif %}
+  </div>
+  <div class="summary" aria-label="Order Summary">
+    <h3>Order Summary</h3>
+    <div class="summary-detail">Subtotal <span>₹<span id="cart-subtotal">{{ cart_total.subtotal|floatformat:2|default:"0.00" }}</span></span></div>
+    <div class="summary-detail">Shipping <span>₹<span id="cart-shipping">{{ cart_total.shipping|default:"0.00" }}</span></span></div>
+    <div class="summary-detail">Discount <span>-₹<span id="cart-discount">{{ cart_total.discount|default:"0.00" }}</span></span></div>
+    <div class="summary-detail summary-total">Total <span>₹<span id="cart-total">{{ cart_total.total|floatformat:2|default:"0.00" }}</span></span></div>
+    {% if cart_items %}
+      <a id="checkout-btn" href="{% url 'checkout' %}" class="checkout-link">Proceed to Checkout</a>
+    {% endif %}
+  </div>
+</div>{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script >
+$(function() {
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = $.trim(cookies[i]);
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  function showMessage(message, isError = false) {
+    $('#message').text(message).css('color', isError ? '#e22c2c' : '#1fa863').stop(true).fadeIn(80).delay(3000).fadeOut(120);
+  }
+
+  // Quantity update using +/− buttons
+  $('.qty-plus').click(function() {
+    const itemId = $(this).data('item-id');
+    let qtyInput = $('#qty-input-' + itemId);
+    let newQty = parseInt(qtyInput.val()) + 1;
+    updateQuantity(itemId, newQty, qtyInput);
+  });
+
+  $('.qty-minus').click(function() {
+    const itemId = $(this).data('item-id');
+    let qtyInput = $('#qty-input-' + itemId);
+    let newQty = Math.max(1, parseInt(qtyInput.val()) - 1);
+    updateQuantity(itemId, newQty, qtyInput);
+  });
+
+  function updateQuantity(itemId, quantity, qtyInput) {
+    $.ajax({
+      url: "{% url 'update_cart_item' 0 %}".replace(/0/, itemId),
+      type: 'POST',
+      data: { 'quantity': quantity },
+      headers: { 'X-CSRFToken': csrftoken },
+      success: function(response) {
+        if (response.success) {
+          qtyInput.val(quantity);
+          $('#cart-subtotal').text(response.cart_summary.subtotal);
+          $('#cart-shipping').text(response.cart_summary.shipping);
+          $('#cart-discount').text(response.cart_summary.discount);
+          $('#cart-total').text(response.cart_summary.total);
+          $(`tr[data-item-id="${itemId}"] td.col-subtotal`).text('₹' + (parseFloat(response.cart_summary.subtotal)).toFixed(2));
+          // Disable minus button if qty==1
+          qtyInput.closest('.qty-selector').find('.qty-minus').prop('disabled', quantity <= 1);
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, true);
+        }
+      },
+      error: function() { showMessage('Error updating cart. Please try again.', true); }
+    });
+  }
+
+  // Remove cart item
+  $('.remove-cart-item').on('click', function() {
+    const itemId = $(this).data('item-id');
+    $.ajax({
+      url: "{% url 'remove_cart_item' 0 %}".replace(/0/, itemId),
+      type: 'POST',
+      headers: { 'X-CSRFToken': csrftoken },
+      success: function(response) {
+        if (response.success) {
+          $(`tr[data-item-id="${itemId}"]`).remove();
+          $('#cart-subtotal').text(response.cart_summary.subtotal);
+          $('#cart-shipping').text(response.cart_summary.shipping);
+          $('#cart-discount').text(response.cart_summary.discount);
+          $('#cart-total').text(response.cart_summary.total);
+          showMessage(response.message);
+          if ($('tbody tr').length === 0) location.reload();
+        } else {
+          showMessage(response.message, true);
+        }
+      },
+      error: function() {
+        showMessage('Error removing item. Please try again.', true);
+      }
+    });
+  });
+
+  // Apply coupon
+  $('#apply-coupon-btn').click(function() {
+    const code = $('#coupon-code-input').val().trim();
+    if (!code) { showMessage('Please enter a coupon code.', true); return; }
+    $.ajax({
+      url: "{% url 'apply_coupon' %}",
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ code: code }),
+      headers: { 'X-CSRFToken': csrftoken },
+      success: function(response) {
+        if (response.success) { showMessage(response.message); location.reload(); }
+        else { showMessage(response.message, true); }
+      },
+      error: function() { showMessage('Error applying coupon. Please try again.', true); }
+    });
+  });
+
+  // Remove coupon
+  $('#remove-coupon-btn').click(function() {
+    $.ajax({
+      url: "{% url 'remove_coupon' %}",
+      type: 'POST',
+      headers: { 'X-CSRFToken': csrftoken },
+      success: function(response) {
+        if (response.success) { showMessage(response.message); location.reload(); }
+        else { showMessage(response.message, true); }
+      },
+      error: function() { showMessage('Error removing coupon. Please try again.', true); }
+    });
+  });
+});
+    </script>
+
+{% endblock %}
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ====================================================================================================== -->
+    <!-- Products
+    <section class="products section">
+    {% for product in page_obj %}
+    {% with variant=product.get_default_variant %}
+    <div class="product-card animate__animated animate__fadeIn">
+        
+        <div class="product-img-container category-card">
+            {% if product.image %}
+                <img loading="lazy" src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+            {% endif %}
+            <div class="product-actions category-card">
+                <a href="{% url 'product:product_detail' product.id %}" class="action-btn" title="Quick View">
+                    <i class="far fa-eye"></i>
+                </a>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">{{ product.name }}XXXX</h3>
+
+            {% if variant %}
+                <div class="product-price">
+                    <span class="current-price">₹{{ variant.price_after_discount|floatformat:2 }}</span>
+                    {% if variant.discount > 0 %}
+                        <span class="old-price">₹{{ variant.price_before_discount|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="product-price">
+                    <span class="current-price text-danger">Not Available</span>
+                </div>
+            {% endif %}
+
+            <hr>
+            <a href="{% url 'product:product_detail' product.id %}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-eye"></i> View Product
+            </a>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</section> -->

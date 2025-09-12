@@ -1,0 +1,531 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+<div class="reviews-container">
+  <div class="reviews-header">
+    <div class="header-content">
+      <h1>Reviews for "{{ product.name }}"</h1>
+      <div class="header-actions">
+        <a href="{% url 'seller_products:product_list' %}" class="btn btn-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Products
+        </a>
+        <div class="review-summary">
+          {% with reviews.paginator.count as total_reviews %}
+            <strong>{{ total_reviews }}</strong> review{{ total_reviews|pluralize }}
+          {% endwith %}
+          {% if reviews %}
+            <div class="avg-rating">
+              <div class="stars">
+                {% for i in "12345"|make_list %}
+                  {% if forloop.counter <= avg_rating_int %}
+                    <span class="star filled">★</span>
+                  {% else %}
+                    
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span>{{ avg_rating|floatformat:1 }} out of 5</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if reviews %}
+    <div class="reviews-list">
+      {% for review in reviews %}
+        <div class="review-card">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">
+              {{ review.user.get_full_name|default:review.user.username|first|upper }}
+            </div>
+            <div class="reviewer-details">
+              <h3>{{ review.user.get_full_name|default:review.user.username }}</h3>
+              <p class="review-date">{{ review.created_at|date:"F d, Y" }}</p>
+            </div>
+          </div>
+          
+          <div class="rating">
+            <div class="stars">
+              {% for i in "12345"|make_list %}
+                {% if forloop.counter <= review.rating %}
+                  <span class="star filled">★</span>
+                {% else %}
+                  <span class="star">★</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          
+          <p class="review-comment">{{ review.comment }}</p>
+          
+          {% if review.images.all %}
+            <div class="review-images">
+              {% for img in review.images.all %}
+                <div class="review-image-item">
+                  <img src="{{ img.image.url }}" alt="Review image" class="review-img" onclick="openLightbox('{{ img.image.url }}')">
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      {% if reviews.has_previous %}
+        <a href="?page=1" class="pagination-button first">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L12 12L18 18M12 12L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="?page={{ reviews.previous_page_number }}" class="pagination-button prev">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {% endif %}
+
+      <div class="pagination-pages">
+        {% for num in reviews.paginator.page_range %}
+          {% if reviews.number == num %}
+            <span class="pagination-number active">{{ num }}</span>
+          {% elif num > reviews.number|add:'-3' and num < reviews.number|add:'3' %}
+            <a href="?page={{ num }}" class="pagination-number">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if reviews.has_next %}
+        <a href="?page={{ reviews.next_page_number }}" class="pagination-button next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="?page={{ reviews.paginator.num_pages }}" class="pagination-button last">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L12 12L6 18M12 12L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="no-reviews">
+      <div class="no-reviews-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 14V16M12 14V16M16 14V16M21 15C21 15.7956 20.6839 16.5587 20.1213 17.1213C19.5587 17.6839 18.7956 18 18 18H6C5.20435 18 4.44129 17.6839 3.87868 17.1213C3.31607 16.5587 3 15.7956 3 15V7C3 6.20435 3.31607 5.44129 3.87868 4.87868C4.44129 4.31607 5.20435 4 6 4H18C18.7956 4 19.5587 4.31607 20.1213 4.87868C20.6839 5.44129 21 6.20435 21 7V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>No reviews yet</h3>
+      <p>This product doesn't have any reviews yet.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="close-btn">&times;</span>
+  <img class="lightbox-content" id="lightbox-img">
+</div>
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --text: #374151;
+  --text-light: #6b7280;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --surface: #ffffff;
+  --surface-elev: #f9fafb;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--text);
+  line-height: 1.5;
+  background-color: #f5f7fa;
+}
+
+.reviews-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.reviews-header {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviews-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background-color: #f3f4f6;
+}
+
+.review-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.avg-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  display: flex;
+  color: #e5e7eb;
+}
+
+.star {
+  font-size: 1.2rem;
+  margin-right: 2px;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.review-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.reviewer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.reviewer-details h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.review-date {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.rating {
+  margin-bottom: 12px;
+}
+
+.review-comment {
+  margin: 0 0 16px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.review-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review-image-item {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.review-image-item:hover {
+  transform: scale(1.05);
+}
+
+.review-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.pagination-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.pagination-button:hover {
+  background-color: #f3f4f6;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.pagination-number:hover {
+  background-color: #f3f4f6;
+}
+
+.pagination-number.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* No reviews state */
+.no-reviews {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.no-reviews-icon {
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.no-reviews h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.no-reviews p {
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* Lightbox */
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.lightbox-content {
+  max-width: 90%;
+  max-height: 90%;
+  margin: auto;
+  display: block;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ccc;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .reviews-container {
+    padding: 16px;
+  }
+  
+  .reviews-header {
+    padding: 16px;
+  }
+  
+  .reviews-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .review-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .review-card {
+    padding: 16px;
+  }
+  
+  .reviewer-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .reviewer-avatar {
+    margin-bottom: 8px;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+  }
+  
+  .pagination-pages {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-images {
+    justify-content: center;
+  }
+  
+  .review-image-item {
+    width: 70px;
+    height: 70px;
+  }
+}
+</style>
+
+<script>
+// Calculate integer part of average rating for display
+const avgRating = parseFloat("{{ avg_rating }}");
+const avgRatingInt = Math.floor(avgRating);
+
+// Lightbox functionality
+function openLightbox(src) {
+  document.getElementById('lightbox').style.display = 'flex';
+  document.getElementById('lightbox-img').src = src;
+  document.body.style.overflow = 'hidden'; // Prevent scrolling
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = 'auto'; // Re-enable scrolling
+}
+
+// Close lightbox when pressing Escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeLightbox();
+  }
+});
+</script>
+{% endblock %}

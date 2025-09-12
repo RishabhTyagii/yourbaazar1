@@ -1,0 +1,201 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+{% load dict_extras %}
+
+<style>
+    :root {
+      --bg:#f9fafb;
+      --surface:#ffffff;
+      --text:#0b1220;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --border-strong:#d1d5db;
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --danger:#dc2626;
+      --radius:14px;
+      --radius-sm:10px;
+      --shadow-sm:0 4px 10px rgba(16,19,24,.08);
+      --shadow-md:0 12px 30px rgba(16,19,24,.12);
+      --transition: all 0.2s ease;
+    }
+
+    /* ------------ Layout ------------ */
+    .wrap {max-width:1140px; margin:0 auto; padding:20px 14px;}
+    .title {margin:0 0 14px; font-size:1.5rem; font-weight:700; color:var(--text);}
+
+    /* ------------ KPI Cards ------------ */
+    .kpis {display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:1.5rem;}
+    .kpi {padding:16px; border-radius:12px; border:1px solid var(--border);
+      background:var(--surface); box-shadow:var(--shadow-sm); transition:var(--transition);}
+    .kpi:hover {transform:translateY(-3px);}
+    .kpi .label {color:var(--muted); font-size:.9rem; font-weight:500;}
+    .kpi .value {font-size:1.4rem; font-weight:800; color:var(--text); margin-top:6px;}
+
+    /* ------------ Filters ------------ */
+    .form {margin-bottom:1.5rem;}
+    .filter-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;}
+    .field {display:flex; flex-direction:column; gap:6px;}
+    .form label {font-weight:600; font-size:.9rem;}
+    .input, .select {
+      padding:12px; border-radius:10px; border:1px solid var(--border);
+      background:var(--surface); font:inherit; font-size:.9rem; color:var(--text);}
+    .input:focus, .select:focus {outline:2px solid var(--primary-dark); outline-offset:1px;}
+    .btn {
+      display:inline-flex; justify-content:center; align-items:center; gap:8px;
+      padding:12px 14px; border-radius:10px; font-weight:700; font-size:.9rem; 
+      transition:var(--transition); cursor:pointer;
+    }
+    .btn {background:var(--primary); color:white; border:none;}
+    .btn:hover {background:var(--primary-dark); transform:translateY(-1px);}
+    .btn-outline {background:#fff; color:var(--primary); border:1px solid var(--border);}
+    .btn-outline:hover {background:#f3f4f6;}
+
+    /* ------------ Table ------------ */
+    .card {background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm);}
+    .card-body {padding:16px;}
+    .table-wrap {overflow-x:auto;}
+    table {width:100%; border-collapse:collapse;}
+    thead th {
+      text-align:left; background:#f9fafb; border-bottom:1px solid var(--border);
+      padding:12px; font-weight:700; font-size:.9rem; color:#111827; white-space:nowrap;
+    }
+    tbody td {
+      padding:12px; border-bottom:1px solid var(--border); vertical-align:middle; font-size:.88rem;
+    }
+    tbody tr:hover {background:#f8fafc;}
+    .text-end {text-align:right;}
+    .text-center{text-align:center;}
+    .muted {color:var(--muted);}
+
+    /* ------------ Status Chips ------------ */
+    .status {display:inline-flex; align-items:center; padding:5px 12px; border-radius:999px; font-weight:600; font-size:.8rem;}
+    .status.Pending {background:#fff7ed; color:#9a3412;}
+    .status.Processing {background:#eff6ff; color:#1d4ed8;}
+    .status.Shipped {background:#eef2ff;color:#4338ca;}
+    .status["Out for Delivery"],.status.Out {background:#fef3c7;color:#92400e;}
+    .status.Delivered {background:#ecfdf5;color:#065f46;}
+    .status.Cancelled {background:#fef2f2;color:#7f1d1d;}
+    .status.Returned {background:#fdf2f8;color:#9d174d;}
+    .status.Refunded {background:#f0f9ff;color:#075985;}
+
+    /* ------------ Pagination ------------ */
+    .pagination {display:flex;gap:10px;align-items:center; justify-content:center; margin:14px 0;}
+    .page-btn, .page-label {padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:.88rem;}
+    .page-btn:hover {box-shadow:var(--shadow-sm);}
+    .page-btn.disabled {opacity:.55; pointer-events:none;}
+    .page-label {color:var(--muted); font-weight:600; cursor:default;}
+
+    /* ------------ Responsive Card View ------------ */
+    @media(max-width:768px){
+      thead{display:none;}
+      tbody tr {display:grid; grid-template-columns:1fr 1fr; gap:.7rem 1rem; margin:10px 0; padding:.9rem;
+        border:1px solid var(--border); border-radius:12px; background:#fff; box-shadow:var(--shadow-sm);}
+      tbody td {border:none !important; padding:0 !important; font-size:.9rem;}
+      tbody td::before {
+        content:attr(data-label);
+        font-weight:600; color:var(--muted); display:block; margin-bottom:2px;
+      }
+      .text-end, .text-center {text-align:left !important;}
+    }
+</style>
+
+<div class="wrap">
+  <h2 class="title">📦 My Orders</h2>
+
+  <!-- KPI Metrics -->
+  <section class="kpis">
+    <div class="kpi"><div class="label">Total Orders</div><div class="value">{{ metrics.total_orders_all }}</div></div>
+    <div class="kpi"><div class="label">Items Sold</div><div class="value">{{ metrics.total_items }}</div></div>
+    <div class="kpi"><div class="label">COD Sales</div><div class="value">₹ {{ metrics.cod_sales }}</div></div>
+    <div class="kpi"><div class="label">Online Sales</div><div class="value">₹ {{ metrics.online_sales }}</div></div>
+    <div class="kpi"><div class="label">Total Shipping</div><div class="value">₹ {{ metrics.total_shipping }}</div></div>
+    <div class="kpi"><div class="label">Cancelled Orders</div><div class="value">{{ metrics.cancelled_orders }}</div></div>
+    <div class="kpi"><div class="label">Returned Orders</div><div class="value">{{ metrics.returned_orders }}</div></div>
+  </section>
+
+  <!-- Filters -->
+  <form method="get" class="form card">
+    <div class="card-body">
+      <div class="filter-grid">
+        <div class="field"><label>Search</label><input type="text" name="q" value="{{ q }}" class="input" placeholder="Order #, name, city, product"></div>
+        <div class="field"><label>Payment</label>
+          <select name="payment_method" class="select">
+            <option value="">All</option>
+            <option value="cod" {% if payment_method == "cod" %}selected{% endif %}>COD</option>
+            <option value="online" {% if payment_method == "online" %}selected{% endif %}>ONLINE</option>
+           
+          </select>
+        </div>
+        <div class="field"><label>Status</label>
+          <select name="status" class="select">
+            <option value="">All</option>
+            <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Processing" {% if status == "Processing" %}selected{% endif %}>Processing</option>
+            <option value="Shipped" {% if status == "Shipped" %}selected{% endif %}>Shipped</option>
+            <option value="Out for Delivery" {% if status == "Out for Delivery" %}selected{% endif %}>Out for Delivery</option>
+            <option value="Delivered" {% if status == "Delivered" %}selected{% endif %}>Delivered</option>
+            <option value="Cancelled" {% if status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+            <option value="Returned" {% if status == "Returned" %}selected{% endif %}>Returned</option>
+            <option value="Refunded" {% if status == "Refunded" %}selected{% endif %}>Refunded</option>
+          </select>
+        </div>
+        <div class="field"><label>Start</label><input type="date" name="start" value="{{ start }}" class="input"></div>
+        <div class="field"><label>End</label><input type="date" name="end" value="{{ end }}" class="input"></div>
+        <div class="field"><label>&nbsp;</label><button type="submit" class="btn">Filter</button></div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Orders Table -->
+  <section class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th><th>Date</th><th>Customer</th><th>City</th>
+            <th>Payment</th><th>Status</th>
+            <th class="text-end">Subtotal (₹)</th><th class="text-end">Shipping (₹)</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+          <tr>
+            <td data-label="Order #">{{ order.order_number }}</td>
+            <td data-label="Date">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+            <td data-label="Customer">{{ order.customer_name }}</td>
+            <td data-label="City">{{ order.shipping_city }}</td>
+            <td data-label="Payment">{{ order.payment_method|upper }}</td>
+            <td data-label="Status"><span class="status {{ order.status }}">{{ order.status }}</span></td>
+            <td data-label="Subtotal" class="text-end">{{ seller_subtotals|get_item:order.id }}</td>
+            <td data-label="Shipping" class="text-end">{{ seller_shipping_map|get_item:order.id }}</td>
+            <td data-label="Action" class="text-end">
+    <a class="btn btn-outline" href="{% url 'seller:seller_order_detail' order.id %}">View</a>
+    <a class="btn btn-outline" href="{% url 'seller:seller_order_invoice' order.id %}">Invoice</a>    
+    
+</td>
+            
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" class="muted text-center" style="padding:18px">No orders found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-body">
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="page-btn" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&payment_method={{ payment_method }}&status={{ status }}&start={{ start }}&end={{ end }}">Prev</a>
+        {% else %}<span class="page-btn disabled">Prev</span>{% endif %}
+        <span class="page-label">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="page-btn" href="?page={{ page_obj.next_page_number }}&q={{ q }}&payment_method={{ payment_method }}&status={{ status }}&start={{ start }}&end={{ end }}">Next</a>
+        {% else %}<span class="page-btn disabled">Next</span>{% endif %}
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,473 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+    <title>Seller Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 2rem;
+            border-radius: var(--card-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-right: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 1rem;
+        }
+
+        .pending .stat-icon {
+            background: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .approved .stat-icon {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Seller Cards */
+        .sellers-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h3 i {
+            margin-right: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .seller-list {
+            list-style: none;
+        }
+
+        .seller-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .seller-item:last-child {
+            border-bottom: none;
+        }
+
+        .seller-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .seller-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .seller-details h4 {
+            margin-bottom: 0.2rem;
+            font-size: 1.1rem;
+        }
+
+        .seller-details p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .seller-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        .btn-primary .fa-check {
+            margin-right: 5px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--light-gray);
+            color: var(--gray);
+        }
+
+        .btn-outline:hover {
+            background: var(--light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Approval Animation */
+        @keyframes approveAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .approving {
+            animation: approveAnimation 0.6s ease;
+        }
+
+        .approve-success {
+            background-color: var(--success) !important;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .seller-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .seller-actions {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stat-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <h1>Seller Admin Dashboard</h1>
+            </div>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=4361ee&color=fff" alt="Admin User">
+                <span>Admin User</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ pending|length }}</h3>
+                    <p>Pending Approvals</p>
+                </div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ approved|length }}</h3>
+                    <p>Approved Sellers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approval Section -->
+        <div class="sellers-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clock"></i> Pending Approval</h3>
+                    <span class="badge">{{ pending|length }} sellers</span>
+                </div>
+                <div class="card-body">
+                    <ul class="seller-list">
+                        {% for s in pending %}
+                        <li class="seller-item">
+                            <div class="seller-info">
+                                <div class="seller-avatar">{{ s.username|first|upper }}</div>
+                                <div class="seller-details">
+                                    <h4>{{ s.username }}</h4>
+                                    <p>{{ s.email }} - {{ s.business_name }}</p>
+                                </div>
+                            </div>
+                            <div class="seller-actions">
+                                <form method="post" action="{% url 'seller:admin_approve_seller' s.id %}" class="approval-form" style="display:inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                </form>
+                                <a href="{% url 'seller:admin_seller_detail' s.id %}" class="btn btn-outline btn-sm">View Detail</a>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No pending sellers.</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Approved Sellers Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-check-circle"></i> Approved Sellers</h3>
+                    <span class="badge">{{ approved|length }} sellers</span>
+                </div>
+                <div class="card-body">
+                    <ul class="seller-list">
+                        {% for s in approved %}
+                        <li class="seller-item">
+                            <div class="seller-info">
+                                <div class="seller-avatar">{{ s.username|first|upper }}</div>
+                                <div class="seller-details">
+                                    <h4>{{ s.username }}</h4>
+                                    <p>{{ s.email }} - {{ s.business_name }}</p>
+                                </div>
+                            </div>
+                            <div class="seller-actions">
+                                <a href="{% url 'seller:admin_seller_detail' s.id %}" class="btn  btn-primary btn-sm">View Detail</a>
+                                
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No approved sellers yet.</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to approval buttons
+            const approveForms = document.querySelectorAll('.approval-form');
+            
+            approveForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button');
+                    const originalText = button.innerHTML;
+                    
+                    // Add animation class
+                    button.classList.add('approving');
+                    
+                    // Change button style during approval
+                    setTimeout(() => {
+                        button.classList.remove('approving');
+                        button.classList.add('approve-success');
+                        button.innerHTML = '<i class="fas fa-check-double"></i> Approved';
+                    }, 600);
+                    
+                    // The form will still submit and process via Django
+                });
+            });
+        });
+    </script>
+{% endblock %}

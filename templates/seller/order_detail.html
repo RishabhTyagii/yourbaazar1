@@ -1,0 +1,234 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+/* ---------- Base Layout ---------- */
+.order-container {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  padding: 1.5rem;
+  background:#f9fafb;
+}
+.page-header {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom:1.5rem;
+}
+.page-title {
+  font-size:1.6rem;
+  font-weight:700;
+  color:#1f2937;
+  margin-bottom:.5rem;
+}
+.back-btn {
+  text-decoration:none;
+  background:#1f2937;
+  color:white;
+  padding:.6rem 1.2rem;
+  border-radius:6px;
+  font-size:.9rem;
+  transition:.2s;
+}
+.back-btn:hover { background:#111827; }
+
+/* ---------- Card Styling ---------- */
+.cards {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap:1rem;
+  margin-bottom:1.5rem;
+}
+.card {
+  background:white;
+  border-radius:10px;
+  padding:1rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.card-header {
+  font-weight:600;
+  font-size:.95rem;
+  margin-bottom:.6rem;
+  color:#374151;
+}
+.card p, .card div { font-size:.9rem; margin:.3rem 0; }
+
+/* ---------- Table ---------- */
+.table-container {
+  overflow-x:auto;
+  margin-bottom:1.5rem;
+}
+.responsive-table {
+  width:100%;
+  border-collapse: collapse;
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+.responsive-table th, .responsive-table td {
+  padding:.75rem;
+  border-bottom:1px solid #e5e7eb;
+  font-size:.9rem;
+}
+.responsive-table thead {
+  background:#1f2937;
+  color:white;
+}
+.responsive-table img {
+  max-width:50px;
+  max-height:50px;
+  border-radius:6px;
+  margin-top:.3rem;
+}
+.text-center { text-align:center; }
+.text-right { text-align:right; }
+.text-muted { color:#6b7280; }
+
+/* ---------- Mobile Card Table ---------- */
+@media(max-width:768px) {
+  .responsive-table thead { display:none; }
+  .responsive-table, .responsive-table tbody, .responsive-table tr, .responsive-table td { display:block; width:100%; }
+  .responsive-table tr {
+    background:white;
+    margin:0.5rem 0;
+    border:1px solid #e5e7eb;
+    border-radius:8px;
+    box-shadow:0 2px 4px rgba(0,0,0,.04);
+    padding:.5rem;
+  }
+  .responsive-table td {
+    border:none;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:.5rem .7rem;
+    font-size:.88rem;
+  }
+  .responsive-table td::before {
+    content:attr(data-label);
+    font-weight:600;
+    color:#374151;
+    flex-basis:40%;
+    text-align:left;
+  }
+}
+
+/* ---------- Totals ---------- */
+.totals {
+  max-width:450px;
+  margin-left:auto;
+  background:white;
+  border-radius:10px;
+  padding:1rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  font-size:.9rem;
+}
+.total-row {
+  display:flex;
+  justify-content:space-between;
+  margin:.5rem 0;
+}
+.total-row.total {
+  font-weight:700;
+  border-top:1px solid #e5e7eb;
+  padding-top:.7rem;
+  margin-top:.7rem;
+  font-size:1rem;
+}
+</style>
+
+<div class="order-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">🧾 Order #{{ order.order_number }}</h2>
+    <a href="{% url 'seller:seller_order_list' %}" class="back-btn">⬅ Back to Orders</a>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-header">👤 Customer</div>
+      <p><strong>Name:</strong> {{ order.customer_name }}</p>
+      <p><strong>Email:</strong> {{ order.customer_email }}</p>
+      <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+    </div>
+    <div class="card">
+      <div class="card-header">📦 Shipping</div>
+      <div>{{ order.shipping_address }}</div>
+      <div>{{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_zip_code }}</div>
+      <div>{{ order.shipping_country }}</div>
+    </div>
+    <div class="card">
+      <div class="card-header">💳 Payment</div>
+      <div><strong>Method:</strong> {{ order.payment_method|upper }}</div>
+      <div><strong>Status:</strong> {{ order.payment_status }}</div>
+      {% if order.payment_id %}
+      <div><strong>Payment ID:</strong> {{ order.payment_id }}</div>
+      {% endif %}
+    </div>
+    <div class="card">
+      <div class="card-header">📝 Order Info</div>
+      <div><strong>Date:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</div>
+      <div><strong>Status:</strong> {{ order.status }}</div>
+      {% if order.tracking_id %}
+      <div><strong>Tracking ID:</strong> {{ order.tracking_id }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="card" style="padding:0;">
+    <div class="card-header" style="padding:1rem;">🛍️ Items (Your Products)</div>
+    <div class="table-container">
+  <table class="responsive-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Variant</th>
+        <th class="text-center">Qty</th>
+        <th class="text-right">Unit (₹)</th>
+        <th class="text-right">Line Total (₹)</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td data-label="Product">
+          <div style="display:flex;align-items:center;gap:.5rem;">
+            <img src="{{ item.product.thumbnail.url }}" alt="">
+            <div>{{ item.product.name }}</div>
+          </div>
+        </td>
+        <td data-label="Variant">
+          {% if item.variant %}
+            {% if item.variant.color.color_name %}{{ item.variant.color.color_name }}{% endif %}
+            {% if item.variant.size %}{% if item.variant.color.color_name %}, {% endif %}Size {{ item.variant.size }}{% endif %}
+          {% else %}—{% endif %}
+        </td>
+        <td data-label="Qty" class="text-center">{{ item.quantity }}</td>
+        <td data-label="Unit" class="text-right">₹ {{ item.price }}</td>
+        <td data-label="Line Total" class="text-right">₹ {{ item.price|floatformat:2 }}</td>
+        <td data-label="Status">{{ item.item_status }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">No items.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals">
+    <div class="total-row"><span>Seller Subtotal</span><span>₹ {{ seller_subtotal }}</span></div>
+    <div class="total-row"><span>Seller Shipping</span><span>₹ {{ seller_shipping }}</span></div>
+    <div class="total-row total"><span>Total</span><span>₹ {{ seller_total }}</span></div>
+  </div>
+
+</div>
+
+{% endblock %}

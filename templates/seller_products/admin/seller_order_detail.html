@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ----------- Base ----------- */
+.order-detail {
+  padding: 1rem;
+  background: #f5f7fa;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+/* ----------- Meta & Customer ----------- */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 1rem;
+}
+.card p { margin: .4rem 0; font-size: .95rem; color:#374151; }
+
+/* ----------- Table ----------- */
+.table-container { overflow-x: auto; margin-top:1rem; }
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width:600px;
+}
+.styled-table thead {
+  background: #2563eb;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.styled-table th, .styled-table td {
+  padding: .75rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .9rem;
+}
+.styled-table tr:nth-child(even) { background:#f9fafb; }
+.styled-table tr:hover { background: #eff6ff; }
+.styled-table img {
+  max-width:45px;
+  border-radius:6px;
+  margin-top:.3rem;
+}
+.text-right { text-align:right; }
+.text-center { text-align:center; color:#6b7280; }
+
+/* ----------- Totals ----------- */
+.totals-box {
+  background: white;
+  border-radius: 10px;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+.total-row {
+  display:flex;
+  justify-content:space-between;
+  margin: .6rem 0;
+  font-size:.95rem;
+}
+.total-row strong { color:#111827; }
+.total-row.total {
+  border-top:1px solid #e5e7eb;
+  padding-top:.8rem;
+  margin-top:.8rem;
+  font-weight:600;
+  font-size:1.05rem;
+}
+
+/* ----------- Buttons ----------- */
+.back-link {
+  display:inline-block;
+  margin-top:1.5rem;
+  background:#2563eb;
+  color:white;
+  text-decoration:none;
+  font-size:.9rem;
+  padding:.6rem 1rem;
+  border-radius:6px;
+  transition:.2s;
+}
+.back-link:hover { background:#1d4ed8; }
+
+/* ----------- Responsive Fixes ----------- */
+@media(max-width:768px) {
+  .page-title { font-size:1.25rem; }
+  .styled-table { font-size:.85rem; }
+  .styled-table th, .styled-table td { padding:.55rem; }
+  .table-container { border:1px solid #e5e7eb; border-radius:8px; }
+  .totals-box { font-size:.9rem; }
+  .total-row { flex-direction: column; align-items: flex-start; }
+  .total-row span, .total-row strong { width:100%; }
+}
+</style>
+
+<div class="order-detail">
+
+  <!-- Title -->
+  <h2 class="page-title">🛒 Order #{{ order.order_number }} — Seller: {{ seller.username }}</h2>
+
+  <!-- Meta Info -->
+  <div class="card">
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Payment:</strong> {{ order.payment_method|upper }} / {{ order.payment_status }}</p>
+    <p><strong>Created:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+  </div>
+
+  <!-- Customer & Shipping -->
+  <div class="card">
+    <p><strong>Customer:</strong> {{ order.customer_name }} ({{ order.customer_email }}, {{ order.customer_phone }})</p>
+    <p><strong>Ship To:</strong><br>
+      {{ order.shipping_address }},<br>
+      {{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_zip_code }}
+    </p>
+  </div>
+
+  <!-- Seller Items -->
+  <h3 style="margin-top:1rem; font-size:1.1rem;">📦 Seller Items</h3>
+  <div class="table-container">
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Variant</th>
+          <th class="text-right">Qty</th>
+          <th class="text-right">Unit Price</th>
+          <th class="text-right">Line Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>
+            {{ r.product.name }}<br>
+            <small>SKU: {{ r.product.sku }}</small><br>
+            <img src="{{ r.product.thumbnail.url}}" alt="">
+          </td>
+          <td>
+            {% if r.variant %}
+              {{ r.variant.color.color_name }}{% if r.variant.size %} / {{ r.variant.size }}{% endif %}
+            {% else %} — {% endif %}
+          </td>
+          <td class="text-right">{{ r.quantity }}</td>
+          <td class="text-right">₹ {{ r.unit|floatformat:2 }}</td>
+          <td class="text-right">₹ {{ r.line_total|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No items for this seller in this order.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals-box">
+    <div class="total-row">
+      <span>Subtotal (seller items)</span>
+      <strong>₹ {{ seller_subtotal }}</strong>
+    </div>
+    <div class="total-row">
+      <span>Shipping (per distinct product)</span>
+      <strong>₹ {{ seller_shipping }}</strong>
+    </div>
+    <div class="total-row total">
+      <span>Total (seller)</span>
+      <strong>₹ {{ seller_total }}</strong>
+    </div>
+  </div>
+
+  <!-- Back -->
+  <a href="{% url 'seller_products:admin_seller_orders' %}?seller_id={{ seller.id }}" class="back-link">⬅ Back to Seller Orders</a>
+</div>
+
+{% endblock %}

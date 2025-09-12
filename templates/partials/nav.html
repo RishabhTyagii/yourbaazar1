@@ -1,0 +1,592 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yourbaazar - DANGER MODE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+        /* 🔥 DANGEROUS STYLES - Only affects Yourbaazar components 🔥 */
+        
+        /* === BASE RESET === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* === GLOWING NEON HEADER === */
+        .ybz-header {
+            padding: 15px 0;
+            text-align: center;
+            background: no-repeat linear-gradient(50deg, rgb(238, 255, 255) 0%, rgb(59, 192, 192) 40%, rgb(105, 204, 204) 50%,  rgb(105, 204, 204) 75%);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,45,117,0.2);
+            width: 100%;
+        }
+        
+        .ybz-header p {
+            font-size: clamp(1.8rem, 6vw, 3rem); /* Responsive font size */
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff2d75 0%, #9d4dff 50%, #00f7ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(157, 77, 255, 0.3);
+            letter-spacing: -1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 15px;
+        }
+        
+        .ybz-header i {
+            font-size: 1em;
+            animation: ybz-pulse 2s infinite alternate;
+        }
+        
+        @keyframes ybz-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        /* === CYBERPUNK SEARCH BAR === */
+        .ybz-search-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.9);
+            padding: 12px;
+            z-index: 101;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .ybz-search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 90%;
+        }
+        
+        #ybz-search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #fff;
+            color: rgba(3, 3, 3, 0.8);
+            font-size: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        #ybz-search-input:focus {
+            box-shadow: 0 0 0 2px #00f7ff, 0 0 15px rgba(0,247,255,0.3);
+            outline: none;
+        }
+        
+        #ybz-search-input::placeholder {
+            color: rgba(3, 3, 3, 0.6);
+        }
+        
+        #ybz-search-results {
+            position: absolute;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 0 0 15px 15px;
+            backdrop-filter: blur(20px);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 102;
+            margin-top: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .ybz-search-result-item {
+            padding: 12px 20px;
+            color: #333;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .ybz-search-result-item:hover {
+            background: rgba(110,15,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        /* === DANGEROUS NAVIGATION === */
+        .ybz-nav-bar {
+            position: sticky;
+            top: 68px;
+                  background: no-repeat linear-gradient(50deg, rgb(238, 255, 255) 0%, rgb(59, 192, 192) 40%, rgb(105, 204, 204) 50%, rgb(105, 204, 204) 75%);
+
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,45,117,0.1);
+            width: 100%;
+        }
+        
+        .ybz-nav-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-content: space-around;
+            padding: 10px 5px;
+            width: 100%;
+        }
+        
+        .ybz-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(18, 17, 17, 0.7);
+            text-decoration: none;
+            padding: 8px 10px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+        
+        .ybz-nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .ybz-nav-item:hover, 
+        .ybz-nav-item.ybz-active {
+            color: #000;
+        }
+        
+        .ybz-nav-item:hover i, 
+        .ybz-nav-item.ybz-active i {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, #ff2d75, #9d4dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .ybz-nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00f7ff, #9d4dff);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .ybz-nav-item:hover::after, 
+        .ybz-nav-item.ybz-active::after {
+            width: 70%;
+        }
+        
+        .ybz-badge {
+            position: absolute;
+            top: -5px;
+            right: 5px;
+            background: linear-gradient(135deg, #ff2d75, #ff6b6b);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(255,45,117,0.3);
+        }
+        
+        .logodata {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position:relative;
+        
+        }
+
+        .logodiv {
+            margin-bottom: 1px;
+        }
+
+        .logo-img {
+            height: 100px;
+            width: 100px;
+            object-fit: contain;
+        position:absolute;
+            left:45px;
+            bottom:15px;
+        }
+
+                /* === MOBILE STYLES === */
+                @media (max-width: 768px) {
+                    .ybz-header p {
+                        gap: 8px;
+                    }
+                    
+                    .ybz-search-bar {
+                        padding: 10px;
+                    }
+                    
+                    #ybz-search-input {
+                        padding: 10px 15px;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .ybz-nav-bar {
+                        position: fixed;
+                        bottom: 0;
+                        top: auto;
+                        border-top: 1px solid rgba(255,45,117,0.2);
+                        border-bottom: none;
+                    }
+                    
+                    .ybz-nav-item {
+                        padding: 5px 3px;
+                        font-size: 0.7rem;
+                    }
+                    
+                    .ybz-nav-item i {
+                        font-size: 1.2rem;
+                    }
+                    
+                    .ybz-badge {
+                        right: 0;
+                        font-size: 0.6rem;
+                        padding: 2px 5px;
+                    }
+                }
+                
+                /* === EXTRA SMALL DEVICES === */
+                @media (max-width: 480px) {
+
+                
+                    .ybz-header p {
+                        font-size: 1.5rem;
+                    }
+                    
+                    .ybz-nav-item span {
+                        font-size: 0.6rem;
+                    }
+                    
+                    .ybz-nav-item i {
+                        font-size: 1rem;
+                    }
+                    .logo-img {
+            height: 50px;
+            width: 50px;
+            object-fit: contain;
+        }
+                }
+                
+                /* === SCROLLBAR === */
+                .ybz-scrollbar::-webkit-scrollbar {
+                    width: 5px;
+                }
+                
+                .ybz-scrollbar::-webkit-scrollbar-thumb {
+                    background: linear-gradient(#ff2d75, #9d4dff);
+                    border-radius: 5px;
+                }
+                
+                /* === CONTENT AREA === */
+                .ybz-content {
+                    padding: 20px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    color: #333;
+                }
+                
+                .ybz-content a {
+                    color: #00f7ff;
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+
+
+</style>
+</head>
+<body>
+    
+
+    <!-- 🔥 GLOWING HEADER -->
+ <div class="ybz-header">
+    <div class="logodiv">
+        <div class="logodata">
+            {% if nav_image %}
+                <img src="{{ nav_image }}" alt="{{ site_name }}" class="logo-img">
+            {% else %}
+                <img src="{% static 'images/default-logo.png' %}" alt="{{ site_name }}" class="logo-img">
+            {% endif %}
+
+            <a href="/" style="text-decoration: none; color: inherit;">
+                <p><i class="fas fa-shopping-bag"></i> Aapka Apna Baazar</p><a href="{% url 'seller:mainpage' %}" class="btn btn-primary">Become a seller</a>
+
+            </a>
+        </div>
+    </div>
+
+   {% if request.user.is_staff %}
+
+<button onclick="window.location.href='/admin/'"  class="btn btn-success">Go to Admin</button>
+
+{% endif %}
+</div>
+
+    <!-- 💀 DANGEROUS SEARCH -->
+    <div class="ybz-search-bar">
+        <div class="ybz-search-container">
+            <input type="text" id="ybz-search-input" placeholder="Search products..." autocomplete="off">
+            <div id="ybz-search-results" class="ybz-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- 🚀 SEXY NAVIGATION -->
+    <nav class="ybz-nav-bar">
+        <div class="ybz-nav-container">
+            <a href="/" class="ybz-nav-item ybz-active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'wishlist:view_wishlist' %}" class="ybz-nav-item">
+                <span class="ybz-badge">{{ wishlist_count }}</span>
+                <i class="fas fa-heart"></i>
+                <span>Wishlist</span>
+            </a>
+            <a href="{% url 'view_cart' %}" class="ybz-nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Cart</span>
+            </a>
+             <a href="{% url 'track_orders' %}" class="ybz-nav-item">
+                <i class="fas fa-truck"></i>
+                <span>Orders</span>
+            </a>
+            <a href="{% url 'view_profile' %}" class="ybz-nav-item">
+                <i class="fas fa-user"></i>
+                <span>Account</span>
+            </a>
+            <a href="{% url 'my_coupons' %}" class="ybz-nav-item">
+                <i class="fas fa-tags"></i>
+                <span>Coupons</span>
+            </a>
+        </div>
+    </nav>
+
+
+{% if request.user.is_staff %}
+<nav class="qwe-navbar-container" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 0.75rem 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div class="qwe-navbar-inner" style="">
+        
+        <!-- Logo/Brand -->
+         
+        <div class="qwe-navbar-brand" style="display: flex; align-items: center; gap: 0.75rem;">
+            <svg class="qwe-navbar-logo" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: #ffffff;">
+                <path d="M13 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V9M13 2L20 9M13 2V9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 17H8V15H16V17Z" fill="currentColor"/>
+                <path d="M16 13H8V11H16V13Z" fill="currentColor"/>
+            </svg>
+            <span class="qwe-navbar-title" style="color: white; font-weight: 600; font-size: 1.25rem;">Admin Panel</span>
+        </div>
+        
+        <!-- Navigation Links -->
+        <div class="qwe-navbar-links" style="">
+            <a href="{% url 'order_list' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Orders
+            </a>
+
+            
+            <a href="{% url 'product:variant_stock_list'%}" class="qwe-navbar-btn qwe-navbar-btn-active" style="padding: 0.5rem 1.25rem; background: #3b82f6; color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Inventory
+            </a>
+            
+            <a href="{% url 'basicinfo:sales_dashboard' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 8V16M12 11V16M8 14V16M3 5H21V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Sales
+            </a>
+            
+            <a href="{% url 'coupon_analytics' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 15H9V9H14M16 3H8C5.79086 3 4 4.79086 4 7V17C4 19.2091 5.79086 21 8 21H16C18.2091 21 20 19.2091 20 17V7C20 4.79086 18.2091 3 16 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Coupons
+            </a>
+            <a href="{% url 'basicinfo:contact_query_list' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Queries
+            </a>
+            <a href="{% url 'admin_return_requests' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Returns
+            </a>
+            <a href="{% url 'admin_dashboard' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                customer_view
+            </a>
+            
+            <a href="{% url 'basicinfo:profit_analysis' %}" class="qwe-navbar-btn" style="padding: 0.5rem 1.25rem; background: rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                profit_analysis
+            </a>
+            
+        </div>
+        
+        <!-- User Info -->
+        <div class="qwe-navbar-user" style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="qwe-navbar-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                {{ request.user.username|first|upper }}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Unique CSS classes starting with qwe */
+
+
+
+
+.qwe-navbar-inner{
+    max-width: 1200px; margin: 0 auto; display: flex; align-items: center; 
+}
+.qwe-navbar-btn:hover {
+    background: rgba(255,255,255,0.2) !important;
+    transform: translateY(-1px);
+}
+
+.qwe-navbar-btn-active:hover {
+    background: #2563eb !important;
+}
+
+.qwe-navbar-avatar {
+    transition: all 0.2s;
+}
+
+.qwe-navbar-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Animation for navbar items */
+@keyframes qwe-navbar-fadein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.qwe-navbar-btn {
+    animation: qwe-navbar-fadein 0.3s ease-out forwards;
+}
+
+.qwe-navbar-btn:nth-child(1) { animation-delay: 0.1s; }
+.qwe-navbar-btn:nth-child(2) { animation-delay: 0.2s; }
+.qwe-navbar-btn:nth-child(3) { animation-delay: 0.3s; }
+.qwe-navbar-btn:nth-child(4) { animation-delay: 0.4s; }
+ @media (max-width: 480px) {
+
+            .qwe-navbar-container{
+                width:100%;
+            }}
+
+             @media (min-width: 980px) {
+
+           .qwe-navbar-links{
+display: flex; gap: 0.5rem;
+}}
+</style>
+{% endif %}
+
+    <!-- YOUR CONTENT HERE -->
+    
+
+    <!-- 🎯 EXACT SAME JAVASCRIPT LOGIC -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ✅ Highlight active nav link
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.ybz-nav-item');
+
+        navItems.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('ybz-active');
+            } else {
+                link.classList.remove('ybz-active');
+            }
+        });
+
+        // ✅ Debounced Search
+        let debounceTimer;
+        const searchInput = document.getElementById("ybz-search-input");
+        const searchResults = document.getElementById("ybz-search-results");
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function() {
+                clearTimeout(debounceTimer);
+
+                const query = this.value.trim();
+                if (query.length === 0) {
+                    searchResults.innerHTML = "";
+                    searchResults.style.display = "none";
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetch("{% url 'product:ajax_search' %}?q=" + encodeURIComponent(query))
+                        .then(response => response.text())
+                        .then(html => {
+                            searchResults.innerHTML = html;
+                            searchResults.style.display = "block";
+                        })
+                        .catch(err => console.error("Search error:", err));
+                }, 600);
+            });
+        }
+
+        // ✅ Close search dropdown on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.ybz-search-container')) {
+                searchResults.style.display = 'none';
+            }
+        });
+    });
+    </script>
+</body>
+</html>

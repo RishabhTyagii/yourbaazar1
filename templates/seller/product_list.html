@@ -1,0 +1,26 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+    <title>Document</title>
+</head>
+<body>
+    <h1>Products</h1>
+
+{% if message %}
+  <p style="color:orange">{{ message }}</p>
+{% endif %}
+
+{% if show_form %}
+  <h3>Add Product</h3>
+  <form method="post" action="{% url 'seller:add_product' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add</button>
+  </form>
+{% else %}
+  <p>Product submission will be available after approval.</p>
+{% endif %}
+
+
+
+{% endblock %}

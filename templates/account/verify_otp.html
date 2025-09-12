@@ -1,0 +1,63 @@
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/verifyotp.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Verify Your OTP</h1>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'verify_otp' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="otp">Enter OTP Code</label>
+            <input type="text" id="otp" name="otp" placeholder="e.g. 123456" required>
+        </div>
+        
+        <button type="submit">Verify</button>
+    </form>
+
+    <div class="resend-link">
+        Didn't receive code? 
+        <a href="{% url 'resend_otp' %}" id="resendBtn">Resend OTP</a>
+        <span id="countdown"></span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let lastOtpTime = {{ request.session.last_otp_time|default:"0" }};
+    let nowTime = Math.floor(Date.now() / 1000);
+    let remaining = 60 - (nowTime - lastOtpTime);
+    
+    if (remaining > 0) {
+        let countdownEl = document.getElementById("countdown");
+        let resendBtn = document.getElementById("resendBtn");
+        resendBtn.style.pointerEvents = "none";
+        resendBtn.style.opacity = "0.5";
+
+        let timer = setInterval(() => {
+            countdownEl.innerText = ` (${remaining}s)`;
+            remaining--;
+            if (remaining < 0) {
+                clearInterval(timer);
+                resendBtn.style.pointerEvents = "auto";
+                resendBtn.style.opacity = "1";
+                countdownEl.innerText = "";
+            }
+        }, 1000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Reject Draft #{{ draft.id }} — {{ draft.name }}</h2>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label>Reason</label>
+    <textarea name="reason" class="form-control" rows="4" required></textarea>
+  </div>
+  <button class="btn btn-danger" type="submit">Submit Rejection</button>
+</form>
+{% endblock %}

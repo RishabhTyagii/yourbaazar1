@@ -1,0 +1,84 @@
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <div class="container mt-4">
+        <h1>Sales Analysis</h1>
+        
+        <!-- Date Range Filter -->
+        <form method="get" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" name="start_date" id="start_date" 
+                        value="{{ start_date }}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date">End Date</label>
+                    <input type="date" name="end_date" id="end_date" 
+                        value="{{ end_date }}" class="form-control">
+                </div>
+                <div class="col-md-3 align-self-end">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Products Sold</h5>
+                        <p class="display-4">{{ total_products_sold.total_quantity|default:0 }}</p>
+                        <p class="text-muted">{{ total_products_sold.total_items }} order items</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Chart -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Sales Overview</h5>
+            </div>
+            <div class="card-body">
+                <img src="data:image/png;base64,{{ graphic }}" class="img-fluid">
+            </div>
+        </div>
+        
+        <!-- Variants Sales Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Sales by Product Variants</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Variant</th>
+                                <th>Quantity Sold</th>
+                                <th>Total Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for variant in variants_sales %}
+                            <tr>
+                                <td>{{ variant.variant__product__name }}</td>
+                                <td>{{ variant.variant__name }}</td>
+                                <td>{{ variant.total_sold }}</td>
+                                <td>₹{{ variant.total_revenue }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No variant sales in this period</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

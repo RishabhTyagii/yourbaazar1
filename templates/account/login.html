@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Login{% endblock %}</title>
+    
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container" id="loginForm">
+            <div class="form-header">
+                <h2>Welcome Back</h2>
+                <p>Login to your account</p>
+            </div>
+            
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            <form id="loginFormElement" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="loginEmail" name="username" placeholder="Email or Username" required>
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Login</button>
+                </div>
+                <input type="hidden" name="next" value="{{ next|default:'' }}">
+
+            </form>
+            
+            <div class="form-footer">
+                <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                <p><a href="{% url 'change_password_with_otp' %}">Forgot password?</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,784 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+<div class="page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="title-wrap">
+      <h2 class="page-title">Your Product Drafts</h2>
+      <p class="muted small">Manage drafts before publishing products.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'seller_products:draft_create' %}" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        Create Draft
+      </a>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <form method="get" class="toolbar" role="search" aria-label="Search drafts">
+    <div class="toolbar-left">
+      <div class="search-field">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+        <input type="search" name="q" placeholder="Search by name or SKU…" value="{{ query }}" class="search-input" />
+        <button type="submit" class="btn-search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5v3.5a.5.5 0 0 0 1 0V9H12a.5.5 0 0 0 0-1H8.5V4.5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="field">
+        <select name="status" class="status-filter">
+          <option value="">All status</option>
+          <option value="pending" {% if selected_status == "pending" %}selected{% endif %}>Pending</option>
+          <option value="approved" {% if selected_status == "approved" %}selected{% endif %}>Approved</option>
+          <option value="rejected" {% if selected_status == "rejected" %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-secondary filter-btn">Filter</button>
+      {% if query or selected_status %}
+        <a href="." class="btn btn-link clear-btn">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if page_obj %}
+    <!-- Table -->
+    <div class="table-wrap" role="region" aria-label="Drafts table" tabindex="0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">SKU</th>
+            <th scope="col">Status</th>
+            <th scope="col">Created</th>
+            <th scope="col" class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in page_obj %}
+            <tr class="table-row">
+              <td data-label="ID">#{{ d.id }}</td>
+              <td data-label="Name" class="truncate">{{ d.name }}</td>
+              <td data-label="SKU" class="mono">{{ d.sku }}</td>
+              <td data-label="Status">
+                <span class="badge badge-status {{ d.status|default:'unknown'|lower|slugify }}">
+                  {{ d.get_status_display }}
+                </span>
+              </td>
+              <td data-label="Created">{{ d.created_at|date:"Y-m-d H:i" }}</td>
+              <td class="actions">
+                <a class="btn btn-secondary view-btn" href="{% url 'seller_products:draft_detail' d.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                  View
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+          <a class="page-link prev" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Previous
+          </a>
+        {% else %}
+          <span class="page-link disabled prev">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Previous
+          </span>
+        {% endif %}
+
+        <div class="page-numbers">
+          {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+              <span class="page-link active">{{ num }}</span>
+            {% elif num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+              <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">{{ num }}</a>
+            {% elif num == 1 or num == page_obj.paginator.num_pages %}
+              <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">{{ num }}</a>
+            {% elif num == page_obj.number|add:-3 or num == page_obj.number|add:3 %}
+              <span class="page-ellipsis">…</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if page_obj.has_next %}
+          <a class="page-link next" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </a>
+        {% else %}
+          <span class="page-link disabled next">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </span>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <!-- Empty state -->
+    <div class="empty-state">
+      <div class="empty-icon" aria-hidden="true">📝</div>
+      <h3>No drafts yet</h3>
+      <p class="muted">Start by creating a draft and fill in the product details.</p>
+      <a href="{% url 'seller_products:draft_create' %}" class="btn btn-primary">Create Draft</a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* Modern color palette */
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #3b82f6;
+  --accent-600: #2563eb;
+  --accent-light: #dbeafe;
+  --focus: #93c5fd;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.2s ease;
+  color-scheme: light;
+}
+
+/* Smooth scrolling and improved focus */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base layout */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+}
+
+body { 
+  background: var(--bg); 
+  color: var(--text); 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.title-wrap { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  min-width: 220px; 
+}
+
+.page-title { 
+  margin: 0; 
+  font-size: 1.75rem; 
+  font-weight: 700;
+  line-height: 1.2; 
+  color: var(--text);
+}
+
+.muted { 
+  color: var(--muted); 
+}
+
+.small { 
+  font-size: 0.9rem; 
+}
+
+.header-actions { 
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+.toolbar:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.toolbar-left { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  width: 100%;
+}
+
+/* Enhanced search field */
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  z-index: 2;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: var(--transition);
+  font-size: 0.95rem;
+  padding-right: 50px;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.btn-search {
+  position: absolute;
+  right: 4px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.btn-search:hover {
+  background: var(--accent-600);
+  transform: translateY(-1px);
+}
+
+/* Status filter */
+.status-filter {
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: var(--transition);
+  font-size: 0.95rem;
+  min-width: 140px;
+}
+
+.status-filter:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.btn:hover { 
+  transform: translateY(-1px); 
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active { 
+  transform: translateY(0); 
+}
+
+.btn-primary { 
+  background: var(--accent); 
+  border-color: var(--accent); 
+  color: #fff; 
+}
+
+.btn-primary:hover { 
+  background: var(--accent-600); 
+  border-color: var(--accent-600);
+}
+
+.btn-secondary { 
+  background: transparent; 
+  border-color: var(--border-strong); 
+  color: var(--text); 
+}
+
+.btn-secondary:hover { 
+  background: var(--surface-2); 
+}
+
+.filter-btn, .clear-btn {
+  padding: 10px 16px;
+}
+
+.btn-link {
+  color: var(--accent-600);
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-link:hover { 
+  background: var(--accent-light); 
+}
+
+/* Table */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  margin-bottom: 24px;
+}
+
+.table-wrap:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 720px;
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  z-index: 1;
+  text-align: left;
+  font-weight: 600;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-strong);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.data-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  transition: var(--transition);
+}
+
+.table-row {
+  transition: var(--transition);
+}
+
+.table-row:hover td {
+  background: var(--surface-2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.actions-col { 
+  width: 140px; 
+}
+
+.actions { 
+  white-space: nowrap; 
+}
+
+.view-btn {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+/* Helpers */
+.truncate {
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.badge-status { 
+  border: none; 
+}
+
+.badge-status.draft { 
+  background: #dbeafe; 
+  color: #1e40af; 
+}
+
+.badge-status.pending { 
+  background: #fed7aa; 
+  color: #9a3412; 
+}
+
+.badge-status.review { 
+  background: #fef08a; 
+  color: #854d0e; 
+}
+
+.badge-status.approved { 
+  background: #bbf7d0; 
+  color: #166534; 
+}
+
+.badge-status.rejected { 
+  background: #fecaca; 
+  color: #991b1b; 
+}
+
+.badge-status.unknown { 
+  background: #f1f5f9; 
+  color: #475569; 
+}
+
+/* Enhanced Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+  flex-wrap: wrap;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  background: var(--surface);
+  transition: var(--transition);
+  font-size: 0.9rem;
+  min-width: 42px;
+  justify-content: center;
+}
+
+.page-link:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.page-link.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.page-link.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.page-link.prev, .page-link.next {
+  padding: 8px 16px;
+}
+
+.page-ellipsis {
+  padding: 8px 4px;
+  color: var(--muted);
+}
+
+/* Empty state */
+.empty-state {
+  padding: 60px 24px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.empty-state:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.empty-icon { 
+  font-size: 3rem; 
+  margin-bottom: 16px;
+  display: block;
+}
+
+.empty-state h3 { 
+  margin: 0 0 12px; 
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.empty-state p { 
+  margin: 0 0 24px; 
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* Focus styles */
+:focus-visible { 
+  outline: 2px solid var(--focus); 
+  outline-offset: 2px; 
+}
+
+/* Animation for table rows */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.table-row {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.table-row:nth-child(1) { animation-delay: 0.05s; }
+.table-row:nth-child(2) { animation-delay: 0.1s; }
+.table-row:nth-child(3) { animation-delay: 0.15s; }
+.table-row:nth-child(4) { animation-delay: 0.2s; }
+.table-row:nth-child(5) { animation-delay: 0.25s; }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    justify-content: flex-start;
+  }
+  
+  .toolbar-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-field {
+    max-width: 100%;
+  }
+  
+  .truncate {
+    max-width: 200px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .page-numbers {
+    order: 2;
+  }
+  
+  .page-link.prev {
+    order: 1;
+  }
+  
+  .page-link.next {
+    order: 3;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-table {
+    min-width: 100%;
+  }
+  
+  .data-table thead {
+    display: none;
+  }
+  
+  .data-table tbody tr {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .data-table tbody td:last-child {
+    border-bottom: none;
+  }
+  
+  .data-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted);
+    margin-right: 12px;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Add smooth transitions to interactive elements
+  const buttons = document.querySelectorAll('.btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('mousedown', () => {
+      btn.style.transform = 'translateY(0)';
+    });
+    
+    btn.addEventListener('mouseup', () => {
+      btn.style.transform = 'translateY(-1px)';
+    });
+  });
+  
+  // Enhanced search functionality
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    // Focus on search input when '/' is pressed
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+    
+    // Add a hint about the shortcut
+    searchInput.setAttribute('title', 'Press / to focus');
+  }
+  
+  // Add animation to table rows on scroll
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.table-row').forEach(row => {
+    row.style.opacity = '0';
+    row.style.transform = 'translateY(10px)';
+    row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    observer.observe(row);
+  });
+});
+</script>
+
+{% endblock %}

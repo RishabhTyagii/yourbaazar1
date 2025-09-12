@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Admin Detail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #6a7ce0;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: var(--card-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+            margin-right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            color: var(--secondary);
+        }
+
+        .back-btn i {
+            margin-right: 8px;
+        }
+
+        /* Main Card */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: linear-gradient(to right, #f9fafb, #fff);
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h3 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .seller-id {
+            background: var(--light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Info Sections */
+        .info-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .section-title h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            font-size: 1rem;
+            word-break: break-word;
+        }
+
+        /* Document Section */
+        .documents-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .document-item {
+            background: var(--light);
+            border-radius: var(--card-radius);
+            padding: 1.2rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .document-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .document-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .document-image:hover {
+            transform: scale(1.03);
+        }
+
+        .document-number {
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 0.5rem;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .status-badge i {
+            margin-right: 6px;
+        }
+
+        .status-active {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-approve {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #3bb5da;
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #e51279;
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            flex-direction: column;
+
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close:hover {
+            color: var(--primary-light);
+        }
+
+        .modal-caption {
+            text-align: center;
+            color: white;
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* Approval Animation */
+        @keyframes approveAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .approving {
+            animation: approveAnimation 0.6s ease;
+        }
+
+        .approve-success {
+            background-color: var(--success) !important;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 1.2rem;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .documents-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .document-image {
+                height: 150px;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+            
+            .close {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <h1>Seller Details</h1>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <a href="{% url 'seller:admin_seller_list' %}" class="back-btn btn-approve btn">
+            <i class="fas fa-arrow-left"></i> Back to Sellers List
+        </a>
+
+        <!-- Main Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-user-tie"></i> {{ seller.name }}</h3>
+                <span class="seller-id">ID: {{ seller.id }}</span>
+            </div>
+            <div class="card-body">
+                <!-- Basic Information Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>Basic Information</h4>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-user"></i> Username</span>
+                            <span class="info-value">{{ seller.username }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
+                            <span class="info-value">{{ seller.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
+                            <span class="info-value">{{ seller.phone }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-building"></i> Business Name</span>
+                            <span class="info-value">{{ seller.business_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-calendar"></i> Created At</span>
+                            <span class="info-value">{{ seller.created_at }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>Address Information</h4>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-home"></i> Address</span>
+                            <span class="info-value">{{ seller.address }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-city"></i> City</span>
+                            <span class="info-value">{{ seller.city }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-map"></i> State</span>
+                            <span class="info-value">{{ seller.state }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-mail-bulk"></i> Pincode</span>
+                            <span class="info-value">{{ seller.pincode }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-globe"></i> Country</span>
+                            <span class="info-value">{{ seller.country }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Information Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-university"></i>
+                        <h4>Bank Information</h4>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-user-circle"></i> Account Holder Name</span>
+                            <span class="info-value">{{ seller.owner_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-credit-card"></i> Account Number</span>
+                            <span class="info-value">{{ seller.account_number }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-code"></i> IFSC Code</span>
+                            <span class="info-value">{{ seller.ifsc }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-money-bill-wave"></i> UPI ID</span>
+                            <span class="info-value">{{ seller.upi_id }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Information Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Document Information</h4>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-id-card"></i> PAN Number</span>
+                            <span class="info-value">{{ seller.pan }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-address-card"></i> Aadhar Number</span>
+                            <span class="info-value">{{ seller.aadhar_number }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-file-invoice-dollar"></i> GST Number</span>
+                            <span class="info-value">{{ seller.gst }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Images Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-images"></i>
+                        <h4>Document Images</h4>
+                    </div>
+                    <div class="documents-container">{% if seller.aadhar_photo %}
+                        <div class="document-item" onclick="openModal('{{ seller.aadhar_photo.url }}', 'Aadhar Card - {{ seller.aadhar_number }}')">
+                            <img src="{{ seller.aadhar_photo.url }}" alt="Aadhar Document" class="document-image">
+
+                                 {% else %}
+                                                        <img src="placeholder" alt="Aadhar Document" class="document-image">
+                                   {% endif %}
+                            <div class="document-number">{{ seller.aadhar_number }}</div>
+                            <div class="info-label">Aadhar Card</div>
+                        </div>{% if seller.pan_photo %}
+                        <div class="document-item" onclick="openModal('{{ seller.pan_photo.url }}', 'PAN Card - {{ seller.pan }}')">
+                            <img src="{{ seller.pan_photo.url }}" alt="PAN Document" class="document-image">
+                            {% else %}
+                                                        <img src="placeholder" alt="PAN Document" class="document-image">
+
+                            {% endif %}
+                            <div class="document-number">{{ seller.pan }}</div>
+                            <div class="info-label">PAN Card</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status and Actions -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        <h4>Status & Actions</h4>
+                    </div>
+                    
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+                    <div class="action-buttons">
+                        <form method="post" action="{% url 'seller:admin_approve_seller' seller.id %}" class="approval-form" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-approve">
+                                <i class="fas fa-check"></i> Approve Seller
+                            </button>
+                        </form>
+                        
+             
+                     {% for s in pending %}
+                    <!-- Rejection Form (Collapsible) -->
+                    <div class="collapse mt-3" id="rejectionForm">
+                        <div class="rejection-form p-3 bg-light rounded">
+                            <form method="post" action="{% url 'seller:admin_reject_seller' seller.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Rejection Reason</label>
+                                    <textarea name="reason" class="form-control" rows="3" required 
+                                              placeholder="Please provide a clear reason for rejection..."></textarea>
+                                </div>
+                                <button class="btn btn-danger" type="submit">
+                                    <i class="fas fa-ban"></i> Confirm Rejection
+                                </button>
+                            </form>
+                        </div>
+                    </div>       
+                 
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <script>
+        // Document modal functionality
+        function openModal(imageSrc, caption) {
+            document.getElementById('imageModal').style.display = 'flex';
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('modalCaption').innerHTML = caption;
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Enable scrolling
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Add animation to approval button
+        document.addEventListener('DOMContentLoaded', function() {
+            const approveForms = document.querySelectorAll('.approval-form');
+            
+            approveForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button');
+                    
+                    // Add animation class
+                    button.classList.add('approving');
+                    
+                    // Change button style during approval
+                    setTimeout(() => {
+                        button.classList.remove('approving');
+                        button.classList.add('approve-success');
+                        button.innerHTML = '<i class="fas fa-check-double"></i> Approved';
+                        button.disabled = true;
+                    }, 600);
+                });
+            });
+            
+            // Add animation to document items
+            const documentItems = document.querySelectorAll('.document-item');
+            documentItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.2}s`;
+            });
+        });
+    </script>
+</body>
+</html>

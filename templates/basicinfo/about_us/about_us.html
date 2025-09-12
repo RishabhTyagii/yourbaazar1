@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About YourBaazar - Redefining E-commerce{% endblock %}
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/aboutus.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <header class="about-header">
+        <div class="header-content">
+            <div class="about-logo">YourBaazar</div>
+            <h1>Redefining Shopping, One Click at a Time</h1>
+            <p class="about-tagline">Where innovation meets convenience in the world of e-commerce</p>
+        </div>
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down fa-2x"></i>
+        </div>
+    </header>
+
+    <section class="about-section our-story">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Story</h2>
+                <p>From a college project to a thriving marketplace - the journey of YourBaazar</p>
+            </div>
+            
+            <div class="story-container">
+                <div class="story-text fade-in">
+                    <p>Founded in <strong>2021 by Rishabh Tyagi and Tarun Tyagi</strong>, two visionary engineering students, YourBaazar was born out of a simple idea: to create a platform that makes buying and reselling products effortless for everyone.</p>
+                    <p>What started as a dorm room discussion quickly evolved into a full-fledged e-commerce platform. The brothers combined their technical skills with entrepreneurial spirit to build a marketplace that bridges the gap between buyers looking for great deals and sellers wanting to reach more customers.</p>
+                    <p>Today, YourBaazar has grown into a trusted name in the resale market, serving thousands of users across India with a seamless shopping experience.</p>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="sellers-count">0</div>
+                            <div class="stat-label">Active Sellers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="products-count">0</div>
+                            <div class="stat-label">Products Listed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="users-count">0</div>
+                            <div class="stat-label">Happy Customers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="story-image fade-in">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="YourBaazar Team" class="founders-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section about-features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose YourBaazar?</h2>
+                <p>Discover what makes our platform stand out in the crowded e-commerce space</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3>Unbeatable Prices</h3>
+                    <p>Find the best deals on pre-loved and new products across all categories. Our competitive pricing ensures you always get value for money.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Trusted Sellers</h3>
+                    <p>All our sellers go through a verification process to ensure authenticity and quality. Shop with confidence on our secure platform.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Lightning Fast</h3>
+                    <p>From browsing to checkout, our optimized platform ensures a smooth and speedy shopping experience on any device.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3>Easy Reselling</h3>
+                    <p>List your products in minutes with our simple interface. Reach thousands of potential buyers without any technical hassle.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Growth Tools</h3>
+                    <p>Access powerful analytics and marketing tools to boost your sales and grow your business on our platform.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our dedicated support team is always ready to help with any questions or issues you might encounter.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section about-founders">
+        <div class="container">
+            <div class="section-title">
+                <h2>Meet The Founders</h2>
+                <p>The visionary engineers behind YourBaazar's success</p>
+            </div>
+            
+            <div class="founders-grid">
+                <div class="founder-card fade-in">
+                    <img src="https://yourbaazar.s3.ap-south-1.amazonaws.com/WhatsApp+Image+2025-06-23+at+21.05.15_753981bf.jpg" alt="Rishabh Tyagi" class="founder-img">
+                    <h3>Rishabh Tyagi</h3>
+                    <div class="founder-title">Co-Founder & CTO</div>
+                    <p>Engineering graduate with expertise in platform architecture and user experience design. Leads the technical vision of YourBaazar.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/r-k-tyagi-8b626b307?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://x.com/RishabTyagi51?t=HVrDr-8ZlhGwnhjlFyhyxA&s=09"><i class="fab fa-twitter"></i></a>
+                        <a href="https://github.com/RishabhTyagii"><i class="fab fa-github"></i></a>
+                        <a href="https://www.instagram.com/its._.rishabh._/profilecard/?igsh=ZGxoZXg5Nm51ajJt"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="founder-card fade-in">
+                    <img src="https://yourbaazar.s3.ap-south-1.amazonaws.com/tarun.jpg" alt="Tarun Tyagi" class="founder-img">
+                    <h3>Tarun Tyagi</h3>
+                    <div class="founder-title">Co-Founder & CEO</div>
+                    <p>Engineering graduate with passion for business strategy and marketing. Drives the growth and vision of YourBaazar.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/tarun-tyagi-2b6984356?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://x.com/TarunTyagi4883?t=GJZjZcER-wIioYb3ID3CRw&s=09"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/tarun_tyagi_jii?igsh=MWcwbTBpZmwxdWY3bQ=="><i class="fab fa-instagram"></i></a>
+                        <a href="https://github.com/tarun1372"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section about-cta">
+        <div class="cta-content">
+            <h2>Ready to Join the YourBaazar Community?</h2>
+            <p>Whether you're looking to shop smart or start reselling, we've got you covered with our powerful platform.</p>
+            <div>
+                <a href="/" class="about-btn">Start Shopping</a>
+                <a href="https://www.yourbaazarseller.shop/login/?next=/" class="about-btn btn-outline">Become a Seller</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Counter animation
+    function animateCounters() {
+        const sellers = document.getElementById('sellers-count');
+        const products = document.getElementById('products-count');
+        const users = document.getElementById('users-count');
+        
+        const targetSellers =87;
+        const targetProducts = 5;
+        const targetUsers = 1;
+        
+        const duration = 2000; // 2 seconds
+        const interval = 20; // ms
+        const steps = duration / interval;
+        
+        let step = 0;
+        
+        const counterInterval = setInterval(() => {
+            step++;
+            
+            sellers.textContent = Math.floor((targetSellers / steps) * step).toLocaleString();
+            products.textContent = Math.floor((targetProducts / steps) * step).toLocaleString();
+            users.textContent = Math.floor((targetUsers / steps) * step).toLocaleString();
+            
+            if (step >= steps) {
+                clearInterval(counterInterval);
+                sellers.textContent = targetSellers.toLocaleString();
+                products.textContent = targetProducts.toLocaleString();
+                users.textContent = targetUsers.toLocaleString();
+            }
+        }, interval);
+    }
+    
+    // Scroll to content
+    document.querySelector('.scroll-down').addEventListener('click', () => {
+        window.scrollTo({
+            top: document.querySelector('.our-story').offsetTop - 80,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Scroll animation
+    function checkVisibility() {
+        const elements = document.querySelectorAll('.fade-in');
+        
+        elements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (elementTop < windowHeight - 100) {
+                element.classList.add('visible');
+            }
+        });
+    }
+    
+    // Initialize
+    window.addEventListener('load', () => {
+        animateCounters();
+        checkVisibility();
+    });
+    
+    window.addEventListener('scroll', checkVisibility);
+</script>
+{% endblock %}

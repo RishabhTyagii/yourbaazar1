@@ -1,0 +1,82 @@
+<!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>About YourBaazar</h3>
+                    
+                    <div class="footer-about">
+                         {% for j in footer_data %}
+                        <p>{{j.about_yourself}}</p>
+                         {% endfor %}
+                        <div class="footer-social">
+                          <div class="social-links">
+    {% if social_links %}
+        {% if social_links.facebook %}<a style="text-decoration: none;" href="{{ social_links.facebook }}"><i class="fab fa-facebook-f"></i></a>{% endif %}
+        {% if social_links.twitter %}<a style="text-decoration: none;" href="{{ social_links.twitter }}"><i class="fab fa-twitter"></i></a>{% endif %}
+        {% if social_links.instagram %}<a style="text-decoration: none;" href="{{ social_links.instagram }}"><i class="fab fa-instagram"></i></a>{% endif %}
+        {% if social_links.youtube %}<a style="text-decoration: none;" href="{{ social_links.youtube }}"><i class="fab fa-youtube"></i></a>{% endif %}
+        {% if social_links.linkedin %}<a style="text-decoration: none;" href="{{ social_links.linkedin }}"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+    {% endif %}
+</div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Information</h3>
+                    <ul class="footer-links">
+                        <li><a style="text-decoration: none;" href="{% url 'basicinfo:about_us' %}">About Us</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'basicinfo:deliveryinfo' %}">Delivery Information</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'basicinfo:privacy_policy' %}">Privacy Policy</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'basicinfo:terms_and_conditions'%}">Terms & Conditions</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'basicinfo:contactus' %}">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Customer Service</h3>
+                    <ul class="footer-links">
+                        <li><a style="text-decoration: none;" href="{% url 'view_profile' %}">My Account</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'track_order' %}">Order History</a></li>
+                        <li><a style="text-decoration: none;" href="{% url 'wishlist:view_wishlist' %}">Wish List</a></li>
+                        <!-- <li><a style="text-decoration: none;" href="">Returns</a></li> -->
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                  {% for j in footer_data %}
+<ul class="footer-contact">
+    <li><i class="fas fa-map-marker-alt"></i> <span>{{ j.location }}</span></li>
+    <li><i class="fas fa-phone-alt"></i> <span>{{ j.phone_primary }}</span></li>
+        <li><i class="fas fa-phone-alt"></i> <span>{{ j.phone_secondary }}</span></li>
+
+    <li><i class="fas fa-envelope"></i> <span>{{ j.email_primary }}</span></li>
+        <li><i class="fas fa-envelope"></i> <span>{{ j.email_secondary }}</span></li>
+
+    <li><i class="fas fa-clock"></i> <span>Mon - Sat: 8:00 - 18:00</span></li>
+</ul>
+{% endfor %}
+
+                   
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="container">
+                    <p>&copy; 2023 YourBaazar. All Rights Reserved.</p>
+                    <div class="payment-methods">
+                        
+                        <img loading="lazy" src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+                        <img loading="lazy" src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+                        <img loading="lazy" src="https://cdn-icons-png.flaticon.com/512/196/196566.png" alt="American Express">
+                        <img loading="lazy" src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="PayPal">
+                        <img loading="lazy" src="https://cdn-icons-png.flaticon.com/512/825/825465.png" alt="Apple Pay">
+                     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>

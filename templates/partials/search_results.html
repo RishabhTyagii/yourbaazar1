@@ -1,0 +1,139 @@
+{% load highlight %}
+<style>
+    mark {
+        background-color: yellow;
+        padding: 0 2px;
+        border-radius: 2px;
+    }
+</style>
+<style>
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+        font-weight: 500;
+        color: #007bff;
+    }
+    
+
+    .dropdown-item img {
+        width: 35px;
+        height: 35px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .dropdown-item a {
+        display: flex;
+        align-items: center;
+        color: inherit;
+        text-decoration: none;
+        width: 100%;
+    }
+
+    .search-section-title {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 15px;
+        color: #6c757d;
+        background-color: #f0f0f0;
+        border-top: 1px solid #dee2e6;
+    }
+
+    mark {
+        background-color: #ffe58f;
+        padding: 1px 4px;
+        border-radius: 3px;
+    }
+</style>
+
+{% if product_search %}
+    <div class="search-section-title"><i class="fas fa-box"></i> Products</div>
+    {% for pu in product_search %}
+        <div class="dropdown-item">
+            <a href="{% url 'product:product_list' category_id=pu.product_type.subcategory.category.id subcategory_id=pu.product_type.subcategory.id product_type_id=pu.product_type.id %}">
+                {{ pu.name|highlight:request.GET.q }}
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="dropdown-item text-muted">No products found.</div>
+{% endif %}
+
+
+{% if product_variants %}
+    <div class="search-section-title"><i class="fas fa-boxes"></i> Product Variants</div>
+    {% for variant in product_variants %}
+        <div class="dropdown-item">
+            <a href="{% url 'product:product_detail' variant.color.product.id %}">
+                {% if variant.color.image_main %}
+                    <img src="{{ variant.color.image_main.url }}" alt="">
+                {% endif %}
+                <div>
+                    <strong>
+                        {{ variant.color.product.name|highlight:request.GET.q }} {{ variant.color.color_name|highlight:request.GET.q }}
+                    </strong><br>
+                    <small>
+                        {{ variant.color.color_name|highlight:request.GET.q }} | {{ variant.size|highlight:request.GET.q }} — ₹{{ variant.price_after_discount|floatformat:2 }}
+                    </small>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="dropdown-item text-muted">No product variants found.</div>
+{% endif %}
+
+
+{% if product_type_search %}
+    <div class="search-section-title"><i class="fas fa-tags"></i> Product Types</div>
+    {% for product_typew in product_type_search %}
+        <div class="dropdown-item">
+            <a href="{% url 'product:product_list' category_id=product_typew.subcategory.category.id subcategory_id=product_typew.subcategory.id product_type_id=product_typew.id %}">
+                <img src="{{ product_typew.image.url }}" alt="{{ product_typew.name }}">
+                {{ product_typew.name|highlight:request.GET.q }}
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="dropdown-item text-muted">No product types found.</div>
+{% endif %}
+
+
+{% if subcategory2 %}
+    <div class="search-section-title"><i class="fas fa-layer-group"></i> Subcategories</div>
+    {% for subx in subcategory2 %}
+        <div class="dropdown-item">
+            <a href="{% url 'product:product_type_list' category_id=subx.category.id subcategory_id=subx.id %}">
+                <img src="{{ subx.image.url }}" alt="{{ subx.name }}">
+                {{ subx.name|highlight:request.GET.q }}
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="dropdown-item text-muted">No subcategories found.</div>
+{% endif %}
+
+
+{% if categories %}
+    <div class="search-section-title"><i class="fas fa-th-large"></i> Categories</div>
+    {% for i in categories %}
+        <div class="dropdown-item">
+            <a href="{% url 'product:subcategory_list' i.id %}">
+                <img src="{{ i.image.url }}" alt="{{ i.name }}">
+                {{ i.name|highlight:request.GET.q }}
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="dropdown-item text-muted">No categories found.</div>
+{% endif %}

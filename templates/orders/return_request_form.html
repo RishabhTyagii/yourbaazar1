@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Return Request Form{% endblock %}
+    
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orderreturnrequestform.css' %}">
+{% endblock %}
+
+ 
+{% block content %}
+<style>
+  
+</style>
+
+<div class="return-form-container">
+  <h2>Return a Product</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="message success">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="error">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="form-group">
+      {{ form.order.label_tag }}
+      {{ form.order }}
+      {% if form.order.errors %}<span class="error">{{ form.order.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group" id="order-item-section">
+      <label>{{ form.order_item.label }}</label>
+      <div id="order-item-options">
+        {% for radio in form.order_item %}
+          <div class="radio-option">
+            {{ radio.tag }}
+            <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+          </div>
+        {% endfor %}
+      </div>
+      {% if form.order_item.errors %}<span class="error">{{ form.order_item.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.customer_name.label_tag }}
+      {{ form.customer_name }}
+      {% if form.customer_name.errors %}<span class="error">{{ form.customer_name.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.customer_email.label_tag }}
+      {{ form.customer_email }}
+      {% if form.customer_email.errors %}<span class="error">{{ form.customer_email.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.customer_phone.label_tag }}
+      {{ form.customer_phone }}
+      {% if form.customer_phone.errors %}<span class="error">{{ form.customer_phone.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.reason.label_tag }}
+      {{ form.reason }}
+      {% if form.reason.errors %}<span class="error">{{ form.reason.errors }}</span>{% endif %}
+    </div>
+
+    <div class="form-group">
+  <label>Upload Images (at least 1 required)</label>
+  <small style="display: block; color: var(--medium-gray); margin-bottom: 8px;">Clear product images help us process your return faster</small>
+  
+  <div class="image-upload-wrapper">
+    <div class="image-upload-box">
+      <label for="{{ form.image1.id_for_label }}">+</label>
+      {{ form.image1 }}
+      <img id="preview_1" class="preview-image" style="display:none; position:absolute; width:100%; height:100%; object-fit:cover; border-radius: 8px;" />
+    </div>
+    <div class="image-upload-box">
+      <label for="{{ form.image2.id_for_label }}">+</label>
+      {{ form.image2 }}
+      <img id="preview_2" class="preview-image" style="display:none; position:absolute; width:100%; height:100%; object-fit:cover; border-radius: 8px;" />
+    </div>
+    <div class="image-upload-box">
+      <label for="{{ form.image3.id_for_label }}">+</label>
+      {{ form.image3 }}
+      <img id="preview_3" class="preview-image" style="display:none; position:absolute; width:100%; height:100%; object-fit:cover; border-radius: 8px;" />
+    </div>
+    <div class="image-upload-box">
+      <label for="{{ form.image4.id_for_label }}">+</label>
+      {{ form.image4 }}
+      <img id="preview_4" class="preview-image" style="display:none; position:absolute; width:100%; height:100%; object-fit:cover; border-radius: 8px;" />
+    </div>
+  </div>
+
+  {% if form.image1.errors %}<span class="error">{{ form.image1.errors }}</span>{% endif %}
+</div>
+
+    <button type="submit" class="btn-submit">
+      Submit Return Request
+    </button>
+  </form>
+</div>
+
+
+{% endblock %}
+
+   {% block extra_js %} <script src="{% static 'js/orderreturnrequestform.js' %}"></script>
+ {% endblock %}

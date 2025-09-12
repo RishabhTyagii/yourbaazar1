@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% load dict_extras1 %}
+{% load static %}
+{% block content %}
+
+<style>
+/* ---------- Base Layout ---------- */
+.orders-container {
+  padding: 1.5rem;
+  background: #f4f6f9;
+  border-radius: 8px;
+  font-family: "Segoe UI", sans-serif;
+}
+.page-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  color: #2c3e50;
+}
+
+/* ---------- Filter Form ---------- */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.filter-grid label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: .4rem;
+}
+.filter-grid input, 
+.filter-grid select {
+  width: 100%;
+  padding: .55rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: .9rem;
+  transition: all .2s;
+}
+.filter-grid input:focus, 
+.filter-grid select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0,123,255,.4);
+  outline: none;
+}
+.form-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: .5rem;
+}
+
+.btn {
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .9rem;
+  border: none;
+  text-decoration: none;
+  transition: all .2s;
+}
+.btn-primary { background: #007bff; color:white; }
+.btn-primary:hover { background:#0056b3; }
+.btn-secondary { background: #6c757d; color:white; }
+.btn-secondary:hover { background:#495057; }
+
+/* ---------- Stats Cards ---------- */
+.stats-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card p {
+  margin: 0;
+  font-size: .85rem;
+  color: #777;
+}
+.stat-card h3 {
+  margin-top: .5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* ---------- Table ---------- */
+.table-container {
+  overflow-x: auto;
+}
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.styled-table thead {
+  background: #007bff;
+  color: white;
+}
+.styled-table th, 
+.styled-table td {
+  padding: .8rem;
+  text-align: left;
+  font-size: .88rem;
+  border-bottom: 1px solid #eee;
+}
+.styled-table tr:nth-child(even) { background:#fafafa; }
+.styled-table tr:hover { background: #f0f8ff; }
+.text-right { text-align: right; }
+
+/* ---------- Pagination ---------- */
+.pagination {
+  margin-top: 1rem;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pagination a {
+  padding: .4rem .8rem;
+  background: #f1f3f5;
+  color: #333;
+  border-radius: 5px;
+  font-size: .85rem;
+  text-decoration: none;
+  transition: all .2s;
+}
+.pagination a:hover { background:#007bff; color:white; }
+
+/* ---------- Messages ---------- */
+.empty {
+  margin-top: 1rem;
+  font-style: italic;
+  text-align: center;
+  color: #777;
+}
+
+/* ---------- Status Highlight ---------- */
+.js-status {
+  padding: .3rem;
+  border-radius: 4px;
+}
+.js-status.loading { background:#fff3cd !important; }  /* yellow */
+.js-status.success { background:#d4edda !important; } /* green */
+.js-status.error { background:#f8d7da !important; }   /* red */
+</style>
+
+<div class="orders-container">
+  <h2 class="page-title">📦 Seller-wise Orders</h2>
+
+  <!-- Filters -->
+  <form method="get" id="filter-form">
+    <div class="filter-grid">
+      <div>
+        <label>Seller</label>
+        <select name="seller_id" required>
+          <option value="">-- Select Seller --</option>
+          {% for s in sellers %}
+            <option value="{{ s.id }}" {% if selected_seller and s.id == selected_seller.id %}selected{% endif %}>
+              {{ s.username }} ({{ s.email }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div><label>Search</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="Order # / Name / City">
+      </div>
+      <div><label>Start date</label>
+        <input type="date" name="start" value="{{ start }}">
+      </div>
+      <div><label>End date</label>
+        <input type="date" name="end" value="{{ end }}">
+      </div>
+      <div><label>Status</label>
+        <select name="status">
+          <option value="">Any</option>
+          {% for value,label in ORDER_STATUS_CHOICES %}
+          <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div><label>Payment</label>
+        <select name="payment_method">
+          <option value="">Any</option>
+          <option value="cod" {% if payment_method == "cod" %}selected{% endif %}>COD</option>
+          <option value="card" {% if payment_method == "card" %}selected{% endif %}>Card</option>
+          <option value="upi" {% if payment_method == "upi" %}selected{% endif %}>UPI</option>
+          <option value="wallet" {% if payment_method == "wallet" %}selected{% endif %}>Wallet</option>
+          <option value="netbanking" {% if payment_method == "netbanking" %}selected{% endif %}>Netbanking</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        {% if selected_seller %}
+          <a href="{% url 'seller_products:admin_seller_orders' %}" class="btn btn-secondary">Reset</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+  {% if selected_seller %}
+    <!-- Stats -->
+    <div class="stats-cards">
+      <div class="stat-card"><p>Total Orders</p><h3>{{ metrics.total_orders }}</h3></div>
+      <div class="stat-card"><p>Total COD Sales</p><h3>₹ {{ metrics.cod_sales }}</h3></div>
+      <div class="stat-card"><p>Total Online Sales</p><h3>₹ {{ metrics.online_sales }}</h3></div>
+    </div>
+
+    {% if orders %}
+      <!-- Table -->
+      <div class="table-container">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Order #</th><th>Customer</th><th>Payment</th><th>Status</th>
+              <th class="text-right">Subtotal</th><th class="text-right">Shipping</th>
+              <th class="text-right">Total</th><th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td>{{ o.order_number }}<br><small><a href="{% url 'seller_products:admin_seller_order_detail' order_id=o.id seller_id=selected_seller.id %}">View Items</a></small></td>
+              <td>{{ o.customer_name }}<br><small>{{ o.customer_email }} | {{ o.customer_phone }}</small></td>
+              <td>{{ o.payment_method|upper }} / {{ o.payment_status }}</td>
+              <td>
+                <select data-order-id="{{ o.id }}" class="js-status">
+                  {% for value,label in ORDER_STATUS_CHOICES %}
+                  <option value="{{ value }}" {% if o.status == value %}selected{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td class="text-right">₹ {{ seller_subtotals|dict_get:o.id }}</td>
+              <td class="text-right">₹ {{ seller_shipping_map|dict_get:o.id }}</td>
+              <td class="text-right">₹ {{ seller_totals|dict_get:o.id }}</td>
+              <td>{{ o.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&seller_id={{ selected_seller.id }}&q={{ q }}&start={{ start }}&end={{ end }}&status={{ status }}&payment_method={{ payment_method }}">⬅ Prev</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&seller_id={{ selected_seller.id }}&q={{ q }}&start={{ start }}&end={{ end }}&status={{ status }}&payment_method={{ payment_method }}">Next ➡</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <p class="empty">🚫 No orders found.</p>
+    {% endif %}
+  {% else %}
+    <p class="empty">⚡ Select a seller to view orders.</p>
+  {% endif %}
+</div>
+
+<script>
+/* Status live update with visual feedback */
+document.querySelectorAll('.js-status').forEach(function(sel) {
+  sel.addEventListener('change', async function() {
+    const orderId = this.dataset.orderId;
+    const status = this.value;
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('status', status);
+
+    this.classList.add("loading");
+    try {
+      const resp = await fetch("{% url 'seller_products:admin_order_status_update' %}", {
+        method:"POST",
+        headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        body:formData
+      });
+      const data = await resp.json();
+      this.classList.remove("loading");
+      if(data.ok){ 
+        this.classList.add("success"); 
+      } else {
+        this.classList.add("error");
+        alert(data.error||"Failed to update status");
+      }
+    } catch(e){
+      this.classList.remove("loading");
+      this.classList.add("error");
+      alert("Network error");
+    }
+    setTimeout(()=>{ this.classList.remove("success","error"); },1200);
+  });
+});
+</script>
+
+{% endblock %}

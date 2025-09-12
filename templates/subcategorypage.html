@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} Subcategories{% endblock %}
+    
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+
+
+<link rel="stylesheet" href="{% static 'css/subcategorypage.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="particles" id="particles-js"></div>
+
+<div class=" main-content animate__animated animate__fadeIn">
+    <div class="page-header">
+        <h1 class="page-title">{{ category.name }}</h1>
+        <div class="breadcrumb">
+            <a href="{% url 'product:category_list' %}">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>{{ category.name }}</span>
+        </div>
+    </div>
+
+    <div class="products-container">
+        <div class="products-grid">
+            {% for sub in subcategories %}
+            <div class="product-card animate__animated animate__fadeInUp" id="subcategoriesx" 
+                 style="animation-delay: {{ forloop.counter0|divisibleby:3|yesno:'0,0.2s,0.4s' }}"
+                 data-category="{{ category.name }}" data-subcategory="{{ sub.name }}">
+                <div class="product-image">
+                    <img src="{{ sub.image.url }}" alt="{{ sub.name }}" loading="lazy">
+                </div>
+                  
+                <div class="product-info">
+                    <span class="product-category">{{ category.name }}</span>
+                    <p class="product-description">{{ sub.description|truncatechars:100 }}</p>
+                    <a class="btn btn-success product-title" href="{% url 'product:product_type_list' category.id sub.id %}">
+                        {{ sub.name }} <i class="fas fa-arrow-right"></i>
+                    </a>  
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for pt in product_types %}
+            <div class="product-card animate__animated animate__fadeInUp" id="product-type"
+                 style="animation-delay: {{ forloop.counter0|divisibleby:3|yesno:'0.6s,0.8s,1s' }}"
+                 data-category="{{ category.name }}" data-product-type="{{ pt.name }}">
+                <div class="product-image">
+                    <img src="{{ pt.image.url }}" alt="{{ pt.name }}" loading="lazy">
+                </div>
+                  
+                <div class="product-info">
+                    <span class="product-category">{{ category.name }}</span>
+                    <a class="btn btn-success product-title" href="{% url 'product:product_list' category.id subcategory.id pt.id %}">
+                        {{ pt.name }} <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+ {% block extra_js %} <script src="{% static 'js/subcategorypage.js' %}"></script>
+ {% endblock %}

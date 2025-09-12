@@ -1,0 +1,79 @@
+{% load static %}
+{% load math_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice #{{ order.order_number }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color:#0b1220; }
+        .invoice-box { max-width:800px; margin:auto; padding:30px; border:1px solid #eee; box-shadow:0 0 10px rgba(0,0,0,.15); }
+        .logo { text-align:center; margin-bottom:20px; }
+        .logo img { max-width:150px; }
+        h1 { text-align:center; margin-bottom:20px; }
+        table { width:100%; border-collapse: collapse; margin-top: 20px; }
+        table th, table td { border:1px solid #ddd; padding:8px; }
+        table th { background:#f2f2f2; }
+        .totals { float:right; margin-top:20px; width:300px; }
+        .totals table { border:none; }
+        .totals td { border:none; padding:4px; }
+        .btn-print { display:inline-block; margin-bottom:20px; padding:10px 14px; background:#2563eb; color:#fff; text-decoration:none; border-radius:8px; }
+        @media print {
+            .btn-print { display:none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <a href="#" class="btn-print" onclick="window.print(); return false;">Download / Print</a>
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Logo">
+        </div>
+        <h1>Invoice #{{ order.order_number }}</h1>
+        <p><strong>Seller:</strong> {{ seller.business_name }} ({{ seller.owner_name }})</p>
+        <p><strong>Customer:</strong> {{ order.customer_name }}</p>
+        <p><strong>City:</strong> {{ order.shipping_city }}</p>
+        <p><strong>Date:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Qty</th>
+                    <th>Price (₹)</th>
+                    <th>Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.sku }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity|mul:item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <table>
+                <tr>
+                    <td>Subtotal:</td><td>₹ {{ seller_subtotal }}</td>
+                </tr>
+                <tr>
+                    <td>Shipping:</td><td>₹ {{ seller_shipping }}</td>
+                </tr>
+                <tr>
+                    <td>GST ({{ gst_percent }}%):</td><td>₹ {{ gst_amount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total:</strong></td><td><strong>₹ {{ total_amount }}</strong></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

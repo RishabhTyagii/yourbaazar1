@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/orderlist.css' %}">
+{% endblock %}
+
+
+<div class="order-list-container">
+    <div class="order-list-header">
+        <h1><i class="fas fa-clipboard-list me-2"></i>Your Order History</h1>
+        <p>Track, manage, and stay updated on all your purchases</p>
+    </div>
+    
+    <div class="search-filter-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="orderSearch" placeholder="Search by order number, tracking ID or product...">
+        </div>
+        <div class="status-filter">
+            <button class="status-filter-btn active">All Orders</button>
+            <button class="status-filter-btn pending">Pending</button>
+            <button class="status-filter-btn processing">Processing</button>
+            <button class="status-filter-btn shipped">Shipped</button>
+            <button class="status-filter-btn out-for-delivery">Out for Delivery</button>
+            <button class="status-filter-btn delivered">Delivered</button>
+            <button class="status-filter-btn cancelled">Cancelled</button>
+            <button class="status-filter-btn returned">Returned</button>
+            <button class="status-filter-btn refunded">Refunded</button>
+        </div>
+    </div>
+
+    {% if request.user.is_staff %}
+    <div class="print-section">
+        <a href="{% url 'print_pending_receipts' %}" target="_blank" class="action-btn action-btn-primary">
+            <i class="fas fa-receipt"></i> Print All Pending Receipts
+        </a>
+        <a href="{% url 'print_pending_invoices' %}" target="_blank" class="action-btn action-btn-primary">
+            <i class="fas fa-file-invoice"></i> Print All Pending Invoices
+        </a>
+    </div>
+    {% endif %}
+
+    {% if orders %}
+    <div class="order-table-container">
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Items</th>
+                    <th>Tracking ID</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                    {% if request.user.is_staff %}
+                    <th>Documents</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr class="order-row" data-status="{{ order.status|lower }}" data-id="{{ order.id }}" data-number="{{ order.order_number|lower }}" data-tracking="{{ order.tracking_id|lower }}">
+                    <td data-label="Order #">{{ order.order_number }}</td>
+                    <td data-label="Date">{{ order.created_at|date:"M d, Y" }}</td>
+                    <td data-label="Items">
+                        <div class="order-product">
+                            {% with order.items.first as first_item %}
+                            {% if first_item %}
+                            <img src="{{ first_item.variant.color.image_main.url }}" alt="{{ first_item.product.name }}" class="img-fluid"> <br> <br>
+                            <span class="order-product-name"> <br>
+                                {{ first_item.product.name|truncatechars:20 }}
+                                {% if order.items.count > 1 %}
+                                <span class="badge bg-primary">+{{ order.items.count|add:"-1" }} more</span>
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                    </td>
+                    <td data-label="Tracking ID" class="text-muted">{{ order.tracking_id }}</td>
+                    <td data-label="Status">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="order-status status-{{ order.status|lower }}">
+                                <i class="fas fa-circle"></i> {{ order.get_status_display }}
+                            </span>
+                            {% if request.user.is_staff %}
+                            <form method="post" class="status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <select name="status" class="status-select">
+                                           {% for value, label in ORDER_STATUS_CHOICES %}
+                                               <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+                                                   {{ label }}
+                                               </option>
+                                           {% endfor %}
+                                       </select>                                       
+                                <button type="submit" class="status-update-btn">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td data-label="Total" class="order-total">₹{{ order.total_amount|floatformat:2 }}</td>
+                    <td data-label="Actions">
+                        <a href="{% url 'order_detail' order.id %}" class="view-details-btn">
+                            <i class="fas fa-eye"></i> Details
+                        </a>
+                    </td>
+                    {% if request.user.is_staff %}
+                    <td data-label="Documents">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'admin_invoice' order.id %}" target="_blank" class="action-btn action-btn-primary">
+                                <i class="fas fa-file-invoice"></i> Invoice
+                            </a>
+                            <a href="{% url 'delivery_receipt' order.id %}" target="_blank" class="action-btn action-btn-success">
+                                <i class="fas fa-truck"></i> Receipt
+                            </a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-orders">
+        <div class="empty-orders-content">
+            <div class="empty-orders-icon"><i class="fas fa-box-open"></i></div>
+            <h3>Your Order History is Empty</h3>
+            <p>When you make purchases, they'll appear here with detailed tracking information and status updates.</p>
+            <a href="{% url 'product:product_list' 1 2 3 %}" class="shop-now-btn">
+                <i class="fas fa-shopping-bag"></i> Explore Products
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}
+   {% block extra_js %} <script src="{% static 'js/orderlist.js' %}"></script>{% endblock %}

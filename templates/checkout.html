@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Checkout - Your Bazaar {% endblock %}
+
+{% block extra_css %}
+<style>
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+  h2 { font-size: 2rem; color: #2c3e50; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f1f1; padding-bottom: 10px; }
+  h3 { font-size: 1.5rem; color: #34495e; margin: 1.5rem 0 1rem; }
+  .order-summary { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.05); padding: 20px; margin-bottom: 30px; }
+  .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f1f1; align-items: center; }
+  .order-item:last-child { border-bottom: none; }
+  .order-item .details { flex: 1; font-size: .95rem; }
+  .order-item .price { font-weight: 600; color: #2c3e50; }
+  .total-price { font-size: 1.2rem; font-weight: 700; text-align: right; margin-top: 15px; color: #e74c3c; }
+  .form-group { margin-bottom: 20px; }
+  label { display: block; margin-bottom: 8px; font-weight: 600; color: #34495e; }
+  input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; transition: border-color .3s; }
+  input:focus, select:focus, textarea:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 2px rgba(52,152,219,0.2);}
+  button { display:inline-block; padding:12px 24px; margin-right:15px; margin-top:10px; border:none; border-radius:4px; font-size:1rem; font-weight:600; cursor:pointer; transition:all .3s ease; }
+  #cod-btn { background-color:#2ecc71; color:white; }
+  #cod-btn:hover:not(:disabled) { background-color:#27ae60;}
+  #cod-btn:disabled { background-color:#95a5a6; cursor:not-allowed;}
+  #rzp-pay-btn { background-color:#3498db; color:white;}
+  #rzp-pay-btn:hover { background-color:#2980b9; }
+  .empty-cart { text-align:center; padding:40px; background:#f9f9f9; border-radius:8px; }
+  .empty-cart a { color:#3498db; text-decoration:none; font-weight:600; }
+  .empty-cart a:hover { text-decoration:underline; }
+  @media (min-width:768px) {
+    .checkout-container { display:flex; gap:30px; }
+    .order-summary { flex:0 0 350px; align-self:flex-start; position:sticky; top:20px; }
+    .shipping-form { flex:1; }
+  }
+  @media (max-width:767px) {
+    .container { padding:15px; }
+    h2 { font-size:1.5rem; }
+    h3 { font-size:1.2rem; }
+    .order-summary { padding:15px; }
+    .order-item .details { font-size:.85rem; }
+    button { width:100%; margin-bottom:10px; margin-right:0; }
+    #rzp-pay-btn { margin-right:0; }
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0); } }
+  .order-summary, .shipping-form { animation: fadeIn .5s ease-out; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Checkout</h2>
+  {% if cart_items %}
+  <div class="checkout-container">
+    <div class="order-summary">
+      <h3>Your Order Summary</h3>
+      {% for item in cart_items %}
+      <div class="order-item">
+        <div class="details">
+          <strong>{{ item.product.name }}</strong><br>
+          Qty: {{ item.quantity }}<br>
+          {% if item.variant %}
+          <small>{{ item.variant.color.color_name }} | Size: {{ item.variant.size }}</small><br>
+          {% endif %}
+          {% if item.is_free %}<span style="color:green;">(Free)</span>{% endif %}
+        </div>
+        <div class="price">₹{% if item.is_free %}0.00{% else %}{{ item.price }}{% endif %}</div>
+      </div>
+      {% endfor %}
+
+      <div class="order-item">
+        <div class="details">Subtotal</div>
+        <div class="price">₹{{ summary.subtotal }}</div>
+      </div>
+      <div class="order-item">
+        <div class="details">Shipping</div>
+        
+        {% comment %} <li>Shipping: <span id="summary-shipping">₹{{ summary.shipping }}</span></li>
+         <li>Total: <span id="summary-total">₹{{ summary.total }}</span></li> {% endcomment %}
+
+        <div class="price"  id="summary-shipping">{% if summary.shipping == 0 %}FREE{% else %}₹{{ summary.shipping}}{% endif %}</div>
+      </div>
+      {% if summary.original_shipping and summary.shipping == 0 %}
+<div class="order-item">
+  <div class="details">Free Shipping Applied</div>
+  <div class="price">-₹{{ summary.original_shipping }}</div>
+</div>
+{% endif %}
+
+
+{% if summary.cashback %}
+<div class="order-item">
+  <div class="details">Cashback</div>
+  <div class="price">₹{{ summary.cashback }}</div>
+</div>
+{% endif %}
+
+      {% if applied_coupon %}
+      <div class="order-item">
+        <div class="details">
+          Coupon Applied: <strong>{{ applied_coupon.code }}</strong>
+        </div>
+        <div class="price">-₹{{ summary.discount }}</div>
+      </div>
+      {% elif summary.discount %}
+      <div class="order-item">
+        <div class="details">Discount</div>
+        <div class="price">-₹{{ summary.discount }}</div>
+      </div>
+      {% endif %}
+
+      <div class="total-price"  id="summary-total">Total: ₹{{ summary.total|floatformat:2 }}</div>
+    </div>
+
+    <div class="shipping-form">
+      <form method="post" id="checkout-form" novalidate action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <h3>Shipping Information</h3>
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div style="color:red">{{ field.errors|join:", " }}</div>{% endif %}
+        </div>
+        {% endfor %}
+
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="payment_method" id="payment_method_input" value="cod">
+
+        <div class="payment-buttons">
+          {% if cod_available %}
+            <button type="button" id="cod-btn">
+              Place Order (Cash on Delivery)
+            </button>
+          {% else %}
+            <button type="button" disabled style="background-color: #ccc; color: #333; cursor: not-allowed;">
+              COD is not available
+            </button>
+          {% endif %}
+
+          <button type="button" id="rzp-pay-btn">Pay Online</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+    <div class="empty-cart">
+      <p>Your cart is empty.</p>
+      <p><a href="{% url 'product:indexpage' %}">Start shopping</a> to add items to your cart.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const pincodeField = document.querySelector("input[name='shipping_pin_code']");
+  
+  if (pincodeField) {
+    pincodeField.addEventListener("blur", function(){
+      const pincode = this.value.trim();
+      if (pincode.length >= 6) {
+        fetch("{% url 'product:update_shipping' %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: "pincode=" + encodeURIComponent(pincode)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("summary-shipping").innerText = "₹" + data.summary.shipping.toFixed(2);
+            document.getElementById("summary-total").innerText = "₹" + data.summary.total.toFixed(2);
+          }
+        })
+        .catch(err => console.error("Shipping update failed", err));
+      }
+    });
+  }
+});
+</script>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var codBtn = document.getElementById('cod-btn');
+    if (codBtn) {
+      codBtn.addEventListener('click', function(){
+        document.getElementById('payment_method_input').value = 'cod';
+        document.getElementById('checkout-form').submit();
+      });
+    }
+
+    var rzpBtn = document.getElementById('rzp-pay-btn');
+    if (rzpBtn) {
+      rzpBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        var rzp = new Razorpay({
+          "key": "{{ razorpay_key_id|default:'' }}",
+          "amount": Math.round(Number("{{ summary.total|default:0 }}") * 100),
+          "currency": "INR",
+          "order_id": "{{ razorpay_order_id|default:'' }}",
+          "handler": function(res){
+            document.getElementById('razorpay_payment_id').value = res.razorpay_payment_id;
+            document.getElementById('payment_method_input').value = "online";
+            document.getElementById('checkout-form').submit();
+          },
+          "theme": { "color": "#3498db" }
+        });
+        rzp.open();
+      });
+    }
+  });
+</script>
+{% endblock %}

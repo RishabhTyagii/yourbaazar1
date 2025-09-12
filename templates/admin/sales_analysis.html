@@ -1,0 +1,949 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sales Dashboard{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --dark-color: #2b2d42;
+    --light-color: #f8f9fa;
+    --success-color: #4cc9f0;
+    --danger-color: #f72585;
+    --warning-color: #f8961e;
+    --info-color: #43aa8b;
+}
+
+.dashboard-container {
+    padding: 20px;
+    background-color: #f5f7fa;  
+    min-height: 100vh;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: var(--dark-color);
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    min-height: 400px;
+    overflow: hidden;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.chart-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--dark-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.chart-title i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.filters-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none;
+    backdrop-filter: blur(5px);
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    color: var(--primary-color);
+}
+
+.table-responsive {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    color: var(--dark-color);
+    font-weight: 600;
+    padding: 15px;
+}
+
+.table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 10px 20px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.form-control, .form-select {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.page-link {
+    color: var(--primary-color);
+    border-radius: 8px;
+    margin: 0 5px;
+    border: none;
+    padding: 8px 16px;
+}
+
+.page-link:hover {
+    color: var(--secondary-color);
+    background-color: rgba(67, 97, 238, 0.1);
+}
+
+.tab-content {
+    padding: 20px 0;
+}
+
+.nav-tabs .nav-link {
+    color: var(--dark-color);
+    font-weight: 500;
+    border: none;
+    padding: 12px 20px;
+    margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    background-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .chart-container {
+        margin-bottom: 20px;
+        height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .metric-card {
+        margin-bottom: 15px;
+    }
+    
+    .filters-card .col-md-3 {
+        margin-bottom: 15px;
+    }
+    
+    .chart-title {
+        font-size: 16px;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+    
+    .metric-value {
+        font-size: 24px;
+    }
+    
+    .btn-primary {
+        width: 100%;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="filters-card">
+        <h2 class="mb-4"><i class="bi bi-graph-up"></i> Sales Analytics Dashboard</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Start Date</label>
+                <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date</label>
+                <input type="date" id="endDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Period</label>
+                <select id="period" class="form-select">
+                    <option value="day">Daily</option>
+                    <option value="week">Weekly</option>
+                    <option value="month">Monthly</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button onclick="fetchSalesData()" class="btn btn-primary w-100">
+                    <i class="bi bi-arrow-repeat"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-label"><i class="bi bi-currency-rupee"></i> Total Sales</div>
+                <div class="metric-value" id="totalSales">₹0.00</div>
+                <div class="metric-label" id="salesPeriod"></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-label"><i class="bi bi-cart-check"></i> Total Orders</div>
+                <div class="metric-value" id="totalOrders">0</div>
+                <div class="metric-label" id="ordersPeriod"></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-label"><i class="bi bi-receipt"></i> Avg. Order Value</div>
+                <div class="metric-value" id="avgOrderValue">₹0.00</div>
+                <div class="metric-label">Per order</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-label"><i class="bi bi-people"></i> Repeat Customers</div>
+                <div class="metric-value" id="repeatCustomers">0</div>
+                <div class="metric-label">Loyal customers</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="charts-tab" data-bs-toggle="tab" data-bs-target="#charts" type="button" role="tab" aria-controls="charts" aria-selected="true">
+                <i class="bi bi-bar-chart-line"></i> Charts
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tables-tab" data-bs-toggle="tab" data-bs-target="#tables" type="button" role="tab" aria-controls="tables" aria-selected="false">
+                <i class="bi bi-table"></i> Data Tables
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="dashboardTabsContent">
+        <!-- Charts Tab -->
+        <div class="tab-pane fade show active" id="charts" role="tabpanel" aria-labelledby="charts-tab">
+            <!-- Main Charts Row -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-graph-up-arrow"></i> Sales Trend</div>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-credit-card"></i> Payment Methods</div>
+                        <canvas id="paymentMethodsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Charts Row -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-calendar-week"></i> Orders by Day of Week</div>
+                        <canvas id="dayOfWeekOrdersChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-calendar-week"></i> Sales by Day of Week</div>
+                        <canvas id="dayOfWeekSalesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Tab -->
+        <div class="tab-pane fade" id="tables" role="tabpanel" aria-labelledby="tables-tab">
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-box-seam"></i> Top Products</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topProductsTable">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button id="prevTopProducts" class="btn btn-sm btn-outline-primary" disabled>
+                                    <i class="bi bi-chevron-left"></i> Previous
+                                </button>
+                                <span id="topProductsPageInfo">Page 1 of 1</span>
+                                <button id="nextTopProducts" class="btn btn-sm btn-outline-primary" disabled>
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-list-check"></i> Order Status Distribution</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Count</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statusDistributionTable">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="bi bi-receipt"></i> Detailed Sales Data</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Total Sales</th>
+                                        <th>Order Count</th>
+                                        <th>Avg. Order Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailedSalesTable">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button id="prevSalesData" class="btn btn-sm btn-outline-primary" disabled>
+                                    <i class="bi bi-chevron-left"></i> Previous
+                                </button>
+                                <span id="salesDataPageInfo">Page 1 of 1</span>
+                                <button id="nextSalesData" class="btn btn-sm btn-outline-primary" disabled>
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+
+<script>
+// Global variables
+let currentPage = {
+    topProducts: 1,
+    salesData: 1
+};
+let totalPages = {
+    topProducts: 1,
+    salesData: 1
+};
+
+// Global chart references
+let salesChart, paymentMethodsChart, dayOfWeekSalesChart, dayOfWeekOrdersChart;
+let chartsInitialized = false;
+
+// Optimized chart creation
+function createOptimizedChart(ctx, type, data, options) {
+    return new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+            ...options,
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 1000,
+            },
+            elements: {
+                point: {
+                    radius: 2,
+                    hoverRadius: 4
+                },
+                line: {
+                    tension: 0.1
+                }
+            },
+            plugins: {
+                decimation: {
+                    enabled: true,
+                    algorithm: 'lttb',
+                    samples: 100
+                }
+            }
+        }
+    });
+}
+
+// Destroy charts properly
+function destroyCharts() {
+    if (salesChart) {
+        salesChart.destroy();
+        salesChart = null;
+    }
+    if (paymentMethodsChart) {
+        paymentMethodsChart.destroy();
+        paymentMethodsChart = null;
+    }
+    if (dayOfWeekSalesChart) {
+        dayOfWeekSalesChart.destroy();
+        dayOfWeekSalesChart = null;
+    }
+    if (dayOfWeekOrdersChart) {
+        dayOfWeekOrdersChart.destroy();
+        dayOfWeekOrdersChart = null;
+    }
+    chartsInitialized = false;
+}
+
+// Limit data points for performance
+function limitDataPoints(data, maxPoints = 100) {
+    if (!data || data.length <= maxPoints) return data;
+    
+    const step = Math.ceil(data.length / maxPoints);
+    return data.filter((_, index) => index % step === 0);
+}
+
+function fetchSalesData(pageType = null, page = 1) {
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const period = document.getElementById("period").value;
+
+    if (!startDate || !endDate) {
+        alert("Please select both start and end dates.");
+        return;
+    }
+
+    // Update page if specified
+    if (pageType && page) {
+        currentPage[pageType] = page;
+    }
+
+    // Show loading overlay
+    document.getElementById("loading").style.display = "flex";
+
+    // Destroy old charts first
+    destroyCharts();
+
+    fetch(/sales/get-sales-data/?start_date=${startDate}&end_date=${endDate}&period=${period}&page=${currentPage.salesData})
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to fetch data");
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading overlay
+            document.getElementById("loading").style.display = "none";
+            
+            // Update pagination info
+            totalPages.topProducts = data.top_products.total_pages;
+            totalPages.salesData = data.pagination.total_pages;
+            
+            updatePaginationControls();
+            
+            // Update all dashboard components
+            updateMetrics(data);
+            updateTables(data);
+            
+            // Initialize charts only after everything else is ready
+            setTimeout(() => {
+                initializeCharts(data);
+            }, 100);
+        })
+        .catch(err => {
+            console.error("Error:", err);
+            alert("Error loading sales data. Please try again.");
+            document.getElementById("loading").style.display = "none";
+        });
+}
+
+function updatePaginationControls() {
+    // Top Products pagination
+    document.getElementById('prevTopProducts').disabled = currentPage.topProducts <= 1;
+    document.getElementById('nextTopProducts').disabled = currentPage.topProducts >= totalPages.topProducts;
+    document.getElementById('topProductsPageInfo').textContent = Page ${currentPage.topProducts} of ${totalPages.topProducts};
+    
+    // Sales Data pagination
+    document.getElementById('prevSalesData').disabled = currentPage.salesData <= 1;
+    document.getElementById('nextSalesData').disabled = currentPage.salesData >= totalPages.salesData;
+    document.getElementById('salesDataPageInfo').textContent = Page ${currentPage.salesData} of ${totalPages.salesData};
+}
+
+function initializeCharts(data) {
+    if (chartsInitialized) return;
+    
+    // Sales Trend Chart
+    const salesCtx = document.getElementById("salesChart").getContext("2d");
+    const limitedLabels = limitDataPoints(data.labels);
+    const limitedSales = limitDataPoints(data.sales);
+    
+    salesChart = createOptimizedChart(salesCtx, 'line', {
+        labels: limitedLabels,
+        datasets: [{
+            label: 'Total Sales (₹)',
+            data: limitedSales,
+            borderColor: '#4361ee',
+            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+            fill: true,
+            borderWidth: 2,
+            pointBackgroundColor: '#4361ee',
+            pointRadius: 3,
+            pointHoverRadius: 5
+        }]
+    }, {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: (val) => '₹' + val.toLocaleString('en-IN')
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    autoSkip: true,
+                    maxRotation: 0,
+                    minRotation: 0
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return '₹' + context.raw.toLocaleString('en-IN', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2
+                        });
+                    }
+                }
+            }
+        }
+    });
+
+    // Payment Methods Chart
+    const pmCtx = document.getElementById("paymentMethodsChart").getContext("2d");
+    paymentMethodsChart = createOptimizedChart(pmCtx, 'doughnut', {
+        labels: data.payment_methods.map(pm => {
+            const methodNames = {
+                'cod': 'Cash on Delivery',
+                'card': 'Credit/Debit Card',
+                'upi': 'UPI Payment',
+                'wallet': 'Wallet',
+                'netbanking': 'Net Banking'
+            };
+            return methodNames[pm.payment_method] || pm.payment_method;
+        }),
+        datasets: [{
+            data: data.payment_methods.map(pm => pm.total_sales),
+            backgroundColor: [
+                'rgba(247, 37, 133, 0.7)',
+                'rgba(67, 97, 238, 0.7)',
+                'rgba(248, 150, 30, 0.7)',
+                'rgba(67, 170, 139, 0.7)',
+                'rgba(76, 201, 240, 0.7)'
+            ],
+            borderColor: [
+                'rgba(247, 37, 133, 1)',
+                'rgba(67, 97, 238, 1)',
+                'rgba(248, 150, 30, 1)',
+                'rgba(67, 170, 139, 1)',
+                'rgba(76, 201, 240, 1)'
+            ],
+            borderWidth: 1
+        }]
+    }, {
+        cutout: '70%',
+        plugins: {
+            legend: { 
+                position: 'right',
+                labels: {
+                    boxWidth: 12,
+                    padding: 20,
+                    usePointStyle: true,
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const value = context.raw;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / total) * 100);
+                        return `${context.label}: ₹${value.toLocaleString('en-IN', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2
+                        })} (${percentage}%)`;
+                    }
+                }
+            }
+        }
+    });
+
+    // Day of Week Sales Chart
+    const dowSalesCtx = document.getElementById("dayOfWeekSalesChart").getContext("2d");
+    dayOfWeekSalesChart = createOptimizedChart(dowSalesCtx, 'bar', {
+        labels: data.day_of_week.labels,
+        datasets: [{
+            label: 'Sales by Day (₹)',
+            data: data.day_of_week.sales,
+            backgroundColor: 'rgba(67, 170, 139, 0.7)',
+            borderColor: 'rgba(67, 170, 139, 1)',
+            borderWidth: 1
+        }]
+    }, {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return '₹' + context.raw.toLocaleString('en-IN', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2
+                        });
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: (val) => '₹' + val.toLocaleString('en-IN')
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Day of Week Orders Chart
+    const dowOrdersCtx = document.getElementById("dayOfWeekOrdersChart").getContext("2d");
+    dayOfWeekOrdersChart = createOptimizedChart(dowOrdersCtx, 'bar', {
+        labels: data.day_of_week.labels,
+        datasets: [{
+            label: 'Orders by Day',
+            data: data.day_of_week.counts,
+            backgroundColor: 'rgba(248, 150, 30, 0.7)',
+            borderColor: 'rgba(248, 150, 30, 1)',
+            borderWidth: 1
+        }]
+    }, {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.raw.toLocaleString('en-IN') + ' orders';
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    chartsInitialized = true;
+}
+
+function updateMetrics(data) {
+    // Update summary metrics
+    document.getElementById("totalSales").innerText = '₹' + data.total_sales.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    });
+    
+    document.getElementById("totalOrders").innerText = data.total_orders.toLocaleString('en-IN');
+    
+    document.getElementById("avgOrderValue").innerText = '₹' + data.avg_order_value.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    });
+    
+    document.getElementById("repeatCustomers").innerText = data.customer_metrics.repeat_customers.toLocaleString('en-IN');
+    
+    // Update period labels
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    document.getElementById("salesPeriod").innerText = ${startDate} to ${endDate};
+    document.getElementById("ordersPeriod").innerText = ${startDate} to ${endDate};
+}
+
+function updateTables(data) {
+    // Top Products Table
+    const topProductsTable = document.getElementById("topProductsTable");
+    topProductsTable.innerHTML = '';
+    
+    data.top_products.data.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${product.product__name || 'Unknown Product'}</td>
+            <td>${product.total_quantity.toLocaleString('en-IN')}</td>
+            <td>₹${product.total_revenue.toLocaleString('en-IN', {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2
+            })}</td>
+        `;
+        topProductsTable.appendChild(row);
+    });
+    
+    // Status Distribution Table
+    const statusTable = document.getElementById("statusDistributionTable");
+    statusTable.innerHTML = '';
+    
+    const totalOrders = data.total_orders;
+    
+    data.status_distribution.forEach(status => {
+        const percentage = ((status.count / totalOrders) * 100).toFixed(1);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${status.status}</td>
+            <td>${status.count.toLocaleString('en-IN')}</td>
+            <td>${percentage}%</td>
+        `;
+        statusTable.appendChild(row);
+    });
+    
+    // Detailed Sales Data Table
+    const detailedSalesTable = document.getElementById("detailedSalesTable");
+    detailedSalesTable.innerHTML = '';
+    
+    // This would be populated from paginated data in a real implementation
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td colspan="4" class="text-center">Use the pagination controls to view detailed sales data</td>
+    `;
+    detailedSalesTable.appendChild(row);
+}
+
+// Initialize the dashboard with default values
+window.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().slice(0, 10);
+    const pastDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    document.getElementById("endDate").value = today;
+    document.getElementById("startDate").value = pastDate;
+    
+    // Initialize tab functionality
+    const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabEls.forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', function (event) {
+            // Redraw charts when tab is shown to ensure proper rendering
+            if (salesChart) salesChart.update();
+            if (paymentMethodsChart) paymentMethodsChart.update();
+            if (dayOfWeekSalesChart) dayOfWeekSalesChart.update();
+            if (dayOfWeekOrdersChart) dayOfWeekOrdersChart.update();
+        });
+    });
+    
+    // Pagination event listeners
+    document.getElementById('prevTopProducts').addEventListener('click', () => {
+        if (currentPage.topProducts > 1) {
+            fetchSalesData('topProducts', currentPage.topProducts - 1);
+        }
+    });
+    
+    document.getElementById('nextTopProducts').addEventListener('click', () => {
+        if (currentPage.topProducts < totalPages.topProducts) {
+            fetchSalesData('topProducts', currentPage.topProducts + 1);
+        }
+    });
+    
+    document.getElementById('prevSalesData').addEventListener('click', () => {
+        if (currentPage.salesData > 1) {
+            fetchSalesData('salesData', currentPage.salesData - 1);
+        }
+    });
+    
+    document.getElementById('nextSalesData').addEventListener('click', () => {
+        if (currentPage.salesData < totalPages.salesData) {
+            fetchSalesData('salesData', currentPage.salesData + 1);
+        }
+    });
+    
+    // Initial data load
+    fetchSalesData();
+});
+
+// Window resize handler with debounce
+let resizeTimeout;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+        if (salesChart) salesChart.resize();
+        if (paymentMethodsChart) paymentMethodsChart.resize();
+        if (dayOfWeekSalesChart) dayOfWeekSalesChart.resize();
+        if (dayOfWeekOrdersChart) dayOfWeekOrdersChart.resize();
+    }, 200);
+});
+</script>
+{% endblock %}

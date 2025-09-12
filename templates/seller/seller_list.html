@@ -1,0 +1,556 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+    <title>Seller Information Dashboard</title>
+   
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #6a7ce0;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .dashboard-header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--card-radius);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-header h2 i {
+            margin-right: 12px;
+            font-size: 1.8rem;
+        }
+
+        /* Search Form */
+        .search-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--card-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-input input {
+            padding-left: 45px;
+            border-radius: 8px;
+            height: 48px;
+            border: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .search-input input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            height: 48px;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover {
+            background: var(--secondary);
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 1rem;
+        }
+
+        .total-sellers .stat-icon {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+
+        .approved .stat-icon {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+
+        .pending .stat-icon {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .table-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .table-header h3 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .custom-table th {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-align: left;
+            position: sticky;
+            top: 0;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .custom-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
+        }
+
+        .custom-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .view-btn {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border: none;
+        }
+
+        .view-btn:hover {
+            background: rgba(67, 97, 238, 0.2);
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .custom-pagination .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .custom-pagination .page-link {
+            color: var(--primary);
+            padding: 0.5rem 0.9rem;
+            border-radius: 6px;
+            margin: 0 3px;
+            border: 1px solid var(--light-gray);
+        }
+
+        .custom-pagination .page-link:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                padding: 15px;
+            }
+            
+            .custom-table {
+                min-width: 1000px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-container {
+                padding: 10px;
+            }
+            
+            .dashboard-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.2rem;
+            }
+            
+            .stat-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .custom-pagination .page-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h2><i class="fas fa-users"></i> Seller Information</h2>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-container">
+            <form method="get" class="search-form">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" class="form-control" placeholder="Search by name, email or phone" value="{{ query }}">
+                </div>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search me-2"></i> Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card total-sellers">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ page_obj.paginator.count }}</h3>
+                    <p>Total Sellers</p>
+                </div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ approved_count }}</h3>
+                    <p>Approved Sellers</p>
+                </div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ pending_count }}</h3>
+                    <p>Pending Approval</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <div class="table-header">
+                <h3><i class="fas fa-table"></i> Seller Details</h3>
+                <div class="table-actions">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Seller Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>PAN Number</th>
+                            <th>Aadhar Number</th>
+                            <th>Bank Account</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seller in page_obj %}
+                        <tr>
+                            <td>{{ seller.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                  
+                                    {{ seller.username }}
+                                </div>
+                            </td>
+                            <td>{{ seller.email }}</td>
+                            <td>{{ seller.phone }}</td>
+                            <td>{{ seller.pan }}</td>
+                            <td>{{ seller.aadhar_number }}</td>
+                            <td>
+                                <div class="bank-info">
+                                    <div><strong>{{ seller.bank_account_name }}</strong></div>
+                                    <div class="text-muted small">{{ seller.bank_account_no }} • {{ seller.ifsc }}</div>
+                                </div>
+                            </td>
+                            <td>{{ seller.created_at|date:"Y-m-d" }}</td>
+                            <td>
+                                {% if seller.is_approved %}
+                                <span class="status-badge status-approved">Approved</span>
+                                {% else %}
+                                <span class="status-badge status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="action-btn view-btn" data-bs-toggle="tooltip" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No sellers found</p>
+                                    <button class="btn btn-primary">Clear Search</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-container">
+            <ul class="pagination custom-pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Add animation to table rows
+            const tableRows = document.querySelectorAll('.custom-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.animationDelay = `${index * 0.05}s`;
+                row.classList.add('fade-in');
+            });
+            
+            // Clear search button functionality
+            document.querySelector('.empty-state button')?.addEventListener('click', function() {
+                window.location.href = window.location.pathname;
+            });
+        });
+    </script>
+{% endblock %}

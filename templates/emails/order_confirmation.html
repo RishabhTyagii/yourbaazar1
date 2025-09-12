@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #f8f9fa; padding: 20px; text-align: center; }
+        .order-details { margin: 20px 0; border: 1px solid #ddd; padding: 15px; }
+        .order-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .total { font-weight: bold; text-align: right; margin-top: 10px; }
+        .footer { margin-top: 20px; text-align: center; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Order Confirmation</h2>
+            <p>Thank you for your purchase!</p>
+        </div>
+        
+        <div class="order-info">
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at|date:"F j, Y" }}</p>
+            <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+        </div>
+        
+        <div class="order-details">
+            <h3>Order Details</h3>
+            {% for item in order_items %}
+            <div class="order-item">
+                <p>{{ item.product.name }} {% if item.variant %}({{ item.variant }}){% endif %}</p>
+                <p>Quantity: {{ item.quantity }} × ₹{{ item.price }}</p>
+                <p>Total: ₹{{ item.get_total_price }}</p>
+            </div>
+            {% endfor %}
+            
+            <div class="total">
+                <p>Subtotal: ₹{{ order.subtotal }}</p>
+                <p>Shipping: ₹{{ order.shipping_cost }}</p>
+                {% if order.discount_amount > 0 %}
+                <p>Discount: -₹{{ order.discount_amount }}</p>
+                {% endif %}
+                <p>Grand Total: ₹{{ order.total_amount }}</p>
+            </div>
+        </div>
+        
+        <div class="shipping-info">
+            <h3>Shipping Information</h3>
+            <p>{{ order.customer_name }}</p>
+            <p>{{ order.shipping_address }}</p>
+            <p>{{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_zip_code }}</p>
+            <p>{{ order.shipping_country }}</p>
+        </div>
+        
+        <div class="footer">
+            <p>If you have any questions, please contact our support team.</p>
+            <p>Thank you for shopping with us!</p>
+        </div>
+    </div>
+</body>
+</html>

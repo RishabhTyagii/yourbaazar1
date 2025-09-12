@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yourbaazarseller - E-commerce Solutions</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5e3bee;
+            --primary-light: #7d5ff3;
+            --secondary: #0c0e16;
+            --light: #f5f5f7;
+            --dark: #1d1e25;
+            --text: #6c6c72;
+            --white: #ffffff;
+            --success: #22c55e;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: var(--white);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            border: 2px solid var(--primary);
+            box-shadow: 0 10px 20px rgba(94, 59, 238, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(94, 59, 238, 0.25);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(94, 59, 238, 0.25);
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav ul li a {
+            font-weight: 500;
+            position: relative;
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--dark);
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.4s ease;
+            padding: 80px 30px 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-nav.active {
+            right: 0;
+        }
+        
+        .mobile-nav ul {
+            list-style: none;
+        }
+        
+        .mobile-nav ul li {
+            margin-bottom: 20px;
+        }
+        
+        .mobile-nav ul li a {
+            font-size: 18px;
+            font-weight: 500;
+            display: block;
+            padding: 10px 0;
+        }
+        
+        .mobile-nav .header-buttons {
+            flex-direction: column;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 180px 0 100px;
+            background: linear-gradient(135deg, #f9f9ff 0%, #f1f2ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before, .hero::after,
+        .features::before, .features::after,
+        .services::before, .services::after,
+        .testimonials::before, .testimonials::after,
+        .cta::before, .cta::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(94, 59, 238, 0.1) 0%, rgba(94, 59, 238, 0.05) 100%);
+            z-index: 0;
+        }
+        
+        .hero::before {
+            top: -100px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+        }
+        
+        .hero::after {
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(94, 59, 238, 0.05);
+            border-radius: 50%;
+        }
+        
+        .shape-1 {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        .shape-2 {
+            width: 50px;
+            height: 50px;
+            top: 60%;
+            left: 5%;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+        
+        .shape-3 {
+            width: 70px;
+            height: 70px;
+            top: 30%;
+            right: 10%;
+            animation: float 18s ease-in-out infinite;
+        }
+        
+        .shape-4 {
+            width: 40px;
+            height: 40px;
+            bottom: 20%;
+            right: 15%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            50% {
+                transform: translateY(10px) translateX(20px);
+            }
+            75% {
+                transform: translateY(20px) translateX(-10px);
+            }
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text {
+            flex: 1;
+        }
+        
+        .hero-text h1 {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+        
+        .hero-text h1 span {
+            color: var(--primary);
+        }
+        
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: var(--text);
+            max-width: 500px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .hero-image {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            transform: perspective(1000px) rotateY(-10deg);
+            transition: var(--transition);
+        }
+        
+        .hero-image img:hover {
+            transform: perspective(1000px) rotateY(0);
+        }
+        
+        /* Features */
+        .features {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            padding: 40px 8px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: var(--primary);
+            z-index: -1;
+            transition: var(--transition);
+            opacity: 0.05;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card:hover::before {
+            height: 100%;
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(94, 59, 238, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .feature-icon {
+            background: var(--primary);
+        }
+        
+        .feature-icon i {
+            font-size: 28px;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .feature-icon i {
+            color: var(--white);
+        }
+        
+        .feature-card h3 {
+            font-size: 17px;
+            margin-bottom: 15px;
+        }
+        
+  .features .container .features-grid .feature-card p{
+    font-size: 15px;
+  }
+
+        /* Services */
+        .services {
+            padding: 100px 0;
+            background: var(--light);
+            position: relative;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+        
+        .service-card {
+            display: flex;
+            gap: 25px;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(94, 59, 238, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        
+        .service-card:hover .service-icon {
+            background: var(--primary);
+        }
+        
+        .service-icon i {
+            font-size: 24px;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .service-card:hover .service-icon i {
+            color: var(--white);
+        }
+        
+        .service-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        /* Policy Section */
+        .policies {
+            padding: 100px 0;
+            background: var(--white);
+        }
+        
+        .policy-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .policy-accordion {
+            margin-top: 40px;
+        }
+        
+        .accordion-item {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .accordion-header {
+            padding: 20px;
+            background: var(--light);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .accordion-header:hover {
+            background: rgba(94, 59, 238, 0.05);
+        }
+        
+        .accordion-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .accordion-icon {
+            transition: var(--transition);
+        }
+        
+        .accordion-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+        
+        .accordion-content-inner {
+            padding: 20px;
+        }
+        
+        .accordion-item.active .accordion-content {
+            max-height: 1000px;
+        }
+        
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        
+        .policy-list {
+            list-style: none;
+        }
+        
+        .policy-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .policy-list li:before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .testimonial-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            font-size: 60px;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+            left: 0;
+            top: -20px;
+            font-family: serif;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .author-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        
+        .author-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        /* CTA */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #5e3bee 0%, #8b7af9 100%);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+        }
+        
+        .cta::after {
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+        }
+        
+        .cta h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+        
+        .cta p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta .btn {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--white);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta .btn:hover {
+            background: transparent;
+            color: var(--white);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--light);
+            padding: 80px 0 30px;
+            position: relative;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-col h3 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: var(--white);
+        }
+        
+        .footer-col p {
+            margin-bottom: 20px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-icons a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 15px;
+        }
+        
+        .footer-col ul li a:hover {
+            color: var(--white);
+            padding-left: 5px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .features-grid,
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+            }
+            
+            .hero-text h1 {
+                font-size: 42px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            /* Show mobile menu button and hide desktop nav */
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav, .header-buttons {
+                display: none;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">Yourbaazar<span>Seller</span></a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#policies">Policies</a></li>
+                    <li><a href="{% url 'basicinfo:contactus' %}">Contact</a></li>
+                  
+                </ul>
+            </nav>
+            <div class="header-buttons">
+                <a href="{% url 'seller:seller_login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'seller:seller_register' %}" class="btn btn-primary">Sign Up</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="overlay"></div>
+    <div class="mobile-nav">
+        <ul>
+
+            <li><a href="#">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#policies">Policies</a></li>
+            <li><a href="{% url 'basicinfo:contactus' %}">Contact</a></li>
+            <li style="margin-top: 10px; text-align: center;"><a href="{% url 'seller:seller_login' %}" class="btn btn-outline">Login</a></li>
+            <li style="margin-top: 10px; text-align: center;"><a href="{% url 'seller:seller_register' %}" class="btn btn-primary">Sign Up</a></li>
+        </ul>
+
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 class="animate">Boost Your <span>Online Sales</span> with Yourbaazarseller</h1>
+                <p class="animate delay-1">Yourbaazarseller provides everything you need to start, manage and grow your e-commerce business. Join thousands of sellers who trust our platform.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'seller:seller_register' %}" class="btn btn-primary animate delay-2">Get Started</a>
+                    <a href="{% url 'basicinfo:about_us' %}" class="btn btn-outline animate delay-2">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=720&q=80" alt="E-commerce Dashboard" class="animate delay-3">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Powerful Features</h2>
+                <p>Discover the tools and features that make Yourbaazarseller the perfect platform for your online business</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate">
+                    <div class="feature-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3>Easy Store Setup</h3>
+                    <p>Create your online store in minutes with our intuitive setup process.</p>
+                </div>
+                <div class="feature-card animate delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Sales Analytics</h3>
+                    <p>Track your performance with detailed analytics and reports.</p>
+                </div>
+                <div class="feature-card animate delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>Payment Processing</h3>
+                    <p>Accept payments from customers around the world with ease.</p>
+                </div>
+                <div class="feature-card animate">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Shipping Solutions</h3>
+                    <p>Integrated shipping with major carriers at discounted rates.</p>
+                </div>
+                <div class="feature-card animate delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Management</h3>
+                    <p>Manage your store on the go with our mobile app.</p>
+                </div>
+                <div class="feature-card animate delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Platform</h3>
+                    <p>Your data is protected with enterprise-grade security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Services</h2>
+                <p>We offer a comprehensive suite of services to help your business succeed</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card animate">
+                    <div class="service-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Weekly Payment Settlements</h3>
+                        <p>Get insights into your sales performance with our weekly payment settlements.</p>
+                    </div>
+                </div>
+                <div class="service-card animate delay-1">
+                    <div class="service-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Inventory Management</h3>
+                        <p>Keep track of your inventory levels and get low stock alerts automatically.</p>
+                    </div>
+                </div>
+                <div class="service-card animate">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Customer Management</h3>
+                        <p>Manage customer information, order history, and communication in one place.</p>
+                    </div>
+                </div>
+                <div class="service-card animate delay-1">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Internal Analytics</h3>
+                        <p>Gain insights into your store's performance with our built-in analytics tools.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Policy Section -->
+    <section class="policies" id="policies">
+        <div class="container">
+            <div class="section-title">
+                <h2>Seller Policies</h2>
+                <p>Clear guidelines to help you succeed on our platform</p>
+            </div>
+            <div class="policy-container">
+                <div class="policy-accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h3>General Terms & Onboarding</h3>
+                            <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <ul class="policy-list">
+                                    <li>By registering as a seller on the YourBaazar platform, you agree to comply with all policies, rules, and obligations stated herein.</li>
+                                    <li>Seller must provide accurate legal documents, business information, GST details, bank account details, and valid identity/address proof.</li>
+                                    <li>YourBaazar reserves the right to review, approve, or reject seller applications at its sole discretion.</li>
+                                    <li>If uploaded documents are unsatisfactory, incomplete, forged, or unverifiable, YourBaazar may request re-upload, temporary suspension, or permanent blocking of the seller account.</li>
+                                    <li>Seller approval is mandatory before any product listing goes live.</li>
+                                    <li>Approval/rejection of documents shall be communicated via registered email/YourBaazar dashboard.</li>
+                                    <li>YourBaazar reserves the right to perform KYC re-verification anytime.</li>
+                                    <li>Sellers must comply with all applicable laws including GST, Consumer Protection Act, IT Act, and e-commerce regulations in India.</li>
+                                    <li>By accepting this agreement, the seller authorizes YourBaazar to collect, store, and process data related to sales, settlements, logistics, and disputes.</li>
+                                    <li>Any violation of this policy may result in suspension, withholding of settlements, or permanent termination.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h3>Product Listing & Approval</h3>
+                            <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <ul class="policy-list">
+                                    <li>Sellers must submit product details, images, pricing, and shipping details for approval.</li>
+                                    <li>Every new product request must be submitted through the seller dashboard.</li>
+                                    <li>YourBaazar will review the product request within 24 hours.</li>
+                                    <li>Upon approval, the product will be listed on YourBaazar marketplace within the next 24 hours.</li>
+                                    <li>Products found misleading, fake, counterfeit, or violating intellectual property rights will be rejected.</li>
+                                    <li>Banned items such as illegal products, narcotics, weapons, hazardous chemicals, expired goods, or items restricted under law are strictly prohibited.</li>
+                                    <li>Seller must maintain accurate stock availability in the system.</li>
+                                    <li>Any discrepancy in stock may result in order cancellation and penalties.</li>
+                                    <li>Sellers must ensure high-quality product images with clear descriptions.</li>
+                                    <li>Product pricing must include applicable GST and comply with MRP regulations.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h3>Shipping & Delivery</h3>
+                            <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <ul class="policy-list">
+                                    <li>YourBaazar follows a Hybrid Shipping Model where shipping charges are partly paid by customers and partly borne by sellers.</li>
+                                    <li>Each product will have a Base Shipping Price defined by the seller.</li>
+                                    <li>The base shipping price will be collected from the customer at checkout.</li>
+                                    <li>If the actual shipping cost exceeds the base price, the excess amount shall be borne by the seller.</li>
+                                    <li>The same base shipping price applies to multiple quantities of the same product.</li>
+                                    <li>If a customer orders more than one unit of the same product, shipping is charged only once (until free shipping threshold is met).</li>
+                                    <li>Free Shipping Threshold: If the order value is ₹1500 or above, the entire shipping cost will be free for the customer.</li>
+                                    <li>In such cases, YourBaazar will recover the applicable shipping charges directly from the seller.</li>
+                                    <li>Sellers are responsible for securely packing orders in accordance with YourBaazar guidelines.</li>
+                                    <li>Every package must carry YourBaazar-branded packaging/taping.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h3>Payment & Settlements</h3>
+                            <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <ul class="policy-list">
+                                    <li>Payments for successful orders will be credited to the seller's YourBaazar Wallet.</li>
+                                    <li>Wallet settlement cycle operates weekly.</li>
+                                    <li>Orders delivered and accepted till Friday night will be added for settlement.</li>
+                                    <li>Settlement processing is carried out on Saturday and Sunday.</li>
+                                    <li>Final transfer to the seller's registered bank account is made on Monday.</li>
+                                    <li>Sellers are responsible for providing accurate bank details.</li>
+                                    <li>Bank charges for NEFT/IMPS/RTGS will be borne by the seller.</li>
+                                    <li>In case of failed transfers due to incorrect bank details, reprocessing charges may apply.</li>
+                                    <li>Online payments received through YourBaazar are subject to standard bank/payment gateway charges, which are deducted before settlement.</li>
+                                    <li>Sellers will receive payment summaries, including deductions, in the wallet transaction history.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h3>Returns & Refunds</h3>
+                            <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <ul class="policy-list">
+                                    <li>Customers may initiate returns as per YourBaazar Return Policy.</li>
+                                    <li>Accepted reasons include damaged product, wrong product, defective item, or unmet description.</li>
+                                    <li>Returns are processed via reverse logistics by YourBaazar.</li>
+                                    <li>Seller must accept all valid returns.</li>
+                                    <li>Refusal to accept returns will result in penalties.</li>
+                                    <li>Upon successful return pickup, the product will be delivered back to the seller.</li>
+                                    <li>Refunds to customers are managed by YourBaazar directly.</li>
+                                    <li>Refund amount will be adjusted against seller settlements.</li>
+                                    <li>Settlement for returns will reflect in Seller Wallet History.</li>
+                                    <li>Sellers can track return/refund status in the dashboard.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+        <div class="container">
+            <h2 class="animate">Ready to Grow Your Business?</h2>
+            <p class="animate delay-1">Join thousands of successful sellers on Yourbaazarseller today</p>
+            <a href="{% url 'seller:seller_register' %}" class="btn animate delay-2">Get Started For Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Yourbaazarseller</h3>
+                    <p>The complete e-commerce solution for sellers of all sizes. Start, run and grow your business with us.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="{% url 'basicinfo:about_us' %}">About Us</a></li>
+
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="{% url 'basicinfo:contactus' %}">Help Center</a></li>
+ 
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Modinagar , Uttar Pradesh</li>
+                        <li><i class="fas fa-phone"></i> +91-9758464721</li>
+                        <li><i class="fas fa-envelope"></i> sellersupport@yourbaazarseller.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Yourbaazar. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                observer.observe(element);
+            });
+            
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 50) {
+                    header.style.padding = '15px 0';
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                } else {
+                    header.style.padding = '20px 0';
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
+                }
+            });
+            
+            // Accordion functionality
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                
+                header.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    
+                    // Close all items
+                    accordionItems.forEach(accItem => {
+                        accItem.classList.remove('active');
+                    });
+                    
+                    // Open clicked item if it wasn't active
+                    if (!isActive) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Open first accordion by default
+            if (accordionItems.length > 0) {
+                accordionItems[0].classList.add('active');
+            }
+            
+            // Mobile menu functionality
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileNav = document.querySelector('.mobile-nav');
+            const overlay = document.querySelector('.overlay');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
+            
+            function toggleMobileMenu() {
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+            }
+            
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            overlay.addEventListener('click', toggleMobileMenu);
+            
+            // Close mobile menu when a link is clicked
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileNav.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

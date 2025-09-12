@@ -1,0 +1,130 @@
+<!-- templates/view_profile.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/view_profile.css' %}">
+{% endblock %}
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google Fonts (Poppins - Modern & Clean) -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+<div class="modern-profile">
+  <div class="profile-container">
+    <!-- Cover & Profile Picture -->
+    <div class="profile-cover">
+      <div class="cover-image"></div>
+      <div class="profile-pic">
+        <div class="avatar">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+      </div>
+    </div>
+
+    <!-- User Info Section -->
+    <div class="profile-info">
+      <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+      <p class="username">@{{ user.username }}</p>
+      
+      <div class="user-details">
+        <div class="detail-item">
+          <i class="fas fa-envelope"></i>
+          <span>{{ user.email }}</span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-user"></i>
+          <span>{{ user.username }}</span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-user"></i>
+          <span>{{ user.phone_number }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats & Actions -->
+    <div class="profile-stats">
+      <div class="stat-card">
+        <h3>Orders</h3>
+        <p>{{ total_orders }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Wishlist</h3>
+        <p>{{ wishlist_count }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Member Since</h3>
+        <p>{{ member_since }}</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="profile-actions">
+      <a href="{% url 'edit_profile' %}" class="profile-btn btn-edit">
+        <i class="fas fa-pencil-alt"></i> Edit Profile
+      </a>
+      <a href="{% url 'change_password_with_otp' %}" class="profile-btn btn-settings">
+        <i class="fas fa-cog"></i> Change Password
+      </a>
+      <a href="{% url 'logout' %}" class="profile-btn btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Contact Queries Section -->
+  <div class="profile-queries-section">
+    <div class="section-header">
+      <h4><i class="fas fa-envelope-open-text"></i> Your Contact Queries</h4>
+      <a href="{% url 'basicinfo:contactus' %}" class="btn-new-query">
+        <i class="fas fa-plus"></i> New Query
+      </a>
+    </div>
+
+    {% if user_queries %}
+    <div class="queries-container">
+      {% for query in user_queries %}
+      <div class="query-card {% cycle 'odd' 'even' %}">
+        <div class="query-header">
+          <h5 class="query-subject">{{ query.subject }}</h5>
+          <span class="query-date">{{ query.created_at|date:"M d, Y" }}</span>
+        <span class="query-status {% if query.is_resolved %}resolved{% else %}pending{% endif %}" id="status-{{ query.id }}">
+  {% if query.is_resolved %}Resolved{% else %}Pending{% endif %}
+</span>
+        </div>
+        
+        <div class="query-body">
+          <p class="query-message">{{ query.message }}</p>
+        </div>
+        
+        <div class="query-footer">
+          <span class="query-id">ID: {{ query.id }}</span>
+          <a href="{% url 'basicinfo:contactus' %}?followup={{ query.id }}" class="btn-follow-up">
+            <i class="fas fa-reply"></i> Follow Up
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-queries">
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <h5>No queries yet</h5>
+        <p>You haven't submitted any contact queries</p>
+        <a href="{% url 'basicinfo:contactus' %}" class="btn-new-query">
+          <i class="fas fa-plus"></i> Contact Support
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

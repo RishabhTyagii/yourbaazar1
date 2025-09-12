@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/returnrequest.css' %}">
+
+{% endblock %}
+<div class="query-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">📦 Return Requests</h1>
+    <p class="dashboard-subtitle">View and manage all product return requests</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-container glassmorphism">
+    <form method="get" action="" class="search-form">
+      <div class="search-input-group">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search by name, email, or order..." class="search-input">
+        <button type="submit" class="search-button">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container glassmorphism">
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Order</th>
+            <th>Product</th>
+            <th>Reason</th>
+            <th>Images</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in page_obj %}
+          <tr class="table-row">
+            <td>{{ req.customer_name }}</td>
+            <td>{{ req.customer_email }}</td>
+            <td>{{ req.customer_phone }}</td>
+            <td>{{ req.order.order_number }}</td>
+            <td>{{ req.order_item.product.name }}</td>
+            <td>{{ req.reason|default:'-' }}</td>
+            <td>
+              <div class="image-gallery">
+                {% if req.image1 %}<a href="{{ req.image1.url }}" target="_blank"><img src="{{ req.image1.url }}" class="image-thumbnail" /></a>{% endif %}
+                {% if req.image2 %}<a href="{{ req.image2.url }}" target="_blank"><img src="{{ req.image2.url }}" class="image-thumbnail" /></a>{% endif %}
+                {% if req.image3 %}<a href="{{ req.image3.url }}" target="_blank"><img src="{{ req.image3.url }}" class="image-thumbnail" /></a>{% endif %}
+                {% if req.image4 %}<a href="{{ req.image4.url }}" target="_blank"><img src="{{ req.image4.url }}" class="image-thumbnail" /></a>{% endif %}
+              </div>
+            </td>
+            <td>{{ req.created_at|date:"d M Y, H:i" }}</td>
+            <td>
+              <button class="toggle-status status-button {% if req.is_resolved %}resolved{% else %}unresolved{% endif %}" data-id="{{ req.id }}">
+                {% if req.is_resolved %}
+                  <span class="status-icon">✓</span> Resolved
+                {% else %}
+                  <span class="status-icon">✗</span> Pending
+                {% endif %}
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" class="no-results">No return requests found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+    <div class="pagination-container">
+      <div class="pagination glassmorphism">
+        {% if page_obj.has_previous %}
+          <a href="?q={{ search_query }}&page=1" class="pagination-button">First</a>
+          <a href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}" class="pagination-button">Previous</a>
+        {% endif %}
+        <span class="page-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?q={{ search_query }}&page={{ page_obj.next_page_number }}" class="pagination-button">Next</a>
+          <a href="?q={{ search_query }}&page={{ page_obj.paginator.num_pages }}" class="pagination-button">Last</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.toggle-status');
+    buttons.forEach(button => {
+      button.addEventListener('click', function () {
+        const id = this.dataset.id;
+        fetch('{% url "toggle_return_status" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: new URLSearchParams({ id })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.classList.toggle('resolved', data.new_status);
+            this.classList.toggle('unresolved', !data.new_status);
+            this.innerHTML = data.new_status ? '<span class="status-icon">✓</span> Resolved' : '<span class="status-icon">✗</span> Pending';
+          }
+        });
+      });
+    });
+  });
+</script>
+<script>
+  document.querySelector('.search-form').addEventListener('submit', function(e) {
+    const input = this.querySelector('input[name="q"]');
+    input.value = input.value.trim();
+  });
+</script>
+
+{% endblock %}

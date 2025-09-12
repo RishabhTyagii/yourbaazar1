@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block title %}Contact Us Query{% endblock %}
+    
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/contactusquerry.css' %}">
+{% endblock %}
+
+ 
+{% block content %}
+
+<div class="query-dashboard">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">📬 Contact Inquiries</h1>
+    <div class="dashboard-subtitle">Manage all customer communications</div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container glassmorphism">
+    <form method="get" action="" class="search-form">
+      <div class="search-input-group">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
+          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search inquiries..." class="search-input">
+        <button type="submit" class="search-button">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Query Table -->
+  <div class="table-container glassmorphism">
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th class="table-header">Name</th>
+            <th class="table-header">Email</th>
+            <th class="table-header">Phone</th>
+            <th class="table-header">Subject</th>
+            <th class="table-header">Message</th>
+            <th class="table-header">Date</th>
+            <th class="table-header">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for query in page_obj %}
+          <tr class="table-row hover-effect">
+            <td class="table-data">{{ query.name }}</td>
+            <td class="table-data">{{ query.email }}</td>
+            <td class="table-data">{{ query.phone }}</td>
+            <td class="table-data">{{ query.subject }}</td>
+            <td class="table-data message-cell">{{ query.message|linebreaks }}</td>
+            <td class="table-data">{{ query.created_at|date:"d M Y H:i" }}</td>
+            <td class="table-data">
+              <button class="toggle-status status-button {% if query.is_resolved %}resolved{% else %}unresolved{% endif %}" data-id="{{ query.id }}">
+                {% if query.is_resolved %}
+                  <span class="status-icon">✓</span> Resolved
+                {% else %}
+                  <span class="status-icon">✗</span> Unresolved
+                {% endif %}
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr class="table-row">
+            <td colspan="7" class="no-results">
+              <div class="empty-state">
+                <svg class="empty-icon" viewBox="0 0 24 24" width="48" height="48">
+                  <path fill="currentColor" d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                </svg>
+                <p>No contact queries found</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <div class="pagination-container">
+    <div class="pagination glassmorphism">
+      {% if page_obj.has_previous %}
+        <a href="?q={{ search_query }}&page=1" class="pagination-button first-page">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/>
+          </svg>
+          First
+        </a>
+        <a href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}" class="pagination-button">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+          </svg>
+          Previous
+        </a>
+      {% endif %}
+
+      <span class="page-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+      {% if page_obj.has_next %}
+        <a href="?q={{ search_query }}&page={{ page_obj.next_page_number }}" class="pagination-button">
+          Next
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+          </svg>
+        </a>
+        <a href="?q={{ search_query }}&page={{ page_obj.paginator.num_pages }}" class="pagination-button last-page">
+          Last
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+
+{% block extra_js %} <script>  $(document).ready(function(){
+    $(".toggle-status").click(function(){
+      const button = $(this);
+      const queryId = button.data("id");
+
+      $.ajax({
+        url: "{% url 'basicinfo:toggle_query_status' %}",
+        type: "POST",
+        data: {
+          id: queryId,
+          csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response){
+          if(response.success){
+            if(response.new_status) {
+              button.html('<span class="status-icon">✓</span> Resolved');
+              button.removeClass('unresolved').addClass('resolved');
+            } else {
+              button.html('<span class="status-icon">✗</span> Unresolved');
+              button.removeClass('resolved').addClass('unresolved');
+            }
+          }
+        }
+      });
+    });
+  });</script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ {% endblock %}
+
+
+
+{% endblock %}
+
+   

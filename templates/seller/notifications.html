@@ -1,0 +1,271 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+
+  <title>Notifications</title>
+  <style>
+    :root{
+      --bg: #08131d;
+      --panel: #0f1520;
+      --panel-2: #0c1117;
+      --text: #e6edf3;
+      --muted: #a1adbb;
+      --brand: #4f8cff;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --card: #0a0f1a;
+      --card-hover: #131b2a;
+      --ring: #22304a;
+      --border: #203047;
+      --unread-accent: #7aa2ff;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 10px rgba(0,0,0,.25);
+    }
+
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --panel-2: #f9fbff;
+        --text: #111827;
+        --muted: #667085;
+        --brand: #3366ff;
+        --card: #ffffff;
+        --card-hover: #fafbff;
+        --ring: #dfe7ff;
+        --border: #e6eaf2;
+        --unread-accent: #356dff;
+        --shadow: 0 8px 24px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.05);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 10% -10%, #14213d20 0%, transparent 60%),
+                  radial-gradient(1000px 700px at 110% 0%, #0ea5e920 0%, transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.55;
+    }
+
+    .container{
+      max-width: 1000px;
+      margin: clamp(16px, 4vw, 40px) auto;
+      padding: 0 clamp(12px, 3vw, 24px);
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: clamp(16px, 3vw, 24px);
+      padding: clamp(12px, 2vw, 16px) clamp(14px, 2.4vw, 18px);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+    }
+    .title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .title-badge{
+      display:inline-grid; place-items:center;
+      width:38px; height:38px;
+      border-radius:11px;
+      background: linear-gradient(135deg, var(--brand), #37b6ff);
+      color:white; font-weight:700;
+      box-shadow: 0 6px 16px rgba(79,140,255,.35);
+    }
+    h1{
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.2;
+      margin:0;
+    }
+    .sub{
+      color: var(--muted);
+      font-size: clamp(12px, 1.6vw, 14px);
+      margin-top:2px;
+    }
+
+    .toolbar{
+      display:flex; align-items:center; gap:8px; flex-wrap: wrap;
+    }
+    .btn{
+      appearance:none; border:1px solid var(--border);
+      background: linear-gradient(180deg, var(--card), var(--panel));
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .04s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{ background: var(--card-hover); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--brand), #37b6ff);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 8px 18px rgba(79,140,255,.35);
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: var(--ring);
+    }
+
+    .panel{
+      padding: clamp(12px, 2.4vw, 18px);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+    }
+
+    .list{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px){
+      .list{ gap: 14px; }
+    }
+
+    .card{
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items:flex-start;
+      padding: 14px 14px;
+      background: linear-gradient(180deg, var(--card), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color .2s ease, background .2s ease, transform .06s ease;
+    }
+    .card:hover{ border-color: var(--ring); background: var(--card-hover); }
+    .card:active{ transform: translateY(1px); }
+
+    .accent{
+      width: 6px;
+      height: 100%;
+      border-radius: 10px;
+      background: var(--unread-accent);
+      opacity: .9;
+      align-self: stretch;
+    }
+    .accent.read{ background: transparent; border: 1px dashed var(--border); opacity: .5; }
+
+    .content{
+      display:flex; flex-direction:column; gap:8px;
+      min-width: 0;
+    }
+    .message{
+      margin:0;
+      font-size: clamp(14px, 1.9vw, 15px);
+      font-weight: 500;
+      letter-spacing: .1px;
+      overflow-wrap: anywhere;
+    }
+    .message.unread{ font-weight: 700; }
+    .meta{
+      display:flex; align-items:center; gap:10px; flex-wrap: wrap;
+      color: var(--muted); font-size: 12.5px;
+    }
+    .pill{
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(127, 147, 173, .14);
+      border: 1px solid var(--border);
+    }
+
+    .actions{
+      display:flex; gap:8px; align-items:center;
+    }
+    .icon-btn{
+      display:inline-grid; place-items:center;
+      width:36px; height:36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+      color: var(--text);
+      cursor:pointer;
+      transition: background .2s ease, transform .06s ease, border-color .2s ease;
+    }
+    .icon-btn:hover{ background: var(--card-hover); border-color: var(--ring); }
+    .icon-btn:active{ transform: translateY(1px); }
+
+    .empty{
+      text-align:center;
+      color: var(--muted);
+      padding: 40px 12px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="title">
+        <div class="title-badge">N</div>
+        <div>
+          <h1>Notifications</h1>
+          <div class="sub">Stay on top of order updates, reviews, and payouts.</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <!-- Mark all read link -->
+        <button class="btn ghost" type="button" onclick="location.href='{% url 'seller:seller_mark_all_read' %}'">Mark all read</button>
+        
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="list">
+        {% for note in notifications %}
+          <article class="card">
+            <div class="accent {% if note.is_read %}read{% endif %}"></div>
+            <div class="content">
+              <p class="message {% if not note.is_read %}unread{% endif %}">
+                {{ note.message|linebreaks }}
+              </p>
+              <div class="meta">
+                <span class="pill">{{ note.created_at|date:"Y-m-d H:i" }}</span>
+                {% if note.link %}
+                  <a href="{{ note.link }}" class="pill" style="text-decoration:none;color:inherit;">View</a>
+                {% endif %}
+                {% if note.is_read %}
+                  <span class="pill">Read</span>
+                {% else %}
+                  <span class="pill">New</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="actions">
+              <!-- Toggle read/unread -->
+              <button class="icon-btn" title="Mark as read/unread" type="button"
+                      onclick="location.href='{% url 'seller:seller_toggle_notification' note.id %}'">✔</button>
+              <!-- Delete notification -->
+              <button class="icon-btn" title="Delete" type="button"
+                      onclick="if(confirm('Are you sure?')) location.href='{% url 'seller:seller_delete_notification' note.id %}'">✕</button>
+            </div>
+          </article>
+        {% empty %}
+          <div class="empty">No notifications yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+ 
+  {% endblock %}

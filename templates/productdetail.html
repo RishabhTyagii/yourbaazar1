@@ -1,0 +1,1137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+    <title>{% block title %}{{ product.name }} {{ product.category.name }}{% endblock %}</title>
+
+{% block seo %}
+
+<meta name="title" content="{{ product.name }} - Buy Online at YourBaazar">
+<meta name="description" content="{{ product.short_description }}">
+<meta name="keywords" content="{{ product.name }}, buy {{ product.name }} online, {{ product.category.name }}, YourBaazar {{ product.name }}">
+
+<meta property="og:type" content="product">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ product.name }} - YourBaazar">
+<meta property="og:description" content="{{ product.short_description }}">
+<meta property="og:image" content="{{ product.image.url }}">
+
+<!-- JSON-LD Product Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name }}",
+  "image": [
+    "{{ product.image.url }}"
+  ],
+  "description": "{{ product.short_description }}",
+  "sku": "{{ product.sku }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "YourBaazar"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri }}",
+    "priceCurrency": "INR",
+    "price": "₹{{ variant.price_after_discount|floatformat:0 }}",
+    "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Baloo+Bhai+2:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/productdetail.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/photoswipe@5/dist/photoswipe.css">
+<script src="https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js" type="module"></script>
+
+
+{% endblock %}
+
+{% block content %}
+<!-- 💎 Main Product Section -->
+<div class="product-container animate__animated animate__fadeIn">
+    <!-- Image Gallery with Zoom -->
+<div class="image-gallery" id="product-gallery">
+    <div class="main-image-container" id="zoomContainer">
+        {% if color_images %}
+            <a href="{{ color_images.0.url }}" data-pswp-width="1200" data-pswp-height="1600">
+                <img id="mainImage" src="{{ color_images.0.url }}" class="main-image" 
+                     data-zoom-image="{{ color_images.0.url }}">
+            </a>
+            <div class="zoom-lens" id="zoomLens"></div>
+            <div class="zoom-result" id="zoomResult"></div>
+        {% else %}
+            <div class="alert alert-warning">No images available</div>
+        {% endif %}
+    </div>
+    
+    <div class="thumbnail-container">
+        {% for image in color_images %}
+            <a href="{{ image.url }}" data-pswp-width="1200" data-pswp-height="1600">
+                <img src="{{ image.url }}" 
+                     class="thumbnail {% if forloop.first %}active{% endif %}" 
+                     onclick="changeImage(this, '{{ image.url }}')"
+                     alt="{{ product.name }}">
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+    
+    <!-- Product Info -->
+    <div class="product-info">
+        <p class="product-title">{{ product.name }}        {% for variant in variants %}    {{ variant.color.color_name }}        {% endfor %}
+    </p>
+        {% if product.brand %}
+            <p class="product-brand">by {{ product.brand }}</p>
+        {% endif %}
+        
+        <!-- 🔥 YOUR PRICE LOGIC -->
+        <div class="price-container mb-4">
+            {% with variant=variants.first %}
+                {% if variant %}
+                    <span id="currentPrice" class="current-price">₹{{ variant.price_after_discount|floatformat:0 }}</span>
+                    <span id="originalPrice" class="original-price">₹{{ variant.price_before_discount|floatformat:0 }}</span>
+                    {% if variant.discount > 0 %}
+                        <span class="discount-badge">{{ variant.discount }}% OFF</span>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <!-- 🎨 Enhanced Color Selector with Images -->
+        <div class="option-section">
+            <h4 class="option-title">
+                <i class="fas fa-tags"></i> Variants
+            </h4>
+            <div class="color-options">
+                {% for color in all_colors %}
+   <a href="?color={{ color.id }}" 
+                   class="color-option-img {% if color.id == selected_color.id %}selected{% endif %}"
+                   title="{{ color.color_name }}"
+                   onmouseover="previewColor('{{ color.image_main.url }}')">
+                    <img src="{{ color.image_main.url }}" 
+                         alt="{{ color.color_name }}"
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                </a>
+                {% endfor %}
+                
+            </div>
+        </div>
+        
+        <!-- Size Options -->
+        <div class="option-section">
+            <h4 class="option-title">
+                <i class="fas fa-ruler-vertical"></i> Size
+            </h4>
+            <div class="size-options">
+                {% for variant in variants %}
+                    <div class="size-option {% if variant.stock <= 0 %}out-of-stock{% endif %}"
+                         data-variant-id="{{ variant.id }}"
+                         data-price="{{ variant.price_after_discount|floatformat:2 }}"
+                         onclick="selectSize(this)">
+                        {{ variant.size }}
+                        {% if variant.stock < 5 and variant.stock > 0 %}
+                            <small>({{ variant.stock }} left)</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="stock-status {% if variants.first.stock <= 0 %}out-of-stock{% elif variants.first.stock < 5 %}low-stock{% else %}in-stock{% endif %}">
+                <i class="fas fa-{% if variants.first.stock <= 0 %}times-circle{% elif variants.first.stock < 5 %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                {% if variants.first.stock <= 0 %}Out of Stock
+                {% elif variants.first.stock < 5 %}Only {{ variants.first.stock }} left!
+                {% else %}In Stock - Ready to Ship{% endif %}
+            </div>
+        </div>
+        
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="add-to-cart-btn" onclick="addToCart()">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+            <button class="buy-now-btn" onclick="buyNow()">
+                <i class="fas fa-bolt"></i> Buy Now
+            </button>
+
+            <!-- wishlist -->
+            {% if selected_color and variants %}
+            <form method="post" action="{% url 'wishlist:add_to_wishlist' %}" id="wishlistForm">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="color_id" value="{{ selected_color.id }}">
+                <input type="hidden" name="variant_id" value="{{ variants.0.id }}">
+                <button type="submit" class="wishlist" id="wishlistBtn">
+                    <i class="fas fa-heart"></i>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="pincode-checker premium-features " >
+    <h4 style="padding-left:2rem;">Check Delivery & COD Availability</h4>
+    <div class="pincode-input-group" style="display:flex; gap:5px; padding-left:2rem; max-width:300px; overflow:hidden;">
+        <input type="text" id="pincode" placeholder="Enter Pincode" class="form-control" maxlength="6" pattern="\d{6}">
+        <button id="check-pincode-btn" class="btn btn-primary">Check</button>
+        
+
+    </div>
+<div id="shipping-results" class="form-control" style="margin-top:2px;  padding:2px; border-radius:5px; border:none; background:none;"></div>
+<!-- Container to show shipping info -->
+
+</div>
+        <!-- Premium Features -->
+        <div class="premium-features">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">Free Delivery</h6>
+                    <small>On orders over ₹1500</small>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-undo"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">Easy Returns</h6>
+                    <small>2-day hassle-free returns</small>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">Secure Payment</h6>
+                    <small>100% secure payment options</small>
+                </div>
+            </div>
+        </div>
+        
+<!-- 📝 Description Section -->
+<div class="details-section review-card">
+    <h3 class="section-title">Product Details</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Description</h5>
+            <p>{{ product.description|linebreaksbr }}</p>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+<!-- ✨ Reviews Summary -->
+<div class="review-summary mb-4">
+    <h3 class="section-title">Customer Reviews</h3>
+    <p class="review-card"><strong>Total Reviews:</strong> {{ total_reviews }}</p>
+    <p class="review-card"><strong>Unique Reviewers:</strong> {{ unique_reviewers }}</p>
+  
+<div class="review-stars">
+    {% for i in "12345" %}
+        {% if forloop.counter <= average_rating %}
+            <i class="fas fa-star"></i>
+        {% elif forloop.counter <= average_rating|add:"0.5" %}
+            <i class="fas fa-star-half-alt"></i>
+        {% else %}
+            <i class="far fa-star"></i>
+        {% endif %}
+    {% endfor %}
+    <span>({{ average_rating }})</span>
+</div>
+
+<!-- 💫 Review Image Gallery -->
+{% if review_images %}
+<div class="review-gallery" id="review-gallery">
+    {% for image in review_images %}
+    <a href="{{ image.image.url }}" 
+       data-pswp-width="1200" 
+       data-pswp-height="1600" 
+       class="review-gallery-item">
+        <img src="{{ image.image.url }}" alt="Review image">
+    </a>
+    {% endfor %}
+</div>
+
+{% if review_images_has_next %}
+    <form method="get">
+        <input type="hidden" name="image_page" value="{{ review_images.next_page_number }}">
+        <button class="view-more-btn" type="submit">View More Images</button>
+    </form>
+{% endif %}
+{% endif %}
+
+
+
+
+
+<!-- 🔄 Review Pagination -->
+{% if page_obj %}
+{% for review in page_obj %}
+<div class="review-card">
+    <div class="review-header">
+        <div class="review-user">{{ review.user.username }}</div>
+        <div class="review-date">{{ review.created_at|date:"F j, Y" }}</div>
+    </div>
+    <div class="review-stars">
+        {% for i in "12345" %}
+            {% if forloop.counter <= review.rating %}
+                <i class="fas fa-star"></i>
+            {% else %}
+                <i class="far fa-star"></i>
+            {% endif %}
+        {% endfor %}
+        <span class="ml-2">{{ review.rating }}.0</span>
+    </div>
+    <p class="review-text">{{ review.comment }}</p>
+
+    {% if review.images.all %}
+    <div class="review-images" >
+        {% for image in review.images.all %}
+        <img src="{{ image.image.url }}" class="review-image" alt="Review image"
+             onclick="openReviewModalFromThumbnail('{{ image.image.url }}')">
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+
+<!-- Pagination Buttons -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+        <a class="btn btn-success " style="text-decoration: none;" href="?page={{ page_obj.next_page_number }}">Show All Reviews</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- 📝 Add Review Form -->
+{% if user.is_authenticated %}
+<div class="add-review mt-5">
+    <h5>Write a Review</h5>
+    <form id="reviewForm" enctype="multipart/form-data" method="POST" action="{% url 'review:submit_review' product.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Comment</label>
+            <textarea name="comment" class="form-control" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Upload Images (Max 4)</label>
+            <input type="file" name="images" accept="image/*" class="form-control">
+            <input type="file" name="images" accept="image/*" class="form-control mt-1">
+            <input type="file" name="images" accept="image/*" class="form-control mt-1">
+            <input type="file" name="images" accept="image/*" class="form-control mt-1">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+</div>
+{% else %}
+<div class="add-review">
+    <p>Please <a href="{% url 'login' %}?next={{ request.path }}">login</a> to write a review.</p>
+</div>
+{% endif %}
+
+<!-- ✅ Success Message -->
+<div class="success-message" id="successMessage" style="display:none;">
+    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+    <h3>Review Submitted Successfully!</h3>
+    <p>Thank you for your valuable feedback</p>
+</div>
+
+
+
+
+
+
+<div class="cart-success-message" id="cartSuccessMessage">
+    <div class="success-icon">
+        <i class="fas fa-shopping-cart"></i>
+    </div>
+    <h3>Added to Cart!</h3>
+    <p>Your item is now in your shopping cart</p>
+</div>
+
+<div class="wishlist-success-message" id="wishlistSuccessMessage">
+    <div class="success-icon">
+        <i class="fas fa-heart"></i>
+    </div>
+    <h3>Added to Wishlist!</h3>
+    <p>You can find this item in your wishlist</p>
+</div>
+<!-- ================================================== -->
+
+
+
+
+
+{% if recent_products %}
+<section class="fpsc1-product-carousel-section">
+  <div class="fpsc1-product-carousel-container">
+    <h3 class="fpsc1-carousel-title">Recently Viewed</h3>
+    
+    <div class="fpsc1-product-carousel fpsc1-owl-theme">
+      
+      <div class="fpsc1-carousel-track">
+    
+               {% for product in recent_products %}
+        <!-- Product 5 -->
+        <div class="fpsc1-product-card">
+          <div class="fpsc1-product-badge">Upto 10% OFF</div>
+          <div class="fpsc1-product-image">
+          
+                        {% comment %} <img src="{{ product.thumbnail.url }}" class="tq12-card-img" alt="{{ prod.name }}"> {% endcomment %}
+                        
+            {% if product.thumbnail and product.thumbnail.url %}
+              <img src="{{product.thumbnail.url }}" class="tq12-card-img" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'img/default.jpg' %}" class="tq12-card-img" alt="No Image">
+            {% endif %}
+
+                    
+          </div>
+          <div class="fpsc1-product-details">
+            <h4 class="fpsc1-product-title">{{ product.name|truncatechars:30 }}</h4>
+            <div class="fpsc1-price-container">
+                {% if product.get_default_variant %}
+              <span class="fpsc1-current-price">  ₹{{ product.get_default_variant.price_after_discount|floatformat:0 }}</span>   {% if product.get_default_variant.discount > 0 %}
+              <span class="fpsc1-original-price">₹{{ product.get_default_variant.price_before_discount|floatformat:0 }}</span>
+            </div> {% endif %}
+                        
+            <a href="{{ product.get_absolute_url }}" class="fpsc1-view-btn" style="text-decoration:none">View Product</a>
+          </div>
+        </div>
+            {% endif %}
+         {% endfor %}
+      </div>
+      
+     
+    </div>
+  </div>
+
+
+
+</section>
+{% endif %}
+
+
+<!-- ================================================== -->
+
+
+ 
+
+<section class="fpsc-product-carousel-section">
+  <div class="fpsc-product-carousel-container">
+    <h3 class="fpsc-carousel-title">You may also like</h3>
+    
+    <div class="fpsc-product-carousel fpsc-owl-theme">
+      
+      <div class="fpsc-carousel-track">
+    
+               {% for rec_product in recommended_products %}
+        <!-- Product 5 -->
+        <div class="fpsc-product-card">
+          <div class="fpsc-product-badge">Upto 10% OFF</div>
+          <div class="fpsc-product-image">
+          
+            
+
+              {% if rec_product.image %}
+            <img src="{{ rec_product.image.url }}" class="tq12-card-img" alt="{{ rec_product.name }}">
+          {% elif rec_product.variants.first.image %}
+            <img src="{{ rec_product.variants.first.image.url }}"class="tq12-card-img"  alt="{{ rec_product.name }}">
+          {% else %}
+            <img src="{% static 'images/default-product.jpg' %}"class="tq12-card-img"  alt="No Image">
+          {% endif %}
+                    
+          </div>
+          <div class="fpsc-product-details">
+            <h4 class="fpsc-product-title">{{ rec_product.name }}</h4>
+            <div class="fpsc-price-container">
+                {% with rec_product.get_default_variant as variant %}
+            {% if variant %}
+              <span class="fpsc-current-price">  ₹{{ variant.price_after_discount|floatformat:2 }}</span>    {% if variant.discount > 0 %}
+              <span class="fpsc-original-price"> ₹{{ variant.price_before_discount|floatformat:2 }}</span>
+            </div> {% endif %}
+                        
+            <a href="{{ prod.get_absolute_url }}" class="fpsc-view-btn" style="text-decoration:none">View Product</a>
+          </div>
+        </div>
+   {% endif %}
+          {% endwith %}       
+          
+          
+           {% empty %}
+      <p>No recommendations available.</p>
+          {% endfor %}
+      </div>
+      
+     
+    </div>
+  </div>
+
+
+
+</section>
+
+
+
+<!-- =============================================================== -->
+
+
+
+<!-- =============================================================== -->
+
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Product Detail Page -->
+
+
+<script>
+document.getElementById('check-pincode-btn').addEventListener('click', function() {
+    const pincodeInput = document.getElementById('pincode');
+    let pincode = pincodeInput.value.trim();
+    if (!pincode) {
+        alert('Please enter a pincode.');
+        return;
+    }
+
+    // ✅ Show loading message
+    const resultsContainer = document.getElementById('shipping-results');
+    resultsContainer.innerHTML = '<div>Checking delivery...</div>';
+
+    // ✅ Pass product_id as query param
+    const productId = "{{ product.id }}";  // Django template variable
+
+    fetch(`/check-pincode/?pincode=${encodeURIComponent(pincode)}&product_id=${productId}`)
+        .then(res => res.json())
+        .then(data => {
+            resultsContainer.innerHTML = ''; // Clear previous
+
+            if (data.available) {
+                const html = `
+                    <div style="padding:5px;   margin-bottom:5px;">
+                        <strong>${data.product}</strong><br>
+                        Delivery: Available<br>
+                       
+                        Estimated Delivery: ${data.eta}<br>
+                        
+                        COD Available: ${data.cod ? 'Yes' : 'No'}
+                    </div>
+                `;
+                resultsContainer.innerHTML = html;
+            } else {
+                const html = `
+                    <div style="padding:5px; border:1px solid #f00; color:#f00; display:inline-block;">
+                        Delivery not available for this pincode.<br>
+                    </div>
+                `;
+                resultsContainer.innerHTML = html;
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching shipping info:', err);
+            resultsContainer.innerHTML = '<div style="color:red;">Error fetching shipping info. Try again.</div>';
+        });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Color Preview on Hover
+    function previewColor(imageUrl) {
+        document.getElementById('mainImage').src = imageUrl;
+        document.getElementById('mainImage').dataset.zoomImage = imageUrl;
+    }
+    
+    // Image Zoom Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const zoomContainer = document.getElementById('zoomContainer');
+        const mainImage = document.getElementById('mainImage');
+        const zoomLens = document.getElementById('zoomLens');
+        const zoomResult = document.getElementById('zoomResult');
+        
+        if (!zoomContainer || !mainImage) return;
+        
+        // Create zoom result image
+        const zoomImg = document.createElement('img');
+        zoomImg.src = mainImage.src;
+        zoomResult.appendChild(zoomImg);
+        
+        // Calculate the ratio between result and lens
+        const cx = zoomResult.offsetWidth / zoomLens.offsetWidth;
+        const cy = zoomResult.offsetHeight / zoomLens.offsetHeight;
+        
+        // Set background properties
+        zoomImg.style.width = (mainImage.width * cx) + 'px';
+        zoomImg.style.height = (mainImage.height * cy) + 'px';
+        
+        // Mouse events
+        zoomContainer.addEventListener('mousemove', moveLens);
+        zoomContainer.addEventListener('mouseenter', function() {
+            zoomLens.style.display = 'block';
+            zoomResult.style.display = 'block';
+        });
+        zoomContainer.addEventListener('mouseleave', function() {
+            zoomLens.style.display = 'none';
+            zoomResult.style.display = 'none';
+        });
+        
+        function moveLens(e) {
+            e.preventDefault();
+            
+            // Get cursor position
+            const rect = zoomContainer.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            
+            // Prevent lens from going outside
+            x = Math.max(zoomLens.offsetWidth/2, Math.min(x, rect.width - zoomLens.offsetWidth/2));
+            y = Math.max(zoomLens.offsetHeight/2, Math.min(y, rect.height - zoomLens.offsetHeight/2));
+            
+            // Set lens position
+            zoomLens.style.left = x + 'px';
+            zoomLens.style.top = y + 'px';
+            
+            // Calculate zoomed image position
+            const posX = (x - zoomLens.offsetWidth/2) * cx;
+            const posY = (y - zoomLens.offsetHeight/2) * cy;
+            
+            // Position the zoomed image
+            zoomImg.style.left = '-' + posX + 'px';
+            zoomImg.style.top = '-' + posY + 'px';
+        }
+    });
+    
+    // Change Main Image
+    function changeImage(element, imageUrl) {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = imageUrl;
+        mainImage.dataset.zoomImage = imageUrl;
+        
+        // Update zoom image
+        const zoomImg = document.querySelector('#zoomResult img');
+        if (zoomImg) {
+            zoomImg.src = imageUrl;
+        }
+        
+        // Update active thumbnail
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        element.classList.add('active');
+    }
+    
+    // Select size
+    function selectSize(element) {
+        if(element.classList.contains('out-of-stock')) return;
+        
+        document.querySelectorAll('.size-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        
+        // Update price if different variants have different prices
+        const newPrice = element.dataset.price;
+        document.getElementById('currentPrice').textContent = `₹${newPrice}`;
+        
+        // Update stock status
+        const stockStatus = document.querySelector('.stock-status');
+        if (element.classList.contains('out-of-stock')) {
+            stockStatus.className = 'stock-status out-of-stock';
+            stockStatus.innerHTML = '<i class="fas fa-times-circle"></i> Out of Stock';
+            document.querySelector('.add-to-cart-btn').disabled = true;
+            document.querySelector('.buy-now-btn').disabled = true;
+        } else {
+            const stockText = element.querySelector('small') ? `Only ${element.querySelector('small').textContent.trim()} left!` : 'In Stock - Ready to Ship';
+            if (element.querySelector('small')) {
+                stockStatus.className = 'stock-status low-stock';
+                stockStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${stockText}`;
+            } else {
+                stockStatus.className = 'stock-status in-stock';
+                stockStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${stockText}`;
+            }
+            document.querySelector('.add-to-cart-btn').disabled = false;
+            document.querySelector('.buy-now-btn').disabled = false;
+        }
+    }
+    
+    // Add to cart with enhanced animation
+    function addToCart() {
+        const selectedSize = document.querySelector('.size-option.selected');
+        if(!selectedSize) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a size first!',
+                confirmButtonColor: '#6C5CE7'
+            });
+            return;
+        }
+        
+        const variantId = selectedSize.dataset.variantId;
+        const productId = '{{ product.id }}';
+        const csrfToken = '{{ csrf_token }}';
+        
+        const btn = document.querySelector('.add-to-cart-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+        btn.disabled = true;
+        
+        fetch(`/cart/add/${productId}/${variantId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to add to cart");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Show success message
+            const successMsg = document.getElementById('cartSuccessMessage');
+            successMsg.style.display = 'block';
+            
+            // Create celebration effect
+            createCelebration('#6C5CE7', ['🛒', '👜', '🎁', '🛍️', '📦']);
+            
+            // Update cart count in navbar if you have one
+            if (data.cart_count) {
+                const cartCountElements = document.querySelectorAll('.cart-count');
+                cartCountElements.forEach(el => {
+                    el.textContent = data.cart_count;
+                    el.classList.add('animate__animated', 'animate__rubberBand');
+                    setTimeout(() => {
+                        el.classList.remove('animate__animated', 'animate__rubberBand');
+                    }, 1000);
+                });
+            }
+            
+            // Hide success message after delay
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 2000);
+            
+            // Reset button state
+            btn.innerHTML = '<i class="fas fa-check"></i> Added!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                btn.disabled = false;
+            }, 2000);
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Could not add item to cart. Please Login First',
+                confirmButtonColor: '#6C5CE7',
+                customClass: {
+                    popup: 'animate__animated animate__shakeX'
+                }
+            });
+            btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+            btn.disabled = false;
+        });
+    }
+    
+    // Buy now
+    function buyNow() {
+        const selectedSize = document.querySelector('.size-option.selected');
+        if(!selectedSize) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a size first!',
+                confirmButtonColor: '#6C5CE7',
+                customClass: {
+                    popup: 'animate__animated animate__shakeX'
+                }
+            });
+            return;
+        }
+        
+        const variantId = selectedSize.dataset.variantId;
+        const productId = '{{ product.id }}';
+        const csrfToken = '{{ csrf_token }}';
+        
+        const btn = document.querySelector('.buy-now-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+        
+        fetch(`/cart/add/${productId}/${variantId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to add to cart");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Create a flying bolt animation
+            const boltIcon = document.createElement('div');
+            boltIcon.innerHTML = '<i class="fas fa-bolt"></i>';
+            boltIcon.style.position = 'fixed';
+            boltIcon.style.left = (btn.getBoundingClientRect().left + btn.offsetWidth/2) + 'px';
+            boltIcon.style.top = (btn.getBoundingClientRect().top) + 'px';
+            boltIcon.style.fontSize = '24px';
+            boltIcon.style.color = 'var(--success)';
+            boltIcon.style.zIndex = '1000';
+            boltIcon.style.transition = 'all 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            document.body.appendChild(boltIcon);
+            
+            // Animate the flying bolt
+            setTimeout(() => {
+                boltIcon.style.left = 'calc(100% - 50px)';
+                boltIcon.style.top = '20px';
+                boltIcon.style.transform = 'scale(1.5)';
+                boltIcon.style.opacity = '0';
+            }, 50);
+            
+            // Remove the flying icon and redirect
+            setTimeout(() => {
+                boltIcon.remove();
+                window.location.href = "{% url 'checkout' %}";
+            }, 500);
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Could not proceed to checkout.  Please Login First',
+                confirmButtonColor: '#6C5CE7',
+                customClass: {
+                    popup: 'animate__animated animate__shakeX'
+                }
+            });
+            btn.innerHTML = '<i class="fas fa-bolt"></i> Buy Now';
+            btn.disabled = false;
+        });
+    }
+    
+    // Wishlist form submission with enhanced animation
+    document.getElementById('wishlistForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const btn = document.getElementById('wishlistBtn');
+        
+        // Create a heart explosion effect
+        for (let i = 0; i < 10; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '<i class="fas fa-heart"></i>';
+            heart.style.position = 'absolute';
+            heart.style.left = (btn.getBoundingClientRect().left + btn.offsetWidth/2) + 'px';
+            heart.style.top = (btn.getBoundingClientRect().top + btn.offsetHeight/2) + 'px';
+            heart.style.color = 'var(--secondary)';
+            heart.style.fontSize = Math.random() * 10 + 10 + 'px';
+            heart.style.opacity = '0';
+            heart.style.transition = `all ${0.5 + Math.random()}s ease-out`;
+            heart.style.transform = 'translate(0, 0) scale(0)';
+            heart.style.zIndex = '1000';
+            document.body.appendChild(heart);
+            
+            // Animate hearts
+            setTimeout(() => {
+                heart.style.opacity = '1';
+                heart.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px) scale(1)`;
+                
+                setTimeout(() => {
+                    heart.style.opacity = '0';
+                    heart.style.transform = `translate(${(Math.random() - 0.5) * 200}px, ${(Math.random() - 0.5) * 200}px) scale(0)`;
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 1000);
+                }, 500);
+            }, i * 100);
+        }
+        
+        // Add bounce animation to button
+        btn.classList.add('animate__animated', 'animate__rubberBand');
+        setTimeout(() => {
+            btn.classList.remove('animate__animated', 'animate__rubberBand');
+        }, 1000);
+        
+        // Submit the form
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const successMsg = document.getElementById('wishlistSuccessMessage');
+                successMsg.style.display = 'block';
+                
+                // Create celebration effect
+                createCelebration('#FD79A8', ['❤️', '💖', '💝', '💘', '💗']);
+                
+                if (data.added) {
+                    btn.innerHTML = '<i class="fas fa-heart"></i>';
+                    btn.style.backgroundColor = 'var(--secondary)';
+                } else {
+                    btn.innerHTML = '<i class="far fa-heart"></i>';
+                    btn.style.backgroundColor = 'var(--accent)';
+                }
+                
+                // Update wishlist count if needed
+                if (data.wishlist_count !== undefined) {
+                    const wishlistCountElements = document.querySelectorAll('.wishlist-count');
+                    wishlistCountElements.forEach(el => {
+                        el.textContent = data.wishlist_count;
+                        el.classList.add('animate__animated', 'animate__rubberBand');
+                        setTimeout(() => {
+                            el.classList.remove('animate__animated', 'animate__rubberBand');
+                        }, 1000);
+                    });
+                }
+                
+                // Hide success message after delay
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                    // Refresh the page to update the wishlist state
+                    location.reload();
+                }, 2000);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Could not update wishlist.  Please Login First',
+                    confirmButtonColor: '#6C5CE7',
+                    customClass: {
+                        popup: 'animate__animated animate__shakeX'
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Could not update wishlist.  Please Login First',
+                confirmButtonColor: '#6C5CE7',
+                customClass: {
+                    popup: 'animate__animated animate__shakeX'
+                }
+            });
+        });
+    });
+    
+    // Review Modal Functions
+    function openReviewModal(startIndex) {
+        const modal = document.getElementById('reviewModal');
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Scroll to the selected image
+        if (startIndex > 0) {
+            const images = modal.querySelectorAll('.review-modal-img');
+            if (images[startIndex]) {
+                setTimeout(() => {
+                    images[startIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Open modal from thumbnail in individual reviews
+    function openReviewModalFromThumbnail(imageUrl) {
+        const modal = document.getElementById('reviewModal');
+        const modalContent = document.getElementById('reviewModalContent');
+        
+        // Clear existing content
+        modalContent.innerHTML = '';
+        
+        // Add the clicked image
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.className = 'review-modal-img';
+        modalContent.appendChild(img);
+        
+        // Show modal
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Create celebration effect
+    function createCelebration(color, icons) {
+        const colors = color ? [color] : ['#6C5CE7', '#00B894', '#FD79A8', '#FDCB6E', '#0984E3'];
+        const celebrationIcons = icons || ['★', '❤️', '✌️', '👍', '🎉', '👏'];
+        
+        for (let i = 0; i < 30; i++) {
+            const element = document.createElement('div');
+            element.className = 'celebration';
+            element.textContent = celebrationIcons[Math.floor(Math.random() * celebrationIcons.length)];
+            element.style.left = Math.random() * 100 + 'vw';
+            element.style.top = (window.innerHeight + 50) + 'px';
+            element.style.color = colors[Math.floor(Math.random() * colors.length)];
+            element.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            element.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            element.style.animationDelay = (Math.random() * 0.5) + 's';
+            document.body.appendChild(element);
+            
+            setTimeout(() => {
+                element.remove();
+            }, 2500);
+        }
+    }
+
+    // Image preview for review images
+    document.getElementById('reviewImages').addEventListener('change', function(e) {
+        const container = document.getElementById('imagePreviewContainer');
+        container.innerHTML = '';
+        
+        if (this.files) {
+            Array.from(this.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.className = 'review-thumbnail';
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    });
+    
+    // Submit review with enhanced success message
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        // Hide error message if shown
+        document.getElementById('reviewError').style.display = 'none';
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const successMsg = document.getElementById('successMessage');
+                successMsg.style.display = 'block';
+                
+                // Create celebration effect
+                createCelebration('#00B894',  ['★', '❤️', '✌️', '👍', '🎉', '👏']);
+                
+                // Reset form
+                form.reset();
+                document.getElementById('imagePreviewContainer').innerHTML = '';
+                
+                // Hide success message after delay
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                    
+                    // Reload page to show new review
+                    location.reload();
+                }, 2000);
+            } else {
+                throw new Error(data.error || 'Form validation failed');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            const errorMsg = document.getElementById('reviewError');
+            errorMsg.style.display = 'flex';
+            errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message || 'Failed to submit review. Please try again.'}`;
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Review';
+        });
+    });
+</script>
+<script type="module">
+    import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+
+    const lightbox = new PhotoSwipeLightbox({
+        gallery: '#product-gallery',
+        children: 'a',
+        pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.min.js')
+    });
+    lightbox.init();
+</script>
+<script type="module">
+    import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+
+    // Product gallery
+    const productLightbox = new PhotoSwipeLightbox({
+        gallery: '#product-gallery',
+        children: 'a',
+        pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.min.js')
+    });
+    productLightbox.init();
+
+    // Review gallery
+    const reviewLightbox = new PhotoSwipeLightbox({
+        gallery: '#review-gallery',
+        children: 'a',
+        pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.min.js')
+    });
+    reviewLightbox.init();
+</script>
+
+ <script src="{% static 'js/productdetail.js' %}"></script>
+
+{% endblock %}

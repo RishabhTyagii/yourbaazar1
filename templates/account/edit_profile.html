@@ -1,0 +1,113 @@
+<!-- templates/edit_profile.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block title %}Edit Profile{% endblock %}
+    
+    {% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/editprofile.css' %}">
+{% endblock %}
+
+ 
+{% block content %}
+<div class="modern-edit-profile">
+  <div class="edit-profile-container">
+    <!-- Header with Back Button -->
+    <div class="edit-header">
+      <a href="{% url 'view_profile' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1>Edit Your Profile</h1>
+    </div>
+
+    <!-- Profile Picture Upload -->
+    <div class="avatar-upload">
+      <div class="avatar-preview">
+        <div class="avatar-preview-inner" id="avatarPreview">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+      </div>
+      <label for="avatarUpload" class="upload-button">
+        <i class="fas fa-camera"></i> Change Photo
+      </label>
+      <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+    </div>
+
+    <!-- Edit Form -->
+    <form method="POST" class="profile-edit-form">
+      {% csrf_token %}
+      
+      <div class="form-grid">
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="form-help">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{% url 'change_password_with_otp' %}" class="btn-change-password">
+          <i class="fas fa-lock"></i> Change Password
+        </a>
+      </div>
+    </form>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="form-messages">
+      {% for message in messages %}
+      <div class="alert-message {{ message.tags }}">
+        <i class="fas 
+          {% if message.tags == 'success' %}fa-check-circle
+          {% elif message.tags == 'error' %}fa-times-circle
+          {% else %}fa-info-circle{% endif %}"></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google Fonts (Poppins) -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+
+<script>
+  // Simple avatar preview on upload
+  document.getElementById('avatarUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const preview = document.getElementById('avatarPreview');
+        preview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = event.target.result;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+{% endblock %}

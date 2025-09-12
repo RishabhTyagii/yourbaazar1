@@ -1,0 +1,208 @@
+{% extends "seller/sellerbase.html" %}
+{% load static %}
+{% block content %}
+<section class="wrap">
+  <header class="head">
+    <h1 class="title">Share your Experience</h1>
+    <p class="sub">Your review helps other sellers make informed decisions.</p>
+  </header>
+
+  <form method="post" enctype="multipart/form-data" class="card form" novalidate>
+    {% csrf_token %}
+
+    <!-- Avatar Upload -->
+    <div class="form-row">
+      <label class="label" for="{{ form.photo.id_for_label }}">Your Photo</label>
+      <div class="avatar-field">
+        <div class="avatar-preview square" id="avatarPreview">
+          {% if instance and instance.photo %}
+            <img src="{{ instance.photo.url }}" alt="Your photo">
+          {% else %}
+            <div class="avatar-fallback">+</div>
+          {% endif %}
+        </div>
+        <div class="file-wrap">
+          {{ form.photo }}
+          <small class="hint">PNG/JPG up to 2MB. Square works best.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Star Rating -->
+    <div class="form-row">
+      <label class="label">Rating</label>
+      {{ form.rating }}
+      <div class="stars" role="radiogroup" aria-label="Rate your experience out of 5">
+        <div class="star-group" data-for="id_rating">
+          {% for i in "54321" %}
+            <input class="star-input" type="radio" id="star{{ i }}" value="{{ i }}"
+                   {% if form.instance and form.instance.rating|stringformat:"s" == i %}checked{% endif %}>
+            <label class="star" for="star{{ i }}" title="{{ i }} stars">★</label>
+          {% endfor %}
+        </div>
+      </div>
+      {% if form.rating.errors %}
+        <div class="errors">
+          {% for e in form.rating.errors %}
+            <div class="error">{{ e }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Names -->
+    <div class="grid">
+      <div class="form-row">
+        <label class="label" for="{{ form.display_name.id_for_label }}">Your Name</label>
+        <div class="control floating">
+          {{ form.display_name }}
+          <span class="placeholder">Your Name</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="label" for="{{ form.business_name.id_for_label }}">Business Name</label>
+        <div class="control floating">
+          {{ form.business_name }}
+          <span class="placeholder">Business Name</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="form-row">
+      <label class="label" for="{{ form.experience.id_for_label }}">Your Experience</label>
+      <div class="control floating">
+        {{ form.experience }}
+        <span class="placeholder">Write your experience here...</span>
+      </div>
+      <small class="hint">Be specific about service, delivery, support, and results.</small>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'seller_reviews:testimonial_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</section>
+
+<style>
+/* === Variables === */
+:root{
+  --bg:#f7f8fb; --surface:#ffffff; --text:#0b1220; --muted:#556070; --muted-2:#6b7280;
+  --border:#e5e7eb; --border-strong:#d1d5db; --primary:#2563eb; --primary-600:#1d4ed8;
+  --radius-lg:16px; --radius-md:12px; --shadow-sm:0 6px 16px rgba(16,19,24,.08);
+  --shadow-md:0 14px 30px rgba(16,19,24,.10); --focus: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* === Page & Header === */
+.wrap{ max-width:860px; margin:0 auto; padding:2rem; }
+.head{ margin-bottom:16px; }
+.title{ margin:0 0 4px; font-size:clamp(1.25rem,2.6vw,1.9rem); font-weight:800; color:var(--primary-600);}
+.sub{ margin:0; color:var(--muted-2); }
+
+/* === Card Form === */
+.card.form{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm); padding:2rem;
+}
+.form-row{ margin-bottom:16px; }
+.label{ display:block; font-weight:700; margin-bottom:6px; }
+
+/* === Grid === */
+.grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+@media(min-width:720px){ .grid{ grid-template-columns:1fr 1fr; } }
+
+/* === Input Controls === */
+.control{ position:relative; }
+.control input[type="text"], .control textarea, form input[type="file"]{
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border);
+  font:inherit; color:var(--text); background:#fff; outline:none; transition: all 0.15s ease;
+}
+textarea{ min-height:140px; resize:vertical; }
+.control input:focus, .control textarea:focus{ border-color:var(--primary-600); box-shadow:var(--focus); }
+
+/* === Floating Labels === */
+.floating .placeholder{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:#94a3b8; pointer-events:none; transition:0.12s ease; background:#fff; padding:0 6px;
+}
+.floating input:not(:placeholder-shown) ~ .placeholder,
+.floating textarea:not(:placeholder-shown) ~ .placeholder,
+.floating input:focus ~ .placeholder,
+.floating textarea:focus ~ .placeholder{
+  top:0; transform:none; font-size:.8rem; color:#6b7280;
+}
+
+/* === Avatar Field === */
+.avatar-field{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.avatar-preview.square{
+  width:80px; height:80px; border-radius:12px; overflow:hidden; border:1px dashed var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--muted-2);
+  cursor:pointer; transition: all 0.2s ease;
+}
+.avatar-preview.square img{ width:100%; height:100%; object-fit:cover; border-radius:12px; }
+.avatar-preview.square:hover{ border-color:var(--primary); background:rgba(37,99,235,0.05); }
+.file-wrap .hint{ font-size:.85rem; color:#64748b; margin-top:4px; }
+
+/* === Star Rating === */
+.stars{ display:block; margin-top:6px; }
+.star-group{ display:flex; flex-direction: row-reverse; gap:4px; }
+.star-input{ display:none; }
+.star{ font-size:2rem; color:#dcdfe4; cursor:pointer; transition:.15s ease; user-select:none; padding:2px; border-radius:6px; }
+.star:hover, .star:hover ~ .star, .star-input:checked ~ label{ color:#f5b301; transform:translateY(-1px); }
+.star:focus-visible{ outline:2px solid var(--primary-600); outline-offset:2px; }
+
+/* === Actions === */
+.actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.btn{ padding:10px 16px; border-radius:12px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.btn-primary{ background:var(--primary); color:#fff; border:none; }
+.btn-primary:hover{ background:var(--primary-600); }
+.btn-secondary{ background:#eef2ff; color:var(--primary-700); border:1px solid #e0e7ff; text-decoration:none; }
+.btn-secondary:hover{ background:#e0e7ff; }
+
+/* === Responsive === */
+@media(max-width:480px){ .card.form{ padding:16px; } .grid{ grid-template-columns:1fr; } .actions{ flex-direction:column; } .btn{ width:100%; } }
+</style>
+
+<script>
+(function(){
+  // Star input -> hidden rating
+  const group = document.querySelector('.star-group');
+  const hidden = document.getElementById(group?.dataset.for);
+  if(group && hidden){
+    group.querySelectorAll('.star-input').forEach(inp=>{
+      const label = group.querySelector(`label[for="${inp.id}"]`);
+      inp.addEventListener('change',()=> hidden.value=inp.value);
+      label?.addEventListener('keydown',(e)=>{
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); inp.checked=true; hidden.value=inp.value; }
+      });
+    });
+  }
+
+  // Avatar preview
+  const fileInput = document.querySelector('input[type="file"]');
+  const preview = document.getElementById('avatarPreview');
+  if(fileInput && preview){
+    preview.addEventListener('click',()=>fileInput.click());
+    fileInput.addEventListener('change', e=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      preview.innerHTML='';
+      const img = document.createElement('img');
+      img.src=url;
+      img.alt='Preview';
+      img.onload=()=> URL.revokeObjectURL(url);
+      preview.appendChild(img);
+    });
+  }
+
+  // Floating labels
+  document.querySelectorAll('.control.floating input, .control.floating textarea').forEach(el=>{
+    if(!el.getAttribute('placeholder')) el.setAttribute('placeholder',' ');
+  });
+})();
+</script>
+
+{% endblock %}

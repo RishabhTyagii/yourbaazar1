@@ -1,0 +1,491 @@
+{% load static %}
+{% block content %}
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="page">
+  <div class="page-header">
+    <div class="title-wrap">
+      <h2 class="page-title">Edit Product</h2>
+      <div class="page-subtitle">
+        <span class="badge mono">SKU: {{ product.sku }}</span>
+        <span class="divider"></span>
+        <span class="muted">{{ product.name }}</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-danger" role="button">Back</a>
+      <button form="product-form" type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+
+  <form id="product-form" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <div class="grid">
+      <section class="card span-7">
+        <header class="card-header">
+          <h3 class="card-title">Main Details</h3>
+          <p class="card-desc">Primary product attributes and content.</p>
+        </header>
+        <div class="card-body form-grid">
+          {{ pform.non_field_errors }}
+          {{ pform.media }}
+          {% for field in pform %}
+            <div class="form-field {% if field.errors %}has-error{% endif %}">
+              <label for="{{ field.id_for_label }}">{{ field.label }}
+                {% if field.field.required %}<span class="req" aria-hidden="true">*</span><span class="sr-only"> required</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+              {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <aside class="card span-5">
+        <header class="card-header">
+          <h3 class="card-title">Operational Meta</h3>
+          <p class="card-desc">Internal settings, status, and logistics.</p>
+        </header>
+        <div class="card-body form-grid">
+          {{ meta_form.non_field_errors }}
+          {% for field in meta_form %}
+            <div class="form-field {% if field.errors %}has-error{% endif %}">
+              <label for="{{ field.id_for_label }}">{{ field.label }}
+                {% if field.field.required %}<span class="req" aria-hidden="true">*</span><span class="sr-only"> required</span>{% endif %}
+              </label>
+              {{ field }}
+              
+              {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+              {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <section class="card span-12">
+        <header class="card-header">
+          <h3 class="card-title">Colors & Variants</h3>
+          <p class="card-desc">Manage color options and their associated variants.</p>
+        </header>
+
+        <div class="card-body">
+          {{ cformset.non_form_errors }}
+          {{ cformset.management_form }}
+
+          {% for cform in cformset.forms %}
+            <div class="color-block">
+              <div class="color-block-head">
+                <h4 class="color-title">Color #{{ forloop.counter }}</h4>
+                <div class="color-status">
+                  {% if cform.instance.id %}
+                    <span class="badge">ID: {{ cform.instance.id }}</span>
+                  {% endif %}
+                  {% if cform.instance and cform.instance.swatch %}
+                    <span class="swatch" style="--swatch: {{ cform.instance.swatch }};"></span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="form-grid">
+                {% for field in cform.visible_fields %}
+                  <div class="form-field {% if field.errors %}has-error{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}
+                      {% if field.field.required %}<span class="req" aria-hidden="true">*</span><span class="sr-only"> required</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+                    {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                  </div>
+                {% endfor %}
+                <input type="hidden" name="{{ cform.prefix }}-id" value="{{ cform.instance.id }}">
+              </div>
+
+              <!-- Variants for this color -->
+              <div class="variant-block">
+                <h5 class="variant-title">Variants</h5>
+                {% with idx=forloop.counter0 %}
+                  {% for v_idx, vfs in variant_formsets %}
+                    {% if v_idx == idx %}
+                      {{ vfs.non_form_errors }}
+                      {{ vfs.management_form }}
+
+                      <div class="variant-grid">
+                        {% for vform in vfs.forms %}
+                          <div class="variant-card">
+                            <div class="variant-card-head">
+                              <span class="badge muted">#{{ forloop.counter }}</span>
+                            </div>
+                            <div class="card-body form-grid">
+                              {% for field in vform.visible_fields %}
+                                <div class="form-field {% if field.errors %}has-error{% endif %}">
+                                  <label for="{{ field.id_for_label }}">{{ field.label }}
+                                    {% if field.field.required %}<span class="req" aria-hidden="true">*</span><span class="sr-only"> required</span>{% endif %}
+                                  </label>
+                                  {{ field }}
+                                  {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+                                  {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                                </div>
+                              {% endfor %}
+                              <input type="hidden" name="{{ vform.prefix }}-id" value="{{ vform.initial.id }}">
+                            </div>
+                          </div>
+                        {% empty %}
+                          <p class="muted">No variants for this color.</p>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endwith %}
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No colors yet. Add one using your formset controls.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </form>
+
+  <!-- Sticky footer action bar -->
+  <div class="action-bar">
+    <div class="action-bar-inner">
+      <span class="muted small">Unsaved changes may be lost.</span>
+      <div class="spacer"></div>
+      <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-secondary">Cancel</a>
+      <button form="product-form" type="submit" class="btn btn-success">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<style>
+      /* Light theme only */
+      :root {
+        --bg: #f7f8fb;
+        --surface: #ffffff;
+        --surface-2: #ffffff;
+        --surface-3: #f8fafc;
+        --text: #101318;
+        --muted: #5c667a;
+        --border: #e7e9ee;
+        --border-strong: #d7dbe4;
+        --accent: #2563eb;
+        --accent-600: #1d4ed8;
+        --focus: #1d4ed8;
+        --shadow-sm: 0 4px 10px rgba(16,19,24,0.08);
+        --shadow-md: 0 10px 26px rgba(16,19,24,0.10);
+        color-scheme: light;
+      }
+
+      /* Page */
+      body { background: var(--bg); color: var(--text); }
+
+      /* Layout containers */
+      .page {
+        margin: 0 auto;
+        padding: 16px;
+        color: var(--text);
+      }
+
+      .page-header {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .title-wrap {
+        min-width: 240px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .page-title { margin: 0; font-size: 1.5rem; line-height: 1.25; }
+      .page-subtitle { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; word-break: break-word; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface-2);
+        color: var(--text);
+        font-size: 0.8rem;
+      }
+      .badge.muted { color: var(--muted); }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+      .muted { color: var(--muted); }
+      .small { font-size: 0.85rem; }
+      .divider { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); display: inline-block; }
+
+      .header-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* Grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .span-12 { grid-column: span 12; }
+      .span-7 { grid-column: span 7; min-width: 0; }
+      .span-5 { grid-column: span 5; min-width: 0; }
+      @media (max-width: 980px) {
+        .span-7, .span-5 { grid-column: span 12; }
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+      }
+      .card-header { padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+      .card-title { margin: 0; font-size: 1.1rem; line-height: 1.25; }
+      .card-desc { margin: 6px 0 0; color: var(--muted); font-size: 0.95rem; }
+      .card-body { padding: 16px; }
+
+      /* Universal input fixes to prevent overlapping */
+      *, *::before, *::after { box-sizing: border-box; }
+      form { width: 100%; }
+      form p { margin: 0; }
+      form ul.errorlist { margin: 6px 0 0; padding: 0; list-style: none; color: #d32f2f; }
+
+      /* Form grid resilient layout */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(240px, 1fr));
+        gap: 14px 16px;
+      }
+      @media (max-width: 720px) {
+        .form-grid { grid-template-columns: 1fr; }
+      }
+
+      .form-field {
+        min-width: 0;
+      }
+      .form-field label {
+        display: inline-block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        line-height: 1.2;
+        word-break: break-word;
+      }
+
+      /* Inputs */
+      .form-field input[type="text"],
+      .form-field input[type="number"],
+      .form-field input[type="email"],
+      .form-field input[type="url"],
+      .form-field input[type="file"],
+      .form-field input[type="search"],
+      .form-field input[type="date"],
+      .form-field input[type="time"],
+      .form-field input[type="datetime-local"],
+      .form-field select,
+      .form-field textarea {
+        width: 100%;
+        max-width: 100%;
+        line-height: 1.4;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface-3);
+        color: var(--text);
+        outline: none;
+        appearance: none;
+        transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+      }
+
+      /* Select dropdown indicator */
+      .form-field select {
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+          linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+          linear-gradient(to right, transparent, transparent);
+        background-position:
+          calc(100% - 18px) calc(50% - 3px),
+          calc(100% - 12px) calc(50% - 3px),
+          calc(100% - 2.3em) 50%;
+        background-size: 6px 6px, 6px 6px, 1px 1.8em;
+        background-repeat: no-repeat;
+      }
+
+      /* Textarea sizing */
+      .form-field textarea { min-height: 120px; resize: vertical; }
+
+      /* Checkbox/Radio alignment */
+      .form-field input[type="checkbox"],
+      .form-field input[type="radio"] {
+        width: auto;
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      /* Focus and validation */
+      .form-field input:focus,
+      .form-field select:focus,
+      .form-field textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        background: #fff;
+      }
+      .help {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+      }
+      .error {
+        margin-top: 6px;
+        color: #d32f2f;
+        font-size: 0.9rem;
+      }
+      .has-error input,
+      .has-error select,
+      .has-error textarea {
+        border-color: #d32f2f;
+        background: #fff5f5;
+      }
+
+      /* Color block */
+      .color-block {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        background: var(--surface-2);
+        margin-bottom: 16px;
+      }
+      .color-block-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .color-title { margin: 0; font-size: 1.05rem; }
+      .color-status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .swatch {
+        width: 20px; height: 20px; border-radius: 4px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface-3);
+        background: var(--swatch, var(--surface-3));
+      }
+
+      /* Variants */
+      .variant-block { margin-top: 8px; }
+      .variant-title { margin: 0 0 10px; font-size: 0.95rem; color: var(--muted); }
+      .variant-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 12px;
+      }
+      @media (max-width: 860px) {
+        .variant-grid { grid-template-columns: 1fr; }
+      }
+      .variant-card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+      }
+      .variant-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-2);
+      }
+
+
+      
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform .04s ease, filter .15s ease, background-color .15s ease, border-color .15s ease;
+        white-space: nowrap;
+      }
+      .btn:hover { transform: translateY(-1px); }
+      .btn:active { transform: translateY(0); }
+      .btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover { filter: brightness(0.95); }
+      .btn-secondary {
+        background: transparent;
+        border-color: var(--border-strong);
+        color: var(--text);
+      }
+      .btn-secondary:hover { background: var(--surface-3); }
+
+      /* Sticky Action Bar */
+      .action-bar {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: max(10px, env(safe-area-inset-bottom)) 0 0;
+        margin-top: 16px;
+        background: linear-gradient(to top, rgba(255,255,255,0.96), rgba(255,255,255,0));
+        backdrop-filter: blur(6px);
+      }
+      .action-bar-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 16px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .action-bar .spacer { flex: 1; }
+
+      /* Keyboard focus */
+      :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+      /* Optional: if any fields are still rendered via as_p */
+      form p { margin: 0 0 12px; }
+      form p > label { display: inline-block; margin-bottom: 6px; font-weight: 600; }
+      form p input, form p select, form p textarea { width: 100%; }
+
+      /* File input long names */
+      input[type="file"] { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+</style>
+
+<script>
+  // Hide "Back" if referrer is not same-origin to avoid broken navigation.
+  (function () {
+    const back = document.querySelector('.header-actions .btn.btn-secondary');
+    try {
+      if (!document.referrer || new URL(document.referrer).origin !== location.origin) {
+        back.style.display = 'none';
+      }
+    } catch (e) {}
+  })();
+</script>
+
+{% endblock %}

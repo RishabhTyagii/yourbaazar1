@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        /* Modern Color Palette */
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --accent: #f72585;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #ef233c;
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #adb5bd;
+        
+        /* Shadows */
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        --shadow-xl: 0 20px 50px rgba(0,0,0,0.15);
+        
+        /* Transitions */
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --transition-fast: all 0.15s ease;
+        
+        /* Border Radius */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+    }
+    
+    body {
+        background-color: white;
+        color: var(--dark);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    
+    
+    /* Modern Card */
+    .card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+    
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Status Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge i {
+        margin-right: 0.5rem;
+        font-size: 0.8em;
+    }
+    
+    .badge-processing {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+    }
+    
+    .badge-shipped {
+        background-color: rgba(63, 55, 201, 0.1);
+        color: var(--secondary);
+    }
+    
+    .badge-delivered {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success);
+    }
+    
+    .badge-cancelled {
+        background-color: rgba(239, 35, 60, 0.1);
+        color: var(--danger);
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+        margin: 2rem 0;
+    }
+    
+    .progress-track {
+        height: 6px;
+        background: rgba(0,0,0,0.05);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        border-radius: var(--radius-full);
+        transition: width 0.6s ease;
+    }
+    
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+    
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        flex: 1;
+    }
+    
+    .step-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        background: white;
+        border: 2px solid rgba(0,0,0,0.1);
+        transition: var(--transition);
+    }
+    
+    .step-icon-wrapper.completed {
+        background: var(--primary);
+        border-color: transparent;
+        color: white;
+    }
+    
+    .step-icon-wrapper.active {
+        background: white;
+        border-color: var(--primary);
+        transform: scale(1.1);
+    }
+    
+    .step-icon {
+        font-size: 1rem;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--gray);
+        text-align: center;
+        transition: var(--transition);
+    }
+    
+    .step-label.active {
+        color: var(--dark);
+        font-weight: 600;
+    }
+    
+    /* Order Items */
+    .order-item {
+        display: flex;
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        margin-bottom: 1rem;
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .order-item:hover {
+        box-shadow: var(--shadow-sm);
+        border-color: rgba(0,0,0,0.1);
+    }
+    
+    .item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        margin-right: 1.5rem;
+        background: var(--light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .item-image svg {
+        width: 40%;
+        height: 40%;
+        color: var(--gray);
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background: var(--secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+        background: rgba(67, 97, 238, 0.05);
+    }
+    
+    .btn-text {
+        background: transparent;
+        color: var(--primary);
+        padding: 0;
+    }
+    
+    .btn-text:hover {
+        text-decoration: underline;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--light);
+        border-radius: 50%;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-icon svg {
+        width: 40px;
+        height: 40px;
+        color: var(--primary);
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4 {
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    h2 {
+        font-size: 2rem;
+    }
+    
+    h3 {
+        font-size: 1.5rem;
+    }
+    
+    h4 {
+        font-size: 1.25rem;
+    }
+    
+    .text-muted {
+        color: var(--gray);
+    }
+    
+    /* Form Elements */
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition-fast);
+        background: white;
+        color: var(--dark);
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+    
+    /* Utility Classes */
+    .flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .gap-4 {
+        gap: 1rem;
+    }
+    
+    .mt-3 {
+        margin-top: 1.5rem;
+    }
+    
+    .mb-3 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .pt-3 {
+        padding-top: 1.5rem;
+    }
+    
+    .border-t {
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .order-item {
+            flex-direction: column;
+        }
+        
+        .item-image {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-steps {
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .progress-step {
+            flex: 0 0 calc(50% - 0.5rem);
+            margin-bottom: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        .return-button{
+            display:flex;
+        }
+    }
+
+  .custom-btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+  }
+
+  .custom-btn:hover {
+    background-color: #05af84ff;
+  }
+</style>
+
+
+<div class="container">
+    <!-- Tracking Form -->
+    {% if not request.user.is_authenticated %}
+    <div class="card animate-in" style="animation-delay: 0.1s; max-width: 600px; margin: 2rem auto;">
+        <div class="card-header">
+            <h2>Track Your Order</h2>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3">
+                Enter your tracking ID to check your order status
+            </p>
+            
+            <form method="get" id="trackingForm">
+                <div class="form-group">
+                    <input type="text" 
+                           name="tracking_id" 
+                           id="trackingInput"
+                           class="form-control" 
+                           placeholder="Enter tracking ID (e.g. TRK123456)"
+                           value="{{ tracking_id }}"
+                           required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">
+                    <i class="fas fa-search mr-2"></i> Track Order
+                </button>
+            </form>
+            
+            <p class="text-muted mt-3">
+                Don't have an account? <a href="{% url 'login' %}" style="color: var(--primary);">Login</a> to view all orders
+            </p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- For logged in users -->
+    {% if request.user.is_authenticated %}
+    <div class="mt-4 mb-4">
+        <h2>Your Orders</h2>
+        <p class="text-muted">View and manage your recent orders</p>
+    </div>
+<div style="text-align: center; " class="return-button">
+  <a href="{% url 'create_return_request' %}" class="custom-btn ">Return request  </a>
+  <a href="{% url 'return_history' %}" class="custom-btn">View  Return Requests</a>
+</div>
+    {% endif %}
+    
+    <!-- Orders List -->
+    {% if orders %}
+    <div style="display: grid; gap: 1.5rem;">
+        {% for order in orders %}
+        <div class="card animate-in" style="animation-delay: {{ forloop.counter0|add:"1" }}00ms">
+            <div class="card-header">
+                <div>
+                    <h3>Order #{{ order.order_number }}</h3>
+                    <span class="badge 
+                        {% if order.status == 'Delivered' %}badge-delivered
+                        {% elif order.status == 'Cancelled' %}badge-cancelled
+                        {% elif order.status == 'Shipped' %}badge-shipped
+                        {% else %}badge-processing{% endif %} mt-3">
+                        <i class="fas 
+                            {% if order.status == 'Delivered' %}fa-check-circle
+                            {% elif order.status == 'Cancelled' %}fa-times-circle
+                            {% elif order.status == 'Shipped' %}fa-truck
+                            {% else %}fa-cog fa-spin{% endif %}"></i>
+                        {{ order.status }}
+                    </span>
+                </div>
+                <div class="text-muted">
+                    Placed on {{ order.created_at|date:"M d, Y" }}
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 
+                            {% if order.status == 'Processing' %}35%
+                            {% elif order.status == 'Shipped' %}70%
+                            {% elif order.status == 'Delivered' %}100%
+                            {% elif order.status == 'Cancelled' %}100%
+                            {% else %}0%{% endif %}">
+                        </div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="progress-step">
+                            <div class="step-icon-wrapper 
+                                {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' or order.status == 'Cancelled' %}completed{% endif %}">
+                                <i class="fas fa-shopping-cart step-icon"></i>
+                            </div>
+                            <span class="step-label 
+                                {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' or order.status == 'Cancelled' %}active{% endif %}">
+                                Ordered
+                            </span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-icon-wrapper 
+                                {% if order.status == 'Processing' %}active
+                                {% elif order.status == 'Shipped' or order.status == 'Delivered' or order.status == 'Cancelled' %}completed{% endif %}">
+                                <i class="fas fa-cog step-icon"></i>
+                            </div>
+                            <span class="step-label 
+                                {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' or order.status == 'Cancelled' %}active{% endif %}">
+                                Processing
+                            </span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-icon-wrapper 
+                                {% if order.status == 'Shipped' %}active
+                                {% elif order.status == 'Delivered' or order.status == 'Cancelled' %}completed{% endif %}">
+                                <i class="fas fa-truck step-icon"></i>
+                            </div>
+                            <span class="step-label 
+                                {% if order.status == 'Shipped' or order.status == 'Delivered' or order.status == 'Cancelled' %}active{% endif %}">
+                                Shipped
+                            </span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-icon-wrapper 
+                                {% if order.status == 'Delivered' %}completed
+                                {% elif order.status == 'Cancelled' %}completed{% endif %}">
+                                <i class="fas 
+                                    {% if order.status == 'Delivered' %}fa-check
+                                    {% elif order.status == 'Cancelled' %}fa-times{% endif %} step-icon"></i>
+                            </div>
+                            <span class="step-label 
+                                {% if order.status == 'Delivered' or order.status == 'Cancelled' %}active{% endif %}">
+                                {% if order.status == 'Delivered' %}Delivered
+                                {% elif order.status == 'Cancelled' %}Cancelled
+                                {% else %}Delivered{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Items -->
+                <h4 class="mt-4 mb-3">Items ({{ order.items.count }})</h4>
+                {% for item in items %}
+                {% if item.order_id == order.id %}
+                <div class="order-item">
+                    <div class="item-image">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            <path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <div class="flex-between mb-2">
+                            <div>
+                                <h4 style="margin-bottom: 0.25rem;">{{ item.product.name }}</h4>
+                                {% if item.variant %}
+                                <p class="text-muted">
+                                    {{ item.variant.color.color_name }} | {{ item.variant.size }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-weight: 600; color: var(--primary);">₹{{ item.price }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-between mt-3">
+                            <span class="text-muted">Qty: {{ item.quantity }}</span>
+                            {% if order.status == 'Delivered' %}
+                            <a href="/"  class="btn btn-outline">
+                                <i class="fas fa-redo me-2"></i> Reorder
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                
+                <!-- Order Footer -->
+                <div class="flex-between pt-3 border-t mt-3">
+                    <div>
+                        <span class="text-muted">Tracking ID:</span>
+                        <span style="font-family: monospace; background: rgba(67, 97, 238, 0.05); padding: 0.25rem 0.75rem; border-radius: var(--radius-sm); margin-left: 0.5rem; border: 1px solid rgba(67, 97, 238, 0.1);">
+                            {{ order.tracking_id }}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-muted">Total:</span>
+                        <span style="font-weight: 700; color: var(--dark); margin-left: 0.5rem;">
+                            ₹{{ order.total_amount }}
+                        </span>
+                    </div>
+                </div>
+                
+        <!-- Print Invoice Link -->
+<div style="margin-top: 10px; text-align: right;">
+    <a href="{% url 'invoice' order.id %}" class="btn btn-outline">
+        <i class="fas fa-print me-2"></i> Download Invoice
+    </a>
+</div>
+
+                <!-- Order Actions -->
+                {% if order.status != 'Cancelled' and order.status != 'Delivered' %}
+                <div class="flex-between gap-4 mt-3" style="justify-content: flex-end;">
+                    {% if order.status == 'Processing' %}
+                    <button class="btn btn-outline">
+                        <i class="fas fa-times mr-1"></i> Cancel
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-primary">
+                        <i class="fas fa-headset mr-1"></i> Support
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% elif tracking_id %}
+    <div class="empty-state animate-in">
+        <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+            </svg>
+        </div>
+        <h3 style="margin-bottom: 0.5rem;">Order Not Found</h3>
+        <p class="text-muted mb-3">
+            No order found with tracking ID: <strong>{{ tracking_id }}</strong>
+        </p>
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-search mr-2"></i> Try Again
+        </a>
+    </div>
+    {% elif not request.user.is_authenticated %}
+    <div class="empty-state animate-in" style="max-width: 500px; margin: 2rem auto;">
+        <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+            </svg>
+        </div>
+        <h3 style="margin-bottom: 0.5rem;">Track Your Order</h3>
+        <p class="text-muted">
+            Enter your tracking ID above to check your order status
+        </p>
+    </div>
+    {% else %}
+    <div class="empty-state animate-in">
+        <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+        </div>
+        <h3 style="margin-bottom: 0.5rem;">No Orders Yet</h3>
+        <p class="text-muted mb-3">
+            You haven't placed any orders with us yet. Start shopping to see your orders here!
+        </p>
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-shopping-bag mr-2"></i> Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit tracking form
+    const trackingInput = document.getElementById('trackingInput');
+    const trackingForm = document.getElementById('trackingForm');
+    
+    if (trackingInput && trackingForm) {
+        trackingInput.addEventListener('input', function(e) {
+            if (e.target.value.length >= 8) {
+                trackingForm.submit();
+            }
+        });
+    }
+    
+    // Animate elements on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.card').forEach(card => {
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

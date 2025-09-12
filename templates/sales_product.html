@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+    <title>{% block title %} Festivals sales- yourbaazar{% endblock %}</title>
+
+{% block seo %}
+<meta name="title" content="YourBaazar Sale - Best Deals Online">
+<meta name="description" content="Grab the hottest deals at YourBaazar. Discounts up to 70% on fashion, electronics, and home essentials.">
+<meta name="keywords" content="sale, discount, cheap online shopping, best deals, YourBaazar offers">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="YourBaazar Sale - Best Deals Online">
+<meta property="og:description" content="Grab the hottest deals at YourBaazar. Discounts up to 70% on fashion, electronics, and home essentials.">
+<meta property="og:image" content="{% static 'icon/website_logo.png' %}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SpecialAnnouncement",
+  "name": "Mega Sale at YourBaazar",
+  "url": "{{ request.build_absolute_uri }}",
+  "description": "Huge discounts on fashion, electronics, and home essentials. Limited time offer."
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/salesproduct.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="sales-page">
+    <div class="page-header">
+        <h2><i class="fas fa-bolt fire-icon"></i>Flash Sale Products</h2>
+        <div class="sale-badge">LIMITED TIME OFFER</div>
+        <div class="flash-sale-timer">
+            <i class="fas fa-clock"></i> Sale Ends in: <span id="countdown">24:00:00</span>
+        </div>
+    </div>
+    
+    <div class="product-grid">
+        {% for variant in sale_products %}
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="{{ variant.color.product.image.url }}" 
+                         alt="{{ variant.color.product.name }}" 
+                         class="product-image" 
+                         loading="lazy">
+                    <div class="product-badge">{{ variant.discount|floatformat:0 }}% OFF</div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ variant.color.product.name }}</h3>
+                    <div class="product-price">
+                        <span class="current-price">₹{{ variant.price_after_discount|floatformat:2 }}</span>
+                        <span class="original-price">₹{{ variant.price_before_discount|floatformat:2 }}</span>
+                        <span class="discount-percent">{{ variant.discount|floatformat:0 }}% OFF</span>
+                    </div>
+                    <a href="{% url 'product:product_detail' variant.color.product.id %}" class="view-btn">
+                        <i class="fas fa-shopping-cart"></i> Shop Now
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center;">No sale products available.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if sale_products.has_other_pages %}
+            <ul class="pagination-list">
+                {% if sale_products.has_previous %}
+                    <li><a href="?page=1">&laquo; First</a></li>
+                    <li><a href="?page={{ sale_products.previous_page_number }}">‹ Prev</a></li>
+                {% endif %}
+
+                {% for num in sale_products.paginator.page_range %}
+                    {% if sale_products.number == num %}
+                        <li class="active"><span>{{ num }}</span></li>
+                    {% elif num > sale_products.number|add:'-3' and num < sale_products.number|add:'3' %}
+                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if sale_products.has_next %}
+                    <li><a href="?page={{ sale_products.next_page_number }}">Next ›</a></li>
+                    <li><a href="?page={{ sale_products.paginator.num_pages }}">Last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
