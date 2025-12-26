@@ -1,5 +1,8 @@
 {% extends "seller/sellerbase.html" %}
+
+
 {% load static %}
+{% load webp_filter %}
 {% block content %}
     <title>Admin Review - Draft #{{ draft.id }}</title>
     <style>
@@ -403,7 +406,7 @@
 
             {% if draft.thumbnail %}
             <div class="thumbnail">
-                <img src="{{ draft.thumbnail.url }}" alt="Product Thumbnail">
+                <img src="{{ draft.thumbnail.url|to_webp }}" alt="Product Thumbnail">
                 
             </div>
             {% endif %}

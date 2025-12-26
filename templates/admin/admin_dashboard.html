@@ -22,7 +22,10 @@
           <th class="px-4 py-2 border">Email</th>
           <th class="px-4 py-2 border">Total Orders</th>
           <th class="px-4 py-2 border">Total Spent</th>
+
           <th class="px-4 py-2 border">Last Login</th>
+          <th class="px-4 py-2 border">phone </th>
+
           <th class="px-4 py-2 border">Joined</th>
         </tr>
       </thead>
@@ -33,7 +36,10 @@
           <td class="px-4 py-2 border">{{ data.customer.email }}</td>
           <td class="px-4 py-2 border">{{ data.total_orders }}</td>
           <td class="px-4 py-2 border">₹{{ data.total_spent|floatformat:2|intcomma }}</td>
+
           <td class="px-4 py-2 border">{{ data.last_login|naturaltime }}</td>
+
+          <td class="px-4 py-2 border">{{ data.customer.phone_number }}</td>
           <td class="px-4 py-2 border">{{ data.joined|date:"M d, Y" }}</td>
         </tr>
         {% empty %}

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from .models import FestivalSlide
 
 # Register your models here.
 from .models import NavImage, footer, social_media, contact_us,HeroImage, collection_card, shop_sale
@@ -17,3 +18,8 @@ class CollectionCardAdmin(admin.ModelAdmin):
     list_display = ['id', 'womens_heading', 'mens_heading', 'accessories_heading']
     search_fields = ['womens_heading', 'mens_heading', 'accessories_heading']
 admin.site.register(shop_sale)
+
+@admin.register(FestivalSlide)
+class FestivalSlideAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'order')
+    list_editable = ('is_active', 'order')

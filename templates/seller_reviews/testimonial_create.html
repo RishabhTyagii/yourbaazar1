@@ -1,5 +1,7 @@
 {% extends "seller/sellerbase.html" %}
+
 {% load static %}
+{% load webp_filter  %}
 {% block content %}
 <section class="wrap">
   <header class="head">
@@ -16,7 +18,7 @@
       <div class="avatar-field">
         <div class="avatar-preview square" id="avatarPreview">
           {% if instance and instance.photo %}
-            <img src="{{ instance.photo.url }}" alt="Your photo">
+            <img src="{{ instance.photo.url|to_webp }}" alt="Your photo">
           {% else %}
             <div class="avatar-fallback">+</div>
           {% endif %}

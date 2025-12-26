@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load webp_filter %}
 {% block content %}
 
 
@@ -71,7 +71,7 @@
                         <div class="order-product">
                             {% with order.items.first as first_item %}
                             {% if first_item %}
-                            <img src="{{ first_item.variant.color.image_main.url }}" alt="{{ first_item.product.name }}" class="img-fluid"> <br> <br>
+                            <img src="{{ first_item.variant.color.image_main.url|to_webp }}" alt="{{ first_item.product.name }}" class="img-fluid"> <br> <br>
                             <span class="order-product-name"> <br>
                                 {{ first_item.product.name|truncatechars:20 }}
                                 {% if order.items.count > 1 %}

@@ -36,9 +36,11 @@ urlpatterns = [
     # invoice
     path('orders/<int:order_id>/invoice/', views.seller_order_invoice, name='seller_order_invoice'),
     # admin facing
-     path("sellers/", views.seller_list_admin, name="seller_list_admin"),
-     path("sellers/<int:seller_id>/", views.admin_seller_detail, name="admin_seller_detail"),
-   
+    path("sellers/", views.seller_list_admin, name="seller_list_admin"),
+    path("sellers/<int:seller_id>/", views.admin_seller_detail, name="admin_seller_detail"),
+    path('sellers_privacy_policy/', views.sellers_privacy_policy, name='sellers_privacy_policy'),
+    path('seller-registrationcomplete/', views.registrationcomplete, name='registrationcomplete'),
+
     
     
 ]

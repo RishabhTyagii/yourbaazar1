@@ -1,0 +1,62 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'email/style.css' %}">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        {% block body %}
+            <div>
+                {% block title %}
+                    <div class="title">{% translate 'Verification token' %}</div>
+                {% endblock title %}
+
+                {% block introduction %}
+                    <div class="introduction">
+                        {% if introduction %}
+                            {{ introduction }}
+                        {% else %}
+                            {% translate 'Hello' %} {{ first_name }},
+                        {% endif %}
+                    </div>
+                {% endblock introduction %}
+
+                {% block description %}
+                    <div class="description">
+                        {% if description %}
+                            {{ description }}
+                        {% else %}
+                            {% translate 'Your verification token here:' %}
+                        {% endif %}
+                    </div>
+                {% endblock description %}
+
+                {% block token %}
+                    <div class="token">{{ token }}</div>
+                {% endblock token %}
+
+                {% block footer %}
+                    {% if footer %}
+                        {{ footer }}
+                    {% else %}
+                        <div class="footer">{% translate 'Thank you' %}</div>
+                    {% endif %}
+                {% endblock footer %}
+            </div>
+        {% endblock body %}
+    </body>
+</html>

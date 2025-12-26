@@ -175,7 +175,7 @@ def verify_otp(request):
                 # notify admin
                 notify_admin_new_seller(seller.email, seller.username, seller.business_name)
 
-                return redirect("seller:seller_landing")
+                return redirect("seller:registrationcomplete")
     else:
         form = OTPForm()
 
@@ -516,7 +516,7 @@ def seller_logout(request):
     request.session.modified = True
     # request.session.flush()
     # messages.success(request, "Logged out successfully.")
-    return redirect("seller:seller_landing")
+    return redirect("seller:mainpage")
 
 
 @require_seller_login
@@ -947,3 +947,21 @@ def mainpage(request):
     
     # ✅ Agar seller login nahi hai
     return render(request, "seller/sellerindex.html")
+               
+
+
+
+def sellers_privacy_policy(request):
+    return render(request, 'basicinfo/Privacy_Policy/sellers_privacy_policy.html', {
+        'title': 'sellers Privacy Policy | YourBaazar',
+        # Add any dynamic data here if needed
+    })
+
+
+
+def registrationcomplete(request):
+    return render(request, 'seller/registrationcomplete.html', {
+        'title': 'sellers registrationcomplete | YourBaazar',
+        # Add any dynamic data here if needed
+    })
+    

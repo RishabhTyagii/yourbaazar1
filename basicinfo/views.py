@@ -1,6 +1,8 @@
 from django.shortcuts import render
 # from.models import nav_image, footer, social_media, contact_us
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
+from .models import FestivalSlide
 
 from django.core.paginator import Paginator
 from django.shortcuts import render
@@ -82,7 +84,7 @@ def footer_data(request):
         'footer_data': footer_entries,
         'social_links': social_links
     })
-    
+
 def ajax_navbar(request):
     nav_image_logo= NavImage.objects.all()
     return render(request, 'partials/nav.html',{
@@ -418,6 +420,11 @@ def profit_analysis_view(request):
 
     return render(request, 'admin/profit_analysis.html', context)
 
+def festival_slides_view(request):
+    slides = FestivalSlide.objects.filter(is_active=True).order_by('order')
+    return render(request, 'partials/festival_slides.html', {
+        'festival_slides': slides
+    })
 
 
 

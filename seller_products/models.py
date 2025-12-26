@@ -1,10 +1,15 @@
+#seller_products/models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
-
+from decimal import Decimal
 # Adjust imports to your actual apps
 from seller.models import Seller  # your existing Seller
 from product.models import category, subcategory, product_type, product, ProductColor, ProductVariant
+from PIL import Image
+import os
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 class SellerProductDraft(models.Model):
     class Status(models.TextChoices):
@@ -80,11 +85,36 @@ class SellerProductDraft(models.Model):
 class DraftColor(models.Model):
     draft = models.ForeignKey(SellerProductDraft, on_delete=models.CASCADE, related_name='colors')
     color_name = models.CharField(max_length=50)
-    color_code = models.CharField(max_length=7, blank=True)  # HEX
+    color_code = models.CharField(max_length=7, blank=True)
     image_main = models.ImageField(upload_to='drafts/color/%Y/%m/', null=True, blank=True)
     image1 = models.ImageField(upload_to='drafts/color/%Y/%m/', null=True, blank=True)
     image2 = models.ImageField(upload_to='drafts/color/%Y/%m/', null=True, blank=True)
     image3 = models.ImageField(upload_to='drafts/color/%Y/%m/', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Auto convert all uploaded images to WebP
+        for field_name in ['image_main', 'image1', 'image2', 'image3']:
+            image_field = getattr(self, field_name)
+            if image_field and image_field.name and not image_field.name.lower().endswith('.webp'):
+                self._convert_to_webp(field_name)
+
+    def _convert_to_webp(self, field_name):
+        image_field = getattr(self, field_name)
+        if not image_field:
+            return
+        try:
+            img = Image.open(image_field)
+            img = img.convert("RGB")
+
+            webp_io = BytesIO()
+            img.save(webp_io, format='WEBP', quality=80)
+            webp_name = os.path.splitext(image_field.name)[0] + ".webp"
+
+            image_field.save(webp_name, ContentFile(webp_io.getvalue()), save=False)
+            super(DraftColor, self).save(update_fields=[field_name])
+        except Exception as e:
+            print(f"WebP conversion failed for {field_name}: {e}")
 
     def __str__(self):
         return f"{self.draft.name} - {self.color_name}"
@@ -102,9 +132,11 @@ class DraftVariant(models.Model):
 
     @property
     def final_price(self):
-        if self.discount:
-            return self.price_before_discount * (1 - self.discount / 100)
-        return self.price_before_discount
+        if self.price_before_discount is None:
+            return None  # or Decimal("0.00") if you want a safe default
+
+        discount = self.discount or Decimal("0")  # treat None as 0
+        return self.price_before_discount * (Decimal("1") - discount / Decimal("100"))
 
 class SellerProductMeta(models.Model):
     """

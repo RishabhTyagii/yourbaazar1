@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load webp_filter %}
 {% load static %}
 
 {% block extra_css %}
@@ -214,7 +215,7 @@
             </div>
             
             <div class="return-body">
-                <img src="{{ item.order_item.product.image.url }}" alt="{{ item.order_item.product.name }}" class="product-image">
+                <img src="{{ item.order_item.product.image.url|to_webp }}" alt="{{ item.order_item.product.name }}" class="product-image">
                 
                 <div class="product-details">
                     <h3 class="product-name">{{ item.order_item.product.name }}</h3>

@@ -32,15 +32,17 @@ from django.db.models import Q
 
 import requests
 
+from django.core.mail import EmailMultiAlternatives
+
 def send_otp(email, otp):
-    subject = "Your YourBaazar Verification Code"
-    message = f"""
+    subject = "YourBaazar - Email Verification Code"
+
+    text_content = f"""
 Dear Customer,
 
 Thank you for registering with YourBaazar!
 
-Your OTP for account verification is:
-{otp}
+Your OTP for account verification is: {otp}
 
 This code is valid for 10 minutes. Please do not share it with anyone.
 
@@ -48,20 +50,105 @@ Best regards,
 Team YourBaazar
 """
 
+    # ✅ hosted logo link (replace this with your real logo URL if deployed)
+    logo_url = "https://yourbaazar.in/static/icon/logo.png"
+
+    html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourBaazar OTP Verification</title>
+  <style>
+    body {{
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f8fb;
+      margin: 0;
+      padding: 0;
+    }}
+    .container {{
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }}
+    .header {{
+      background: linear-gradient(135deg, #00bfa6, #0097b2);
+      text-align: center;
+      padding: 30px 20px 15px;
+    }}
+    .header img {{
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
+    }}
+    .header h1 {{
+      margin-top: 10px;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+    }}
+    .content {{
+      padding: 30px;
+      text-align: center;
+      color: #333;
+    }}
+    .otp-box {{
+      display: inline-block;
+      background-color: #e6f7ff;
+      color: #0077b6;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      margin: 25px 0;
+    }}
+    .footer {{
+      background: #f9f9f9;
+      color: #777;
+      font-size: 13px;
+      padding: 15px;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="{logo_url}" alt="YourBaazar Logo" />
+      <h1>YourBaazar Verification</h1>
+    </div>
+    <div class="content">
+      <p>Dear Customer,</p>
+      <p>Thank you for registering with <b>YourBaazar</b>!</p>
+      <p>Your One-Time Password (OTP) for account verification is:</p>
+      <div class="otp-box">{otp}</div>
+      <p>This code is valid for <b>10 minutes</b>. Please do not share it with anyone.</p>
+      <p>Best regards,<br><b>Team YourBaazar</b></p>
+    </div>
+    <div class="footer">
+      &copy; {2025} YourBaazar. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+"""
+
     try:
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,  # From email (in settings.py)
-            [email],
-            fail_silently=False,
-        )
+        msg = EmailMultiAlternatives(subject, text_content, settings.DEFAULT_FROM_EMAIL, [email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         print(f"✅ OTP sent to {email}")
         return True
     except Exception as e:
         print(f"❌ Error sending OTP: {e}")
         return False
-# Register View
+
 # ----------------------
 # Register View
 # ----------------------

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Successful - YourBaazar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(74, 108, 247, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: success-shine 8s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes success-shine {
+            0% {
+                transform: rotate(45deg) translateX(-100%);
+            }
+            100% {
+                transform: rotate(45deg) translateX(100%);
+            }
+        }
+
+        .success-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4ad45e 0%, #2ecc71 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 15px 30px rgba(46, 204, 113, 0.3);
+            animation: scaleIn 0.8s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon i {
+            font-size: 60px;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(90deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .success-message {
+            font-size: 20px;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .countdown-container {
+            background: #f7fafc;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 35px 0;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .countdown-title {
+            font-size: 20px;
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .countdown-timer {
+            font-size: 48px;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(90deg, #805ad5 0%, #d53f8c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .countdown-text {
+            font-size: 16px;
+            color: #718096;
+        }
+
+        .redirect-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #805ad5 0%, #d53f8c 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(128, 90, 213, 0.35);
+            position: relative;
+            z-index: 2;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .redirect-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(128, 90, 213, 0.5);
+        }
+
+        .next-steps {
+            background: #f7fafc;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .next-steps-title {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .steps-list {
+            list-style: none;
+        }
+
+        .steps-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+            color: #4a5568;
+        }
+
+        .steps-list li:last-child {
+            border-bottom: none;
+        }
+
+        .steps-list li i {
+            background: #805ad5;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        /* Decorative Elements */
+        .decoration {
+            position: absolute;
+            z-index: 0;
+            font-size: 24px;
+            opacity: 0.15;
+            color: #805ad5;
+        }
+
+        .decoration.d1 { top: 30px; left: 40px; animation: float 8s ease-in-out infinite; }
+        .decoration.d2 { bottom: 30px; right: 40px; animation: float 9s ease-in-out infinite 1s; }
+        .decoration.d3 { top: 50%; left: 30px; animation: float 7s ease-in-out infinite 0.5s; }
+        .decoration.d4 { bottom: 40%; right: 30px; animation: float 10s ease-in-out infinite 1.5s; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .success-card {
+                padding: 40px 25px;
+            }
+            
+            .success-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .success-icon i {
+                font-size: 50px;
+            }
+            
+            .success-title {
+                font-size: 34px;
+            }
+            
+            .success-message {
+                font-size: 18px;
+            }
+            
+            .countdown-timer {
+                font-size: 36px;
+            }
+            
+            .next-steps {
+                padding: 25px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 30px 20px;
+            }
+            
+            .success-icon {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .success-icon i {
+                font-size: 40px;
+            }
+            
+            .success-title {
+                font-size: 28px;
+            }
+            
+            .success-message {
+                font-size: 16px;
+            }
+            
+            .countdown-timer {
+                font-size: 28px;
+            }
+            
+            .redirect-button {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+            
+            .next-steps-title {
+                font-size: 20px;
+            }
+            
+            .steps-list li {
+                font-size: 15px;
+            }
+        }
+    </style>
+
+
+              <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17504115447"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-17504115447');
+</script>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <!-- Decorative Elements -->
+            <i class="decoration d1 fas fa-star"></i>
+            <i class="decoration d2 fas fa-heart"></i>
+            <i class="decoration d3 fas fa-circle"></i>
+            <i class="decoration d4 fas fa-square"></i>
+            
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h1 class="success-title">Registration Successful!</h1>
+            
+            <p class="success-message">
+                Congratulations! Your seller account has been successfully created. 
+                You can now access your seller dashboard and start listing your products.
+            </p>
+            
+            <div class="countdown-container">
+                <div class="countdown-title">Redirecting to login page in:</div>
+                <div class="countdown-timer" id="countdown">20 seconds</div>
+                <div class="countdown-text">You will be automatically redirected to the seller login page</div>
+            </div>
+            
+            <a href="{% url 'seller:seller_login' %}" class="redirect-button">
+                Go to Login Now
+            </a>
+            
+            <div class="next-steps">
+                <h3 class="next-steps-title">What's Next?</h3>
+                <ul class="steps-list">
+                    <li><i class="fas fa-check"></i> Complete your seller profile</li>
+                    <li><i class="fas fa-check"></i> Set up your payment information</li>
+                    <li><i class="fas fa-check"></i> Add your first product listing</li>
+                    <li><i class="fas fa-check"></i> Configure your store settings</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+  gtag('event', 'conversion', {
+      'send_to': 'AW-17504115447/abcd1234',
+      'value': 1.0,
+      'currency': 'INR'
+  });
+</script>
+    <script>
+        // Countdown timer functionality
+        let timeLeft = 20;
+        const countdownElement = document.getElementById('countdown');
+        const redirectUrl = "{% url 'seller:seller_login' %}";
+        
+        function updateCountdown() {
+            countdownElement.textContent = `${timeLeft} second${timeLeft !== 1 ? 's' : ''}`;
+            
+            if (timeLeft === 0) {
+                window.location.href = redirectUrl;
+            } else {
+                timeLeft--;
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        
+        // Start the countdown
+        setTimeout(updateCountdown, 1000);
+        
+        // Add animation to the success icon
+        document.addEventListener('DOMContentLoaded', function() {
+            const successIcon = document.querySelector('.success-icon');
+            successIcon.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                successIcon.style.transform = 'scale(1)';
+            }, 300);
+        });
+    </script>
+</body>
+</html>

@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}YourBaazar Seller Panel - Sell Online in India{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-    <link rel="apple-touch-icon" href="{% static 'icons/logo.png' %}">
+    <link rel="manifest" href="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/icon/logo.png">
 
     <!-- Primary SEO Meta Tags -->
     <meta name="title" content="YourBaazar Seller Panel - Sell Online, Manage Orders & Grow Business in India">
@@ -17,10 +17,10 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="YourBaazar Seller">
     <!-- Favicon -->
-<link rel="icon" type="image/png"  href="{% static 'icons/logo.png' %}">
+<link rel="icon" type="image/png"  href="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/icon/logo.png">
 
-<link rel="apple-touch-icon" href="{% static 'icons/logo.png' %}">
-<link rel="shortcut icon" href="{% static 'icons/logo.png' %}">
+<link rel="apple-touch-icon" href="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/icon/logo.png">
+<link rel="shortcut icon" href="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/icon/logo.png">
 
 
     <!-- Open Graph / Facebook -->
@@ -452,7 +452,7 @@
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="{% url 'basicinfo:contactus' %}" class="text-white text-decoration-none">Contact Us</a></li>
                     <li class="mb-2"><a href="{% url 'basicinfo:contactus' %}" class="text-white text-decoration-none">Help Center</a></li>
-                    <li class="mb-2"><a href="{% url 'basicinfo:privacy_policy' %}" class="text-white text-decoration-none">Seller Policy</a></li>
+                    <li class="mb-2"><a href="{% url 'seller:sellers_privacy_policy' %}" class="text-white text-decoration-none">Seller Policy</a></li>
                     <li class="mb-2"><a href="{% url 'basicinfo:about_us' %}" class="text-white text-decoration-none">About Us</a></li>
 
                 </ul>
@@ -480,7 +480,7 @@
                 <p class="mb-0">&copy; 2025 YourBaazar. All rights reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                <a href="{% url 'seller:sellers_privacy_policy' %}" class="text-white text-decoration-none me-3">Privacy Policy</a>
                 <a href="#" class="text-white text-decoration-none me-3">Terms of Service</a>
                 <a href="#" class="text-white text-decoration-none">Returns & Refunds</a>
             </div>

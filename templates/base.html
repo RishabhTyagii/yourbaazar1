@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>{% block title %}YourBaazar - Online Shopping in India{% endblock %}</title>
-<link rel="icon" type="image/png"  href="https://yourbaazar.com/static/icon/website_logo.png?v=3">
+<link rel="icon" type="image/png"  href="https://cdn.yourbaazar.com/static/icon/logo.png">
 <meta name="google-site-verification" content="ea_mGzWeSklzZXQKE35AIzMAxkRbk_H9gxrkToDAeHU" />
 
     {% block seo %}
@@ -24,7 +24,7 @@
     <meta name="twitter:url" content="https://yourbaazar.com/">
     <meta name="twitter:title" content="YourBaazar - Online Shopping in India">
     <meta name="twitter:description" content="Discover trending products at YourBaazar. Lowest prices guaranteed with fast delivery and secure payment.">
-    <meta name="twitter:image" content="https://yourbaazar.com/static/icon/website_logo.png?v=3">
+    <meta name="twitter:image" content="https://yourbaazar-bucket.s3.ap-south-1.amazonaws.com/static/icon/logo.png">
 
     <!-- JSON-LD Structured Data (Organization) -->
     <script type="application/ld+json">
@@ -33,7 +33,7 @@
       "@type": "Organization",
       "name": "YourBaazar",
       "url": "https://yourbaazar.com",
-      "logo": "https://yourbaazar.com/static/icon/website_logo.png?v=3",
+      "logo": "https://cdn.yourbaazar.com/static/icon/logo.png",
       "sameAs": [
         "https://www.facebook.com/Yourbaazar",
         "https://www.instagram.com/Yourbaazar",
@@ -41,7 +41,7 @@
       ],
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+91-9758464721",
+        "telephone": "+91-9899761091",
         "contactType": "Customer Service",
         "areaServed": "IN",
         "availableLanguage": ["English", "Hindi"]
@@ -53,9 +53,9 @@
     <!-- Favicon -->
     
     <!-- Manifest & PWA -->
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-    <link rel="apple-touch-icon" href="https://yourbaazar.com/static/icon/website_logo.png?v=3">
-
+    <link rel="manifest" href="https://www.yourbaazar.com/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn.yourbaazar.com/static/icon/logo.png?v=3">
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -78,69 +78,61 @@
     </div>
 
     <!-- Install App Button -->
-    <button id="installBtn" style="display:none; position:fixed; bottom:10rem; right:5px; z-index:1000; padding:10px 16px; background:#98c0f8; color:white; border:none; border-radius:8px; font-weight:bold;">
-        <i class="fa fa-download"></i> 
-    </button>
+    <!-- Install App Button -->
+<button id="installBtn" style="display:none; position:fixed; bottom:10rem; right:5px; z-index:1000; padding:10px 16px; background:#98c0f8; color:white; border:none; border-radius:8px; font-weight:bold;">
+    <i class="fa fa-download"></i>
+</button>
 
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('{% static "service-worker.js" %}')
-                    .then(function(registration) {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(function(err) {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-    </script>
+<!-- Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/static/service-worker.js')
+        .then(reg => console.log('ServiceWorker registered', reg))
+        .catch(err => console.log('ServiceWorker registration failed:', err));
+    });
+}
+</script>
 
-    <!-- PWA Installation Handler -->
-    <script>
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
+<!-- PWA Installation Handler -->
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-            console.log("PWA install prompt available");
-        });
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+});
 
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) {
-                if (window.matchMedia('(display-mode: standalone)').matches) {
-                    alert("App is already installed!");
-                } else {
-                    alert("Your browser doesn't support PWA installation or requirements aren't met");
-                }
-                return;
-            }
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                console.log('User accepted install');
-                installBtn.style.display = 'none';
-            } else {
-                console.log('User declined install');
-            }
-            
-            deferredPrompt = null;
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA installed');
-            installBtn.style.display = 'none';
-        });
-
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
         if (window.matchMedia('(display-mode: standalone)').matches) {
-            installBtn.style.display = 'none';
+            alert("App already installed!");
+        } else {
+            alert("PWA installation not supported");
         }
-    </script>
+        return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('User choice:', outcome);
+    installBtn.style.display = 'none';
+    deferredPrompt = null;
+});
+
+window.addEventListener('appinstalled', () => {
+    console.log('PWA installed');
+    installBtn.style.display = 'none';
+});
+
+// Hide button if already standalone
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    installBtn.style.display = 'none';
+}
+</script>
+
+<!-- Link manifest for PWA -->
 
     <!-- Load footer via AJAX -->
     <script>
@@ -155,7 +147,7 @@
                 });
         });
     </script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

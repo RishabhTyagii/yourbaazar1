@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load webp_filter %}
 
     <title>{% block title %}{{ product.name }} {{ product.category.name }}{% endblock %}</title>
 
@@ -13,18 +14,18 @@
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ product.name }} - YourBaazar">
 <meta property="og:description" content="{{ product.short_description }}">
-<meta property="og:image" content="{{ product.image.url }}">
+<meta property="og:image" content="{{ product.image.url|to_webp }}">
 
 <!-- JSON-LD Product Schema -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "{{ product.name }}",
+  "name": "{{ product.name }}{% for variant in variants %} {{ variant.color.color_name }}{% endfor %}",
   "image": [
     "{{ product.image.url }}"
   ],
-  "description": "{{ product.short_description }}",
+  "description": "{{ product.short_description|truncatechars:200 }}",
   "sku": "{{ product.sku }}",
   "brand": {
     "@type": "Brand",
@@ -34,11 +35,40 @@
     "@type": "Offer",
     "url": "{{ request.build_absolute_uri }}",
     "priceCurrency": "INR",
-    "price": "₹{{ variant.price_after_discount|floatformat:0 }}",
-    "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+    "price": {{ variant.price_after_discount|floatformat:2 }},
+    "priceValidUntil": "{% if variant.price_valid_until %}
+    {{ variant.price_valid_until|date:"Y-m-d" }}
+{% else %}
+    N/A
+{% endif %}
+",
+    "availability": "{% if variant.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
   }
+  {% if total_reviews > 0 %},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ average_rating|floatformat:1 }},
+    "reviewCount": {{ total_reviews }}
+  },
+  "review": [
+    {% for review in page_obj %}
+    {
+      "@type": "Review",
+      "author": "{{ review.user.username }}",
+      "datePublished": "{{ review.created_at|date:'Y-m-d' }}",
+      "reviewBody": "{{ review.comment|escapejs }}",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": {{ review.rating }},
+        "bestRating": 5
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+  {% endif %}
 }
 </script>
+
 {% endblock %}
 
 {% block extra_css %}
@@ -58,23 +88,21 @@
 <div class="image-gallery" id="product-gallery">
     <div class="main-image-container" id="zoomContainer">
         {% if color_images %}
-            <a href="{{ color_images.0.url }}" data-pswp-width="1200" data-pswp-height="1600">
-                <img id="mainImage" src="{{ color_images.0.url }}" class="main-image" 
-                     data-zoom-image="{{ color_images.0.url }}">
+            <a href="{{ color_images.0.url|to_webp }}" data-pswp-width="1200" data-pswp-height="1600">
+                <img id="mainImage" src="{{ color_images.0.url|to_webp }}" class="main-image" 
+                     data-zoom-image="{{ color_images.0.url|to_webp }}">
             </a>
             <div class="zoom-lens" id="zoomLens"></div>
             <div class="zoom-result" id="zoomResult"></div>
         {% else %}
             <div class="alert alert-warning">No images available</div>
         {% endif %}
-    </div>
-    
-    <div class="thumbnail-container">
+    </div>    <div class="thumbnail-container">
         {% for image in color_images %}
-            <a href="{{ image.url }}" data-pswp-width="1200" data-pswp-height="1600">
-                <img src="{{ image.url }}" 
+            <a href="{{ image.url|to_webp }}" data-pswp-width="1200" data-pswp-height="1600">
+                <img src="{{ image.url|to_webp }}" 
                      class="thumbnail {% if forloop.first %}active{% endif %}" 
-                     onclick="changeImage(this, '{{ image.url }}')"
+                     onclick="changeImage(this, '{{ image.url|to_webp }}')"
                      alt="{{ product.name }}">
             </a>
         {% endfor %}
@@ -84,7 +112,7 @@
     
     <!-- Product Info -->
     <div class="product-info">
-        <p class="product-title">{{ product.name }}        {% for variant in variants %}    {{ variant.color.color_name }}        {% endfor %}
+        <p class="product-title">{{ product.name }}       
     </p>
         {% if product.brand %}
             <p class="product-brand">by {{ product.brand }}</p>
@@ -113,8 +141,8 @@
    <a href="?color={{ color.id }}" 
                    class="color-option-img {% if color.id == selected_color.id %}selected{% endif %}"
                    title="{{ color.color_name }}"
-                   onmouseover="previewColor('{{ color.image_main.url }}')">
-                    <img src="{{ color.image_main.url }}" 
+                   onmouseover="previewColor('{{ color.image_main.url|to_webp }}')">
+                    <img src="{{ color.image_main.url|to_webp }}" 
                          alt="{{ color.color_name }}"
                          style="width: 100%; height: 100%; object-fit: cover;">
                 </a>
@@ -257,11 +285,11 @@
 {% if review_images %}
 <div class="review-gallery" id="review-gallery">
     {% for image in review_images %}
-    <a href="{{ image.image.url }}" 
+    <a href="{{ image.image.url|to_webp }}" 
        data-pswp-width="1200" 
        data-pswp-height="1600" 
        class="review-gallery-item">
-        <img src="{{ image.image.url }}" alt="Review image">
+        <img src="{{ image.image.url|to_webp }}" alt="Review image">
     </a>
     {% endfor %}
 </div>
@@ -301,7 +329,7 @@
     {% if review.images.all %}
     <div class="review-images" >
         {% for image in review.images.all %}
-        <img src="{{ image.image.url }}" class="review-image" alt="Review image"
+        <img src="{{ image.image.url|to_webp }}" class="review-image" alt="Review image"
              onclick="openReviewModalFromThumbnail('{{ image.image.url }}')">
         {% endfor %}
     </div>
@@ -407,10 +435,10 @@
           <div class="fpsc1-product-badge">Upto 10% OFF</div>
           <div class="fpsc1-product-image">
           
-                        {% comment %} <img src="{{ product.thumbnail.url }}" class="tq12-card-img" alt="{{ prod.name }}"> {% endcomment %}
+                        {% comment %} <img src="{{ product.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}"> {% endcomment %}
                         
             {% if product.thumbnail and product.thumbnail.url %}
-              <img src="{{product.thumbnail.url }}" class="tq12-card-img" alt="{{ item.name }}">
+              <img src="{{product.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ item.name }}">
             {% else %}
               <img src="{% static 'img/default.jpg' %}" class="tq12-card-img" alt="No Image">
             {% endif %}
@@ -464,9 +492,9 @@
             
 
               {% if rec_product.image %}
-            <img src="{{ rec_product.image.url }}" class="tq12-card-img" alt="{{ rec_product.name }}">
+            <img src="{{ rec_product.image.url|to_webp }}" class="tq12-card-img" alt="{{ rec_product.name }}">
           {% elif rec_product.variants.first.image %}
-            <img src="{{ rec_product.variants.first.image.url }}"class="tq12-card-img"  alt="{{ rec_product.name }}">
+            <img src="{{ rec_product.variants.first.image.url|to_webp }}"class="tq12-card-img"  alt="{{ rec_product.name }}">
           {% else %}
             <img src="{% static 'images/default-product.jpg' %}"class="tq12-card-img"  alt="No Image">
           {% endif %}
@@ -481,7 +509,7 @@
               <span class="fpsc-original-price"> ₹{{ variant.price_before_discount|floatformat:2 }}</span>
             </div> {% endif %}
                         
-            <a href="{{ prod.get_absolute_url }}" class="fpsc-view-btn" style="text-decoration:none">View Product</a>
+            <a href="{{ rec_product.get_absolute_url }}" class="fpsc-view-btn" style="text-decoration:none">View Product</a>
           </div>
         </div>
    {% endif %}

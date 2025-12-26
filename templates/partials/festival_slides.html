@@ -1,0 +1,96 @@
+{% if festival_slides %}
+<style>
+  #festivalCarousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    background-color: #fff;
+  }
+  #festivalCarousel .carousel-item img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+  }
+  #festivalCarousel .carousel-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 2;
+    color: #fff;
+  }
+  #festivalCarousel .carousel-caption h5 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #ffdf40;
+    text-shadow: 3px 3px 15px rgba(0,0,0,0.6);
+  }
+  #festivalCarousel .carousel-caption p {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+  }
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 50%;
+  }
+  @media (max-width: 768px) {
+    #festivalCarousel .carousel-caption h5 { font-size: 1.5rem; }
+    #festivalCarousel .carousel-caption p { font-size: 1rem; }
+  }
+
+  /* Full clickable overlay */
+  .carousel-link-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1; /* below caption */
+  }
+</style>
+
+<div id="festivalCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+  <div class="carousel-indicators">
+    {% for slide in festival_slides %}
+      <button type="button" data-bs-target="#festivalCarousel"
+              data-bs-slide-to="{{ forloop.counter0 }}"
+              {% if forloop.first %}class="active" aria-current="true"{% endif %}
+              aria-label="Slide {{ forloop.counter }}"></button>
+    {% endfor %}
+  </div>
+
+  <div class="carousel-inner">
+    {% for slide in festival_slides %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        {% if slide.desktop_image %}
+          <img src="{{ slide.desktop_image.url }}" class="d-none d-md-block w-100" alt="{{ slide.title }}">
+        {% endif %}
+        {% if slide.mobile_image %}
+          <img src="{{ slide.mobile_image.url }}" class="d-block d-md-none w-100" alt="{{ slide.title }}">
+        {% endif %}
+
+        <!-- Clickable overlay -->
+        <a href="{% url 'product:sales_products' %}" class="carousel-link-overlay"></a>
+
+        <div class="carousel-caption">
+          {% if slide.title %}<h5>{{ slide.title }}</h5>{% endif %}
+          {% if slide.description %}<p>{{ slide.description }}</p>{% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#festivalCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#festivalCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+{% endif %}

@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+{% load webp_filter %}
+
 {% load static %}
+
     <title>{% block title %} Festivals sales- yourbaazar{% endblock %}</title>
 
 {% block seo %}
@@ -33,7 +36,7 @@
 <div class="sales-page">
     <div class="page-header">
         <h2><i class="fas fa-bolt fire-icon"></i>Flash Sale Products</h2>
-        <div class="sale-badge">LIMITED TIME OFFER</div>
+        <div class="sale-badge">LIMITED TIME OFFEaR</div>
         <div class="flash-sale-timer">
             <i class="fas fa-clock"></i> Sale Ends in: <span id="countdown">24:00:00</span>
         </div>
@@ -43,7 +46,7 @@
         {% for variant in sale_products %}
             <div class="product-card">
                 <div class="product-image-container">
-                    <img src="{{ variant.color.product.image.url }}" 
+                    <img src="{{ variant.color.product.image.url|to_webp }}" 
                          alt="{{ variant.color.product.name }}" 
                          class="product-image" 
                          loading="lazy">

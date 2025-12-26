@@ -33,6 +33,7 @@ path('admin/returns/', views.return_request_admin_view, name='admin_return_reque
 path('order/admin/returns/toggle/', views.toggle_return_status, name='toggle_return_status'),
 
 
+path('order/order-success/', views.order_success_page, name='order_success')
 
 
 

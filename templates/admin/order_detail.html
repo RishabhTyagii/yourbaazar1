@@ -1,5 +1,7 @@
 {% comment %} {% extends 'base.html' %} {% endcomment %}
+
 {% load static %}
+{% load webp_filter %}
 {% block title %}Admin Oder Details{% endblock %}
 
 {% block extra_css %}
@@ -24,9 +26,9 @@
             {% for item in order.items.all %}  <!-- Updated to handle multiple order items -->
             <div class="order-product-detail">
                         {% if item.variant and item.variant.color and item.variant.color.image_main %}
-    <img src="{{ item.variant.color.image_main.url }}" class="product-image" alt="{{ item.product.name }}">
+    <img src="{{ item.variant.color.image_main.url|to_webp }}" class="product-image" alt="{{ item.product.name }}">
 {% elif item.product.image %}
-    <img src="{{ item.product.image.url }}" class="product-image" alt="{{ item.product.name }}">
+    <img src="{{ item.product.image.url|to_webp }}" class="product-image" alt="{{ item.product.name }}">
 {% else %}
 <img src="{% static 'images/default-product.png' %}" class="product-image" alt="No Image">
 {% endif %}

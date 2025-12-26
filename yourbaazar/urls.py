@@ -25,7 +25,7 @@ urlpatterns = [
     path('', include(("product.urls", "product"),namespace='product')),
     path('order/', include('order.urls')),
     path('coupon/', include('coupon.urls')),
-    
+   # path('accounts/', include('allauth.urls')),     
     path('accounts/', include('accounts.urls')),
     path('', include('basicinfo.urls')),
     path('nested_admin/', include('nested_admin.urls')),

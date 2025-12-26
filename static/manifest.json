@@ -1,19 +1,19 @@
 {
   "name": "YourBaazar",
   "short_name": "YourBaazar",
-  "start_url": "/",
+  "start_url": "/?v=2",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1a73e8",
+  "background_color": "#914ceb",
+  "theme_color": "#914ceb",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/static/icon/website_logo.png",
+      "src": "/static/icon/applogo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/static/icon/website_logo.png",
+      "src": "/static/icon/applogo.png",
       "sizes": "512x512",
       "type": "image/png"
     }

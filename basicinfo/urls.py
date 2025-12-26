@@ -20,6 +20,8 @@ path('contact-queries/', views.contact_query_list, name='contact_query_list'),
     path('get-sales-data/', views.get_sales_data, name='get_sales_data'),
     path('profit-analysis/', views.profit_analysis_view, name='profit_analysis'),
 
+   path('festival-slides/', views.festival_slides_view, name='festival_slides'),
+
             path('deliveryinfo/', views.deliveryinfo, name='deliveryinfo'),
 
     ]

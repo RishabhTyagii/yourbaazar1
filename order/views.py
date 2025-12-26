@@ -635,7 +635,10 @@ def order_success(request, order_id):
     # 2️⃣ Notify sellers about this order
     notify_sellers_new_order(order)
 
-    return redirect('product:indexpage')
+    return redirect('order_success')
+
+def order_success_page(request):
+    return render(request, 'order_success.html')
 
 
 class OrderTrackingView(View):
@@ -855,27 +858,44 @@ def toggle_return_status(request):
 
 
 import requests
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Order
+from .shiprocket import ShiprocketClient
+
 @login_required
 def track_orders_view(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
     tracking_data = {}
-    from .shiprocket import ShiprocketClient
     sr = ShiprocketClient()
 
     for order in orders:
         try:
-            if order.awb_code:   # ✅ Case 1: AWB already assigned
-                res = requests.get(
-                    f"{sr.BASE}/courier/track/awb/{order.awb_code}",
-                    headers=sr._headers(),
-                    timeout=20
-                )
+            if order.awb_code:
+                url = f"{sr.BASE}/courier/track/awb/{order.awb_code}"
+                res = requests.get(url, headers=sr._headers(), timeout=20)
+
                 if res.status_code == 200:
                     data = res.json()
-                    tracking_info = data.get("tracking_data", {})
-                    current_status = tracking_info.get("current_status", "Not Updated Yet")
-                    activities = tracking_info.get("shipment_track_activities", [])
+
+                    # ✅ Fix: Some Shiprocket responses nest tracking info differently
+                    tracking_info = (
+                        data.get("tracking_data")
+                        or data.get("data", {}).get("tracking_data")
+                        or {}
+                    )
+
+                    current_status = (
+                        tracking_info.get("current_status")
+                        or data.get("tracking_data", {}).get("shipment_status", "Not Updated Yet")
+                    )
+
+                    activities = (
+                        tracking_info.get("shipment_track_activities")
+                        or data.get("tracking_data", {}).get("shipment_track_activities")
+                        or []
+                    )
 
                     tracking_data[order.id] = {
                         "status": current_status,
@@ -884,7 +904,7 @@ def track_orders_view(request):
                 else:
                     tracking_data[order.id] = {"error": res.text}
 
-            elif getattr(order, "shipment_id", None):   # ✅ Case 2: AWB not yet, but shipment_id saved
+            elif getattr(order, "shipment_id", None):
                 res = requests.get(
                     f"{sr.BASE}/orders/show/{order.shipment_id}",
                     headers=sr._headers(),
@@ -898,7 +918,7 @@ def track_orders_view(request):
                     }
                 else:
                     tracking_data[order.id] = {"status": "Pending", "activities": []}
-            else:   # ✅ Case 3: No AWB and no shipment_id
+            else:
                 tracking_data[order.id] = {"status": "Pending", "activities": []}
 
         except Exception as e:
@@ -908,3 +928,4 @@ def track_orders_view(request):
         "orders": orders,
         "tracking_data": tracking_data
     })
+

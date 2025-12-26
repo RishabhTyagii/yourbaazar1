@@ -1,7 +1,7 @@
 {% extends "seller/sellerbase.html" %}
 {% load static %}
 {% block content %}
-
+{% load webp_filter %}
 <section class="reviews-wrap">
   <header class="reviews-header">
     <h1 class="title">Seller Reviews</h1>
@@ -29,7 +29,7 @@
       <article class="review-card">
         <div class="avatar">
           {% if r.photo %}
-            <img src="{{ r.photo.url }}" alt="{{ r.display_name|default:r.seller.username }} photo">
+            <img src="{{ r.photo.url|to_webp }}" alt="{{ r.display_name|default:r.seller.username }} photo">
           {% else %}
             <div class="avatar-fallback" aria-hidden="true">👤</div>
           {% endif %}

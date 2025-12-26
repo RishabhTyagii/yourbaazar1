@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load webp_filter %}
 {% block content %}
 <div class="container-fluid py-3">
     {% if products %}
@@ -11,7 +11,7 @@
                 <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
                     <div class="position-relative" style="height: 200px; overflow: hidden;">
                         {% if product.thumbnail %}
-                            <img src="{{ product.thumbnail.url }}" class="w-100 h-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
+                            <img src="{{ product.thumbnail.url|to_webp }}" class="w-100 h-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
                         {% else %}
                             <img src="{% static 'images/no-image.jpg' %}" class="w-100 h-100 object-fit-cover" alt="No image" loading="lazy">
                         {% endif %}
@@ -86,7 +86,7 @@
                 <div class="col-4 position-relative">
                     <div class="h-100 w-100" style="min-height: 120px;">
                         {% if product.thumbnail %}
-                            <img src="{{ product.thumbnail.url }}" class="h-100 w-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
+                            <img src="{{ product.thumbnail.url|to_webp }}" class="h-100 w-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
                         {% else %}
                             <img src="{% static 'images/no-image.jpg' %}" class="h-100 w-100 object-fit-cover" alt="No image" loading="lazy">
                         {% endif %}

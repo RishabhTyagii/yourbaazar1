@@ -1,5 +1,6 @@
 {% extends "seller/sellerbase.html" %}
 {% load static %}
+{% load webp_filter %}
 {% block content %}
 <div class="reviews-container">
   <div class="reviews-header">
@@ -67,7 +68,7 @@
             <div class="review-images">
               {% for img in review.images.all %}
                 <div class="review-image-item">
-                  <img src="{{ img.image.url }}" alt="Review image" class="review-img" onclick="openLightbox('{{ img.image.url }}')">
+                  <img src="{{ img.image.url|to_webp }}" alt="Review image" class="review-img" onclick="openLightbox('{{ img.image.url }}')">
                 </div>
               {% endfor %}
             </div>

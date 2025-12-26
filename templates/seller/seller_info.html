@@ -1,4 +1,5 @@
 {% load static %}
+{% load webp_filter %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -430,9 +431,11 @@
           </div>
           <span>YourBaazar Seller</span>
         </a>
+                   {% if request.session.seller_id %}
 <button class="btn btn-success" >
           <i class="fas fa-wallet"></i> ₹{{ wallet.available_balance }}
-        </button>
+        </button> 
+            {% endif %}
 
         <a href="/" class="btn btn-primary">Home</a>
 
@@ -643,7 +646,7 @@
             <div style="padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md);">
               <div style="display: flex; align-items: center; margin-bottom: 12px;">
                 {% if r.photo %}
-                  <img src="{{ r.photo.url }}" style="width:48px;height:48px;object-fit:cover;border-radius:50%;margin-right:12px;">
+                  <img src="{{ r.photo.url|to_webp }}" style="width:48px;height:48px;object-fit:cover;border-radius:50%;margin-right:12px;">
                 {% else %}
                   <div style="width:48px;height:48px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;margin-right:12px;">
                     <i class="fas fa-user"></i>

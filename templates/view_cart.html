@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load webp_filter %}
 {% block title %}Your Cart - DesiBazaar{% endblock %}
 
 {% block extra_css %}
@@ -20,7 +20,7 @@
           <tr data-item-id="{{ item.id }}" style="display: flex; flex-wrap: wrap;">
             <td>
               <div class="product-info">
-                <img class="product-img" src="{% if item.product.thumbnail.url %}{{ item.product.thumbnail.url }}{% else %}{% static 'img/no-image.png' %}{% endif %}" alt="{{ item.product.name }}">
+                <img class="product-img" src="{% if item.product.thumbnail.url|to_webp %}{{ item.product.thumbnail.url|to_webp }}{% else %}{% static 'img/no-image.png' %}{% endif %}" alt="{{ item.product.name }}">
                 <div>
                   <div class="product-name">{{ item.product.name }}</div>
                   {% if item.variant %}

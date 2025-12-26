@@ -25,13 +25,33 @@ SECRET_KEY = 'django-insecure-9#dptm5wm&k7eycjw7)ufg@1gqw68qt#(68gcxpgswowt&612u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [   
+     "yourbaazar.com",
+    "www.yourbaazar.com",
+    "yourbaazarseller.shop",
+    "www.yourbaazarseller.shop",
+    "127.0.0.1",
+    "localhost", ]
+
+# settings.py
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://yourbaazarseller.shop",
+    "https://www.yourbaazarseller.shop",
+    "https://yourbaazar.com",
+    "https://www.yourbaazar.com",
+]
+
+# For handling subdomain properly
+
+
+# For SCRIPT_NAME support
 
 
 # Application definition
 
 INSTALLED_APPS = [
-   
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,6 +76,7 @@ INSTALLED_APPS = [
     'seller_products',
     'wallet',
     'seller_reviews',
+    'storages',
     'seller_reports',
 ]
 
@@ -63,10 +84,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'yourbaazar.middleware.SellerSubdomainMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'yourbaazar.urls'
@@ -91,6 +114,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'yourbaazar.wsgi.application'
 
 
+
+#jazzmin
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -141,27 +166,54 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 CART_SESSION_ID = 'cart'
+
+#redis caches 
+
+# settings.py
+
+# CACHES = {
+ #   "default": {
+  #      "BACKEND": "django_redis.cache.RedisCache",
+   #     "LOCATION": "redis://127.0.0.1:6379/1",  # Redis DB 1
+    #    "OPTIONS": {
+     #       "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # Agar password set kiya hai
+            # "PASSWORD": "YourStrongPasswordHere"
+  #      }
+ #   }
+#}
+
+# Sessions Redis me store karne ke liye
+#SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+#SESSION_CACHE_ALIAS = "default"
+
+
+
+
+
+
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles' 
+#STATIC_URL = '/static/'
+#STATICFILES_DIRS = [BASE_DIR / 'static']
+#STATIC_ROOT = BASE_DIR / 'staticfiles' 
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
-RAZORPAY_KEY_ID = 'rzp_test_65YCocRoTQOcZP'
-RAZORPAY_KEY_SECRET = 'rf7AFTaC0e5AhAmOCI0VgfOu'
+RAZORPAY_KEY_ID = 'rzp_live_RNUvFs0ASifHRG'
+RAZORPAY_KEY_SECRET = 'kgFexCGfRmJkFF7GyJmBv7Dy'
 
 
 
@@ -171,17 +223,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'tt075216@gmail.com'        # replace with your email
-EMAIL_HOST_PASSWORD = 'icwg dgpy dnky nfkf'       # use Gmail App Password (not regular password!)
+EMAIL_HOST_USER = 'yourbaazar1@gmail.com'        # replace with your email
+EMAIL_HOST_PASSWORD = 'vzrl hfau llqk jdhd'       # use Gmail App Password (not regular password!)
 
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER='tarunq20@gmail.com'
-EMAIL_HOST_PASSWORD='xaex ixga aovw fsrv'  # App Password (2FA on)
-DEFAULT_FROM_EMAIL='tarunq20@gmail.com'
-ADMIN_NOTIFY_EMAIL='tarunq20@gmail.com'  # जहाँ admin को registration mail जाए
+EMAIL_HOST_USER='yourbaazar1@gmail.com'
+EMAIL_HOST_PASSWORD='vzrl hfau llqk jdhd'  # App Password (2FA on)
+DEFAULT_FROM_EMAIL='yourbaazar1@gmail.com'
+ADMIN_NOTIFY_EMAIL='administration@yourbaazar.com'  # जहाँ admin को registration mail जाए
 OTP_EXPIRE_MIN=10
 OTP_RESEND_COOLDOWN_SEC=60
 
@@ -201,3 +253,51 @@ SHIPROCKET_DEFAULT_WEIGHT_KG = 0.5
 SHIPROCKET_DEFAULT_LENGTH_CM = 15
 SHIPROCKET_DEFAULT_BREADTH_CM = 12
 SHIPROCKET_DEFAULT_HEIGHT_CM = 5
+
+
+
+
+
+
+
+
+
+
+
+
+# AWS Credentials
+AWS_ACCESS_KEY_ID = "AKIA5OUQZGJ76IBP32WS"
+AWS_SECRET_ACCESS_KEY = "GsnLc3HN7pKRqKCpNKwCI1A6hdXEg1U5IhEukZNA"
+AWS_STORAGE_BUCKET_NAME = "yourbaazar-bucket"
+AWS_S3_REGION_NAME = "ap-south-1"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+
+AWS_S3_CUSTOM_DOMAIN = "cdn.yourbaazar.com"
+
+# Custom Storages
+STORAGES = {
+    "default": {
+        "BACKEND": "yourbaazar.storages_backends.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "yourbaazar.storages_backends.StaticStorage",
+    },
+}
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # agar tumhara project root me static folder hai
+]
+
+
+# URL settings
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
+# Optional local fallback (sirf development ke liye)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+
+
+
+

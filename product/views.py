@@ -8,12 +8,12 @@ import random
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from dal import autocomplete
-
+from django.views.decorators.cache import cache_page
 # from .forms import ProductForm 
 from django.http import JsonResponse
 
 
-from django.db.models import Q
+from django.db.models import Q,Count
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import product as Product, product_type, ProductVariant, ProductColor
@@ -32,12 +32,14 @@ def clear_order_success(request):
     return JsonResponse({'status': 'error'}, status=400)
 
 
-
+@cache_page(60 * 15)  # 15 minutes
 def indexpage(request):
     hero=HeroImage.objects.all()
-    categories1 = category.objects.exclude(name__iexact='sales') 
+    categories1 = category.objects.exclude(name__iexact='sales') \
+        .annotate(total_products=Count('subcategory__product_type__product')) \
+        .filter(total_products__gt=0)
     subcategory1= subcategory.objects.all()
-    
+    product_types = product_type.objects.all()
     def get_sneakers(subcat_name):
         return ProductVariant.objects.filter(
             color__product__product_type__name__icontains='sneaker',
@@ -103,9 +105,12 @@ def indexpage(request):
         'suggested_products': random_products,
         'new_coupons': new_coupons,
         'kitchen_appliances': kitchen_category,
-        'products': products
+        'products': products,
+        'product_types':product_types,
         
     })
+
+
 
 
 def all_sales_products(request):
@@ -134,7 +139,7 @@ def all_sales_products(request):
     return render(request, 'sales_product.html', context)
 
 
-    
+  
 def homepage_view(request):
     sneakers_variants = ProductVariant.objects.filter(
         color__product__product_type__name__iexact="Sneakers",
@@ -177,7 +182,9 @@ def subcategory_list(request, category_id):
         # Get the category object
         category_obj = get_object_or_404(category, id=category_id)
         # Get subcategories related to that category
-        subcategories = subcategory.objects.filter(category=category_obj)
+        subcategories = subcategory.objects.filter(category=category_obj) \
+            .annotate(total_products=Count('product_type__product')) \
+            .filter(total_products__gt=0)
         # Render the response
         return render(request, 'subcategorypage.html', {
             'category': category_obj,
@@ -238,7 +245,8 @@ def product_type_list(request, category_id, subcategory_id):
             'category': subcategory_obj.category
         })
     except Exception as e:
-        return HttpResponse(f"Error occurred: {e}")  
+        return HttpResponse(f"Error occurred: {e}") 
+
 def product_list(request, category_id, subcategory_id, product_type_id):
     try:
         product_obj = get_object_or_404(
@@ -247,17 +255,17 @@ def product_list(request, category_id, subcategory_id, product_type_id):
             subcategory_id=subcategory_id,
             category_id=category_id
         )
-        
-        # Filter variants
-        variants = ProductVariant.objects.filter(
-            color__product__category_id=category_id,
-            color__product__subcategory_id=subcategory_id,
-            color__product__product_type_id=product_type_id,
-            color__product__is_available=True
-        ).select_related('color', 'color__product')
 
-        # 🔹 Add pagination
-        paginator = Paginator(variants, 20)  # 12 variants per page
+        # ✅ Fetch unique products (not variants)
+        products = Product.objects.filter(
+            category_id=category_id,
+            subcategory_id=subcategory_id,
+            product_type_id=product_type_id,
+            is_available=True
+        ).prefetch_related('colors', 'colors__variants')  # prefetch for optimization
+
+        # Pagination
+        paginator = Paginator(products, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -265,12 +273,14 @@ def product_list(request, category_id, subcategory_id, product_type_id):
             'category': product_obj.category,
             'subcategory': product_obj.subcategory,
             'product_type': product_obj,
-            'variants': page_obj,  # 🔸 Replace with paginated object
+            'products': page_obj,  # changed key
         })
 
     except Exception as e:
         return HttpResponse(f"Error occurred: {e}")
+
 from django.core.paginator import Paginator
+
 
 def product_detail(request, product_id):
     product_obj = get_object_or_404(

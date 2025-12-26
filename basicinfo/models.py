@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
 from ckeditor.fields import RichTextField
 from django.conf import settings
 # Create your models here.
@@ -66,3 +68,104 @@ class shop_sale(models.Model):
     sale_paragraph=models.TextField(blank=True, null=True)
     def __str__(self):
         return f"Sale {self.id}"
+
+
+
+class FestivalSlide(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    
+    desktop_image = models.ImageField(upload_to='festival_slides/desktop/', blank=True, null=True)
+    mobile_image = models.ImageField(upload_to='festival_slides/mobile/', blank=True, null=True)
+    
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title or "Untitled Slide"
+
+    # ✅ Delete images on object delete
+    def delete(self, *args, **kwargs):
+        if self.desktop_image:
+            self.desktop_image.delete(save=False)
+        if self.mobile_image:
+            self.mobile_image.delete(save=False)
+        super(FestivalSlide, self).delete(*args, **kwargs)
+
+
+# 🔹 Pre-save: delete old images on update
+@receiver(pre_save, sender=FestivalSlide)
+def delete_old_images_on_update(sender, instance, **kwargs):
+    if not instance.pk:
+        return  # new object
+
+    try:
+        old_instance = FestivalSlide.objects.get(pk=instance.pk)
+    except FestivalSlide.DoesNotExist:
+        return
+
+    # Desktop image
+    if old_instance.desktop_image and instance.desktop_image != old_instance.desktop_image:
+        old_instance.desktop_image.delete(save=False)
+
+    # Mobile image
+    if old_instance.mobile_image and instance.mobile_image != old_instance.mobile_image:
+        old_instance.mobile_image.delete(save=False)
+
+
+# 🔹 Post-delete: ensure images deleted from S3
+@receiver(post_delete, sender=FestivalSlide)
+def delete_images_on_delete(sender, instance, **kwargs):
+    if instance.desktop_image:
+        instance.desktop_image.delete(save=False)
+    if instance.mobile_image:
+        instance.mobile_image.delete(save=False)
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from PIL import Image
+import os
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+@receiver(post_save, sender=FestivalSlide)
+def convert_images_to_webp(sender, instance, **kwargs):
+    """Auto-convert uploaded FestivalSlide images to WebP on save (production safe)"""
+
+    def convert_and_replace(field_name):
+        image_field = getattr(instance, field_name)
+        if not image_field:
+            return
+
+        # Skip if already .webp
+        name = image_field.name.lower()
+        if name.endswith(".webp"):
+            return
+
+        try:
+            img = Image.open(image_field)
+            img = img.convert("RGB")
+
+            buffer = BytesIO()
+            img.save(buffer, format="WEBP", quality=85)
+            buffer.seek(0)
+
+            # Build new filename
+            base, _ = os.path.splitext(image_field.name)
+            new_name = base + ".webp"
+
+            # Replace file on the field
+            image_field.save(new_name, ContentFile(buffer.read()), save=False)
+
+            # Save only the updated field
+            instance.save(update_fields=[field_name])
+
+        except Exception as e:
+            # Log silently (no crash in prod)
+            import logging
+            logging.getLogger("django").warning(f"WebP conversion failed for {field_name}: {e}")
+
+    convert_and_replace("desktop_image")
+    convert_and_replace("mobile_image")

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
     <title>{% block title %} {{ category.name }} {{ product_type.name }}{% endblock %}</title>
-
+{% load webp_filter %}
 {% block seo %}
 <meta name="title" content="{{ category.name }} - Buy Online at YourBaazar">
 <meta name="description" content="Explore {{ category.name }} collection at YourBaazar. Best prices, latest trends, and fast delivery across India.">
@@ -48,40 +48,46 @@
 
     <!-- Product Grid -->
     <div class="product-grid">
-        {% for variant in variants %}
-        <div class="product-card" 
-             data-price="{{ variant.price_after_discount }}"
-             data-date="{{ variant.color.product.created_at|date:'Y-m-d' }}">
-            
-            {% if variant.discount_percentage > 15 %}
-            <div class="product-badge">-{{ variant.discount_percentage }}%</div>
+        {% for product in products %}
+<div class="product-card" 
+     data-date="{{ product.created_at|date:'Y-m-d' }}">
+
+    {% comment %} Show discount or image from first available variant {% endcomment %}
+    {% with first_variant=product.colors.first.variants.first %}
+        {% if first_variant and first_variant.discount_percentage > 15 %}
+        <div class="product-badge">-{{ first_variant.discount_percentage }}%</div>
+        {% endif %}
+        
+        <div class="product-image-container">
+            {% if product.colors.first.image_main %}
+            <img src="{{ product.colors.first.image_main.url|to_webp }}" alt="{{ product.name }}" class="product-image">
+            {% endif %}
+        </div>
+
+        <div class="product-details">
+            <div class="product-brand">{{ product.brand }}</div>
+            <h3 class="product-title">{{ product.name }}</h3>
+
+            {% if first_variant %}
+            <div class="product-price">
+                <span class="current-price">₹{{ first_variant.price_after_discount }}</span>
+                {% if first_variant.price_before_discount > first_variant.price_after_discount %}
+                <span class="original-price">₹{{ first_variant.price_before_discount }}</span>
+                <span class="discount-badge">SAVE {{ first_variant.discount|floatformat:0 }}%</span>
+                {% endif %}
+            </div>
             {% endif %}
             
-            <div class="product-image-container">
-                <img src="{{ variant.color.image_main.url }}" alt="{{ variant.color.product.name }} " class="product-image">
-            </div>
-            
-            <div class="product-details">
-                <div class="product-brand">{{ variant.color.product.brand }}</div>
-                <h3 class="product-title">{{ variant.color.product.name }}  {{ variant.color.color_name }} {{ variant.size }} </h3>
-                
-                <div class="product-price">
-                    <span class="current-price">₹{{ variant.price_after_discount }}</span>
-                    {% if variant.price_before_discount > variant.price_after_discount %}
-                    <span class="original-price">₹{{ variant.price_before_discount }}</span>
-                    <span class="discount-badge">SAVE {{ variant.discount|floatformat:0 }}%</span>
-                    {% endif %}
-                </div>
-                
-                <div class="product-actions" style="text-decoration: none;">
-                    
-                    <a href="{% url 'product:product_detail' variant.color.product.id %}" style="text-decoration: none;" class="action-btn buy-now-btn">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                </div>
+            <div class="product-actions">
+                <a href="{% url 'product:product_detail' product.id %}" style="text-decoration:none;"  class="action-btn buy-now-btn">
+                    <i class="fas fa-eye"></i> View
+                </a>
             </div>
         </div>
-        {% endfor %}
+    {% endwith %}
+</div>
+{% endfor %}
+
     </div>
 </div>
 <div class="pagination">

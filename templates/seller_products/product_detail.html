@@ -1,5 +1,7 @@
 {% extends "seller/sellerbase.html" %}
+
 {% load static %}
+{% load webp_filter %}
 {% block content %}
 <style>
   :root{
@@ -112,7 +114,7 @@
         <div>
           <div class="hero-media">
             {% if product.thumbnail %}
-              <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
+              <img src="{{ product.thumbnail.url|to_webp }}" alt="{{ product.name }}">
             {% else %}
               <div style="aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--muted)">No image</div>
             {% endif %}
@@ -122,7 +124,7 @@
               {% for item in colors_with_images %}
                 {% if item.images and item.images.0 %}
                 <button class="thumb" title="{{ item.color.color_name }}" type="button">
-                  <img src="{{ item.images.0.url }}" alt="{{ item.color.color_name }} thumbnail">
+                  <img src="{{ item.images.0.url|to_webp }}" alt="{{ item.color.color_name }} thumbnail">
                 </button>
                 {% endif %}
               {% endfor %}
@@ -219,7 +221,7 @@
         <div class="grid mb-3" style="grid-template-columns:repeat(6,1fr);gap:8px">
           {% for img in item.images %}
             <div class="hover-elevate" style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;aspect-ratio:1/1">
-              <img src="{{ img.url }}" alt="{{ item.color.color_name }} image {{ forloop.counter }}" style="width:100%;height:100%;object-fit:cover">
+              <img src="{{ img.url|to_webp }}" alt="{{ item.color.color_name }} image {{ forloop.counter }}" style="width:100%;height:100%;object-fit:cover">
             </div>
           {% endfor %}
         </div>

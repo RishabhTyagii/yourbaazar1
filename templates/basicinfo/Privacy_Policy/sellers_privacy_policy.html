@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourBaazar - Seller Policy & Agreement</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--accent), var(--success));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .last-updated {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .toc {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            columns: 2;
+        }
+        
+        .toc li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: var(--secondary);
+        }
+        
+        .toc a::before {
+            content: "•";
+            margin-right: 8px;
+            color: var(--secondary);
+        }
+        
+        .policy-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .policy-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .policy-section h2::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        
+        .policy-point {
+            margin-bottom: 1.2rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .policy-point::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .important {
+            background-color: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .note {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .toc ul {
+                columns: 1;
+            }
+            
+            .policy-section {
+                padding: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>YourBaazar Seller Policy & Agreement</h1>
+            <p>Guidelines and requirements for sellers on our marketplace platform</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="last-updated">
+            Last Updated: August 15, 2025
+        </div>
+        
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. General Terms & Onboarding</a></li>
+                <li><a href="#section2">2. Product Listing & Approval</a></li>
+                <li><a href="#section3">3. Shipping & Delivery</a></li>
+                <li><a href="#section4">4. Payment & Settlements</a></li>
+                <li><a href="#section5">5. Cash on Delivery (COD)</a></li>
+                <li><a href="#section6">6. Returns & Refunds</a></li>
+                <li><a href="#section7">7. Seller Responsibilities</a></li>
+                <li><a href="#section8">8. Dispute Resolution</a></li>
+            </ul>
+        </div>
+        
+        <div class="policy-section" id="section1">
+            <h2>1. General Terms & Onboarding</h2>
+            
+            <div class="policy-point">
+                By registering as a seller on the YourBaazar platform, you ("Seller") agree to comply with all policies, rules, and obligations stated herein.
+            </div>
+            
+            <div class="policy-point">
+                Seller must provide accurate legal documents, business information, GST details, bank account details, and valid identity/address proof.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar reserves the right to review, approve, or reject seller applications at its sole discretion.
+            </div>
+            
+            <div class="policy-point">
+                If uploaded documents are unsatisfactory, incomplete, forged, or unverifiable, YourBaazar may request re-upload, temporary suspension, or permanent blocking of the seller account.
+            </div>
+            
+            <div class="policy-point">
+                Seller approval is mandatory before any product listing goes live.
+            </div>
+            
+            <div class="policy-point">
+                Approval/rejection of documents shall be communicated via registered email/YourBaazar dashboard.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar reserves the right to perform KYC re-verification anytime.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must comply with all applicable laws including GST, Consumer Protection Act, IT Act, and e-commerce regulations in India.
+            </div>
+            
+            <div class="policy-point">
+                By accepting this agreement, the seller authorizes YourBaazar to collect, store, and process data related to sales, settlements, logistics, and disputes.
+            </div>
+            
+            <div class="policy-point">
+                Any violation of this policy may result in suspension, withholding of settlements, or permanent termination.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section2">
+            <h2>2. Product Listing & Approval</h2>
+            
+            <div class="policy-point">
+                Sellers must submit product details, images, pricing, and shipping details for approval.
+            </div>
+            
+            <div class="policy-point">
+                Every new product request must be submitted through the seller dashboard.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar will review the product request within 24 hours.
+            </div>
+            
+            <div class="policy-point">
+                Upon approval, the product will be listed on YourBaazar marketplace within the next 24 hours.
+            </div>
+            
+            <div class="policy-point">
+                Products found misleading, fake, counterfeit, or violating intellectual property rights will be rejected.
+            </div>
+            
+            <div class="important">
+                <strong>Important:</strong> Banned items such as illegal products, narcotics, weapons, hazardous chemicals, expired goods, or items restricted under law are strictly prohibited.
+            </div>
+            
+            <div class="policy-point">
+                Seller must maintain accurate stock availability in the system.
+            </div>
+            
+            <div class="policy-point">
+                Any discrepancy in stock may result in order cancellation and penalties.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must ensure high-quality product images with clear descriptions.
+            </div>
+            
+            <div class="policy-point">
+                Product pricing must include applicable GST and comply with MRP regulations.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section3">
+            <h2>3. Shipping & Delivery</h2>
+            
+            <div class="policy-point">
+                YourBaazar follows a Hybrid Shipping Model where shipping charges are partly paid by customers and partly borne by sellers.
+            </div>
+            
+            <div class="policy-point">
+                Each product will have a Base Shipping Price defined by the seller.
+            </div>
+            
+            <div class="policy-point">
+                The base shipping price will be collected from the customer at checkout.
+            </div>
+            
+            <div class="policy-point">
+                If the actual shipping cost exceeds the base price, the excess amount shall be borne by the seller.
+            </div>
+            
+            <div class="policy-point">
+                The same base shipping price applies to multiple quantities of the same product.
+            </div>
+            
+            <div class="policy-point">
+                If a customer orders more than one unit of the same product, shipping is charged only once (until free shipping threshold is met).
+            </div>
+            
+            <div class="note">
+                <strong>Free Shipping Threshold:</strong> If the order value is ₹1500 or above, the entire shipping cost will be free for the customer.
+            </div>
+            
+            <div class="policy-point">
+                In such cases, YourBaazar will recover the applicable shipping charges directly from the seller.
+            </div>
+            
+            <div class="policy-point">
+                Sellers are responsible for securely packing orders in accordance with YourBaazar guidelines.
+            </div>
+            
+            <div class="policy-point">
+                Every package must carry YourBaazar-branded packaging/taping.
+            </div>
+            
+            <div class="policy-point">
+                Sellers may use additional branding/labels for their store or brand, but YourBaazar packaging is mandatory.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must keep orders packed and ready for pickup as per courier partner schedules.
+            </div>
+            
+            <div class="policy-point">
+                Delay in order dispatch may affect seller ratings and payouts.
+            </div>
+            
+            <div class="policy-point">
+                Seller must provide invoices for every order in compliance with GST laws.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar reserves the right to assign courier partners; seller cannot override.
+            </div>
+            
+            <div class="policy-point">
+                Any damage during transit due to poor packaging will be seller's liability.
+            </div>
+            
+            <div class="policy-point">
+                In case of courier disputes, YourBaazar's decision will be final.
+            </div>
+            
+            <div class="policy-point">
+                Shipping status will be tracked through the seller dashboard.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must co-operate in case of lost or delayed shipments.
+            </div>
+            
+            <div class="policy-point">
+                Non-adherence to shipping SLAs may result in penalties.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section4">
+            <h2>4. Payment & Settlements</h2>
+            
+            <div class="policy-point">
+                Payments for successful orders will be credited to the seller's YourBaazar Wallet.
+            </div>
+            
+            <div class="policy-point">
+                Wallet settlement cycle operates weekly.
+            </div>
+            
+            <div class="policy-point">
+                Orders delivered and accepted till Friday night will be added for settlement.
+            </div>
+            
+            <div class="policy-point">
+                Settlement processing is carried out on Saturday and Sunday.
+            </div>
+            
+            <div class="policy-point">
+                Final transfer to the seller's registered bank account is made on Monday.
+            </div>
+            
+            <div class="policy-point">
+                Sellers are responsible for providing accurate bank details.
+            </div>
+            
+            <div class="policy-point">
+                Bank charges for NEFT/IMPS/RTGS will be borne by the seller.
+            </div>
+            
+            <div class="policy-point">
+                In case of failed transfers due to incorrect bank details, reprocessing charges may apply.
+            </div>
+            
+            <div class="policy-point">
+                Online payments received through YourBaazar are subject to standard bank/payment gateway charges, which are deducted before settlement.
+            </div>
+            
+            <div class="policy-point">
+                Sellers will receive payment summaries, including deductions, in the wallet transaction history.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section5">
+            <h2>5. Cash on Delivery (COD)</h2>
+            
+            <div class="policy-point">
+                COD facility is available subject to YourBaazar approval.
+            </div>
+            
+            <div class="policy-point">
+                An additional COD Handling Fee will be charged on each COD order.
+            </div>
+            
+            <div class="policy-point">
+                This COD fee will be deducted from seller settlements.
+            </div>
+            
+            <div class="policy-point">
+                COD amounts collected by courier will be credited to YourBaazar first.
+            </div>
+            
+            <div class="policy-point">
+                Final COD settlement will follow the standard weekly cycle.
+            </div>
+            
+            <div class="policy-point">
+                Sellers are advised to pack COD orders securely to avoid RTO losses.
+            </div>
+            
+            <div class="policy-point">
+                High RTO rates may lead to COD disablement for the seller.
+            </div>
+            
+            <div class="policy-point">
+                RTO (Return to Origin) due to customer rejection will be borne by the seller.
+            </div>
+            
+            <div class="policy-point">
+                Disputes in COD settlements must be raised within 7 working days.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar's reconciliation records will be considered final.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section6">
+            <h2>6. Returns & Refunds</h2>
+            
+            <div class="policy-point">
+                Customers may initiate returns as per YourBaazar Return Policy.
+            </div>
+            
+            <div class="policy-point">
+                Accepted reasons include damaged product, wrong product, defective item, or unmet description.
+            </div>
+            
+            <div class="policy-point">
+                Returns are processed via reverse logistics by YourBaazar.
+            </div>
+            
+            <div class="policy-point">
+                Seller must accept all valid returns.
+            </div>
+            
+            <div class="policy-point">
+                Refusal to accept returns will result in penalties.
+            </div>
+            
+            <div class="policy-point">
+                Upon successful return pickup, the product will be delivered back to the seller.
+            </div>
+            
+            <div class="policy-point">
+                Refunds to customers are managed by YourBaazar directly.
+            </div>
+            
+            <div class="policy-point">
+                Refund amount will be adjusted against seller settlements.
+            </div>
+            
+            <div class="policy-point">
+                Settlement for returns will reflect in Seller Wallet History.
+            </div>
+            
+            <div class="policy-point">
+                Sellers can track return/refund status in the dashboard.
+            </div>
+            
+            <div class="policy-point">
+                Frequent returns due to quality issues may lead to de-listing.
+            </div>
+            
+            <div class="policy-point">
+                Fraudulent claims by sellers may result in account suspension.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must conduct internal QC to reduce return ratio.
+            </div>
+            
+            <div class="policy-point">
+                Return shipping costs are borne by the seller.
+            </div>
+            
+            <div class="policy-point">
+                Refund disputes must be raised within 5 working days.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section7">
+            <h2>7. Seller Responsibilities</h2>
+            
+            <div class="policy-point">
+                Seller is responsible for product authenticity and legality.
+            </div>
+            
+            <div class="policy-point">
+                Counterfeit products will result in permanent blocking.
+            </div>
+            
+            <div class="policy-point">
+                Seller must maintain updated inventory at all times.
+            </div>
+            
+            <div class="policy-point">
+                Price manipulation or fake discounts are prohibited.
+            </div>
+            
+            <div class="policy-point">
+                Seller must honor all confirmed orders.
+            </div>
+            
+            <div class="policy-point">
+                Cancellations by sellers may affect ratings.
+            </div>
+            
+            <div class="policy-point">
+                Sellers must maintain good customer service via messages.
+            </div>
+            
+            <div class="policy-point">
+                Misuse of customer data is strictly prohibited.
+            </div>
+            
+            <div class="policy-point">
+                Seller must comply with return acceptance.
+            </div>
+            
+            <div class="policy-point">
+                Seller must participate in periodic YourBaazar sales campaigns.
+            </div>
+            
+            <div class="policy-point">
+                Packaging standards must be strictly followed.
+            </div>
+            
+            <div class="policy-point">
+                Seller must ensure all labels/barcodes are correct.
+            </div>
+            
+            <div class="policy-point">
+                Invoice value must match product listing value.
+            </div>
+            
+            <div class="policy-point">
+                Seller must not list duplicate products to manipulate visibility.
+            </div>
+            
+            <div class="policy-point">
+                Any violation will be treated as policy breach.
+            </div>
+        </div>
+        
+        <div class="policy-section" id="section8">
+            <h2>8. Dispute Resolution</h2>
+            
+            <div class="policy-point">
+                In case of disputes between seller and YourBaazar, both parties agree to resolve amicably.
+            </div>
+            
+            <div class="policy-point">
+                Escalation matrix will be shared via dashboard.
+            </div>
+            
+            <div class="policy-point">
+                If unresolved, disputes may be escalated to arbitration under Indian Arbitration & Conciliation Act, 1996.
+            </div>
+            
+            <div class="policy-point">
+                Jurisdiction will lie in Delhi, India.
+            </div>
+            
+            <div class="policy-point">
+                Sellers agree not to initiate defamatory actions against YourBaazar.
+            </div>
+            
+            <div class="policy-point">
+                Disputes must be raised within 15 days of the incident.
+            </div>
+            
+            <div class="policy-point">
+                Fraudulent activities by sellers will invite legal action.
+            </div>
+            
+            <div class="policy-point">
+                Settlements will be paused during active disputes.
+            </div>
+            
+            <div class="policy-point">
+                YourBaazar reserves the right to adjust payouts against disputes.
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary" style="text-decoration: none;">I Agree to Terms</a>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 YourBaazar Marketplace. All rights reserved.</p>
+            <p>For queries related to seller policies, contact: seller-support@yourbaazar.com</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,3 +1,4 @@
+{% load webp_filter %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -576,7 +577,7 @@
                     </div>
                     <div class="documents-container">{% if seller.aadhar_photo %}
                         <div class="document-item" onclick="openModal('{{ seller.aadhar_photo.url }}', 'Aadhar Card - {{ seller.aadhar_number }}')">
-                            <img src="{{ seller.aadhar_photo.url }}" alt="Aadhar Document" class="document-image">
+                            <img src="{{ seller.aadhar_photo.url|to_webp }}" alt="Aadhar Document" class="document-image">
 
                                  {% else %}
                                                         <img src="placeholder" alt="Aadhar Document" class="document-image">
@@ -585,7 +586,7 @@
                             <div class="info-label">Aadhar Card</div>
                         </div>{% if seller.pan_photo %}
                         <div class="document-item" onclick="openModal('{{ seller.pan_photo.url }}', 'PAN Card - {{ seller.pan }}')">
-                            <img src="{{ seller.pan_photo.url }}" alt="PAN Document" class="document-image">
+                            <img src="{{ seller.pan_photo.url|to_webp }}" alt="PAN Document" class="document-image">
                             {% else %}
                                                         <img src="placeholder" alt="PAN Document" class="document-image">
 
