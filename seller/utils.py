@@ -37,7 +37,7 @@ def send_otp_email(to_email, otp):
         <!-- Header -->
         <tr>
           <td style="background:#2911e0; text-align:center; padding:25px;">
-            <img src="https://yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
+            <img src="https://cdn.yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
           </td>
         </tr>
 
@@ -125,7 +125,7 @@ def notify_admin_new_seller(email, username, business_name):
         <!-- Header -->
         <tr>
           <td style="background:#2911e0; text-align:center; padding:25px;">
-            <img src="https://yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
+            <img src="https://cdn.yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
           </td>
         </tr>
 
@@ -212,7 +212,7 @@ def notify_seller_approved(to_email):
         <!-- Header -->
         <tr>
           <td style="background:#2911e0; text-align:center; padding:25px;">
-            <img src="https://yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
+            <img src="https://cdn.yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
           </td>
         </tr>
 
@@ -294,7 +294,7 @@ def send_reset_otp_email(to_email, otp):
         <!-- Header -->
         <tr>
           <td style="background:#2911e0; text-align:center; padding:25px;">
-            <img src="https://yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
+            <img src="https://cdn.yourbaazar.com/static/icon/logo.png" alt="YourBaazar Logo" style="max-width:160px;">
           </td>
         </tr>
 

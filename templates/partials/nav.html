@@ -214,6 +214,7 @@
                         top: auto;
                         border-top: 1px solid rgba(255,45,117,0.2);
                         border-bottom: none;
+                        height: 110px;
                     }
                     
                     .ybz-nav-item {
@@ -276,7 +277,6 @@
                     font-weight: 600;
                 }
 
-
 </style>
 </head>
 <body>
@@ -284,8 +284,10 @@
 
 
 
+
     <!-- 💀 DANGEROUS SEARCH -->
     <div class="ybz-search-bar">
+<div style="height: 30px; background-color: #2563eb;"></div>
         <div class="logodata">
             {% if nav_image %}
                 <img src="{{ nav_image }}" alt="{{ site_name }}" class="logo-img">

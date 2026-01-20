@@ -172,57 +172,532 @@
         }
 
 
-     .new01 {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        column-gap:1px; /* Space between cards */
-        row-gap:5px;
-         margin-top:10px;
-        margin-bottom:10px   
- }
+    
+ /* Main Container */
+        .new-001-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
 
-    .newdiv {
-        position:relative;
-        display: flex;
-        flex-direction: column;
-        background-color: #22223b;
-        padding: 10px;
-        border: solid #22223b 2px ;
+        .new-001-main-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
 
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;       
-        height: 100%;
-        text-decoration: none;
-    }
+        .new-001-subtitle {
+            font-size: 1.3rem;
+            color: #666666;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
 
-    .newimg {
-        width: 100%;
-        height: 210px;
-        object-fit: cover;
+        /* BHAI - IMPROVED WOOD GRAIN BACKGROUND */
+        .new-001-gradient-section {
+            background-color: #8b7355; /* Base wood color */
+            background-image: 
+                /* Wood grain pattern layer 1 */
+                radial-gradient(circle at 10% 20%, rgba(155, 125, 95, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(175, 145, 115, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(135, 105, 75, 0.2) 0%, transparent 30%),
+                /* Wood grain lines */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 15px,
+                    rgba(121, 99, 72, 0.1) 15px,
+                    rgba(121, 99, 72, 0.1) 16px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(93, 75, 54, 0.15) 40px,
+                    rgba(93, 75, 54, 0.15) 41px
+                ),
+                /* Wood texture overlay */
+                linear-gradient(
+                    135deg,
+                    rgba(139, 115, 85, 0.9) 0%,
+                    rgba(121, 99, 72, 0.9) 25%,
+                    rgba(107, 87, 63, 0.9) 50%,
+                    rgba(93, 75, 54, 0.9) 75%,
+                    rgba(121, 99, 72, 0.9) 100%
+                );
+            margin: 60px 0;
+            border-radius: 40px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(93, 75, 54, 0.6);
+        }
 
-        border: #fff solid 2px;
-        border-radius: 0.5rem;        
-    }
+        /* Wood Frame Effect */
+        .new-001-gradient-section::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            pointer-events: none;
+            z-index: 1;
+        }
 
- .product-type-tittle {
-    color: black;
-    font-weight: 700;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 8px 10px; /* ye ab pure width ko apply hoga */
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -16px; /* exactly bottom */
-    background-color: #fff;
-    text-align: center;
-    font-size: 16px;
+        /* Animated Gradient Border */
+        .new-001-gradient-section::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, 
+                #d4a574, 
+                #8b7355, 
+                #5d4b36,
+                #a99276,
+                #d4a574);
+            background-size: 400% 400%;
+            border-radius: 43px;
+            z-index: -1;
+            opacity: 0.4;
+            animation: gradientBorder 8s ease infinite;
+        }
 
- border: solid #22223b 2px ;
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;   
-}
-    </style>
+        /* Floating Elements */
+        .new-001-floating-circle {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            top: -150px;
+            right: -150px;
+            z-index: 0;
+        }
+
+        .new-001-floating-square {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, rgba(139, 115, 85, 0.1), rgba(121, 99, 72, 0.1));
+            bottom: -100px;
+            left: -100px;
+            transform: rotate(45deg);
+            z-index: 0;
+        }
+
+        /* Wood Knot Effects */
+        .new-001-wood-knot {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 75, 54, 0.4) 0%, rgba(73, 55, 34, 0.6) 70%);
+            top: 30%;
+            left: 20%;
+            z-index: 0;
+        }
+
+        .new-001-wood-knot-2 {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(73, 55, 34, 0.5) 0%, rgba(53, 35, 14, 0.7) 70%);
+            bottom: 30%;
+            right: 25%;
+            z-index: 0;
+        }
+
+        /* Section Title */
+        .new-001-section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 60px;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 10px rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+        }
+
+        /* Section Description */
+        .new-001-section-desc {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 70px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 2;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            padding: 0 20px;
+        }
+
+        /* Product Cards Grid - DESKTOP (4 columns) */
+        .new-001-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 35px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Minimal Product Card */
+        .new-001-product-card {
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .new-001-product-card:hover {
+            transform: translateY(-20px) scale(1.03);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        /* Card Hover Effect */
+        .new-001-product-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4a574, #8b7355, #5d4b36);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+            transform-origin: left;
+        }
+
+        .new-001-product-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Image Container */
+        .new-001-image-container {
+            height: 240px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .new-001-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.7s ease;
+        }
+
+        .new-001-product-card:hover .new-001-card-image {
+            transform: scale(1.1) rotate(1deg);
+        }
+
+        /* Badge */
+        .new-001-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #8b7355, #5d4b36);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            z-index: 3;
+            box-shadow: 0 5px 15px rgba(93, 75, 54, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Card Info */
+        .new-001-card-info {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .new-001-card-category {
+            color: #8b7355;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(139, 115, 85, 0.15);
+            border-radius: 20px;
+            border: 1px solid rgba(139, 115, 85, 0.2);
+        }
+
+        /* Explore Button */
+        .new-001-explore-btn {
+            background: linear-gradient(135deg, #8b7355, #5d4b36);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+ 
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(93, 75, 54, 0.3);
+        }
+
+        .new-001-explore-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(93, 75, 54, 0.5);
+            background: linear-gradient(135deg, #5d4b36, #8b7355);
+        }
+
+        /* View All Button Container */
+        .new-001-view-all-container {
+            text-align: center;
+            margin-top: 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .new-001-view-all-btn {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            padding: 18px 50px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+            background: rgba(139, 115, 85, 0.2);
+        }
+
+        .new-001-view-all-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* MOBILE VIEW - 6 CARDS PER ROW */
+        @media (max-width: 768px) {
+            /* Mobile Grid - 6 cards per row */
+            .new-001-cards-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 10px;
+                overflow-x: auto;
+                padding-bottom: 20px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+                scrollbar-color: #8b7355 rgba(255, 255, 255, 0.1);
+            }
+
+            .new-001-cards-grid::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .new-001-cards-grid::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+
+            .new-001-cards-grid::-webkit-scrollbar-thumb {
+                background: #8b7355;
+                border-radius: 10px;
+            }
+
+            /* Mobile Card Styling */
+            .new-001-product-card {
+                min-width: 160px;
+                border-radius: 20px;
+                margin-bottom: 5px;
+            }
+
+            .new-001-image-container {
+                height: 140px;
+            }
+
+            .new-001-card-info {
+                padding: 15px 10px;
+            }
+
+            .new-001-card-category {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+                letter-spacing: 1px;
+            }
+
+            .new-001-badge {
+                font-size: 0.7rem;
+                padding: 5px 12px;
+                top: 12px;
+                left: 12px;
+            }
+
+            .new-001-explore-btn {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+                margin-top: 10px;
+            }
+
+            .new-001-section-title {
+                font-size: 2.2rem;
+                margin-bottom: 40px;
+            }
+
+            .new-001-section-desc {
+                font-size: 1rem;
+                margin-bottom: 40px;
+            }
+
+            .new-001-gradient-section {
+                margin: 30px 10px;
+                border-radius: 30px;
+            }
+
+            .new-001-floating-circle {
+                width: 200px;
+                height: 200px;
+                top: -100px;
+                right: -100px;
+            }
+
+            .new-001-floating-square {
+                width: 150px;
+                height: 150px;
+                bottom: -75px;
+                left: -75px;
+            }
+
+            .new-001-view-all-container {
+                margin-top: 50px;
+            }
+
+            .new-001-view-all-btn {
+                padding: 15px 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Tablet */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .new-001-cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
+            }
+            
+            .new-001-main-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Small Mobile Adjustments */
+        @media (max-width: 480px) {
+            .new-001-cards-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 8px;
+            }
+
+            .new-001-product-card {
+                min-width: 165px;
+            }
+
+            .new-001-image-container {
+                height: 120px;
+            }
+
+            .new-001-section-title {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            .new-001-section-desc {
+                font-size: 0.9rem;
+                margin-bottom: 30px;
+            }
+
+            .new-001-view-all-btn {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Very Small Mobile */
+        @media (max-width: 360px) {
+            .new-001-cards-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 6px;
+            }
+
+            .new-001-product-card {
+                min-width: 130px;
+            }
+
+            .new-001-image-container {
+                height: 110px;
+            }
+
+            .new-001-card-info {
+                padding: 12px 8px;
+            }
+
+            .new-001-card-category {
+                font-size: 0.7rem;
+            }
+
+            .new-001-explore-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
+      
+
+        </style>
 
 
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
@@ -275,11 +750,48 @@
 
 <!-- === product type section start  from here -->
 
-<section class="new01">
- {% for pt in product_types %}
-    <a href="{% url 'product:product_list' pt.category.id pt.subcategory.id pt.id %}" class="newdiv"> <img src="{{ pt.image.url|to_webp }}" alt="{{ pt.name }}" class="newimg"> <p class="product-type-tittle">{{ pt.name }}</p> </a>
-     {% endfor %}
-</section>
+
+   
+
+
+
+
+    <!-- BHAI - ENHANCED WOOD GRAIN SECTION -->
+    <section class="new-001-gradient-section">
+        <!-- Floating Elements -->
+        <div class="new-001-floating-circle"></div>
+        <div class="new-001-floating-square"></div>
+        <div class="new-001-wood-knot"></div>
+        <div class="new-001-wood-knot-2"></div>
+        
+        <div class="new-001-container">
+                        <h2 class="new-001-section-title">Your Own Market</h2>
+
+            <p class="new-001-section-desc">Discover our exclusive range of premium products. Scroll horizontally on mobile to view all items in each row.</p>
+            
+            <!-- Desktop: 4 columns, Mobile: 6 cards per row -->
+            <div class="new-001-cards-grid">
+                <!-- Row 1 - 6 Cards -->{% for pt in product_types %}
+                <article class="new-001-product-card">
+                    <div class="new-001-image-container">
+                        
+                        <img src="{{ pt.image.url|to_webp }}" alt="Camera" class="new-001-card-image">
+                    </div>
+                    <div class="new-001-card-info">
+                        <div class="new-001-card-category">{{ pt.name }}</div>
+                        <a href="{% url 'product:product_list' pt.category.id pt.subcategory.id pt.id %}"  class="new-001-explore-btn">
+                            <i class="fas fa-arrow-right"></i> Explore
+                        </a>
+                    </div>
+                </article>{% endfor %}
+           
+            </div>        
+         
+        </div>
+    </section>
+
+
+
 
 <!-- product type section ends here -->
 <section class="xxx-course-carousel-section " style="background: linear-gradient(135deg, #b30000, #ff4d00, #ffd700);">
@@ -608,9 +1120,10 @@
                     <h3 class="shoe-title">{{ variant.color.product.name }}</h3>
                     <div class="shoe-price">₹{{ variant.price_after_discount|floatformat:1 }}</div>
                  
-                    <button  style="text-decoration: none;" class="shoe-btn">
-                     <i class="fas fa-eye"></i> View
-                    </button>
+                 
+                    <a href="{% url 'product:product_detail' variant.color.product.id %}"  style="text-decoration: none;"  class="shoe-btn">
+<i class="fas fa-eye"></i>View
+                    </a>
                 </div>
             </div>
             {% endfor %}
