@@ -1,6 +1,10 @@
-from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
+from django.db import models, transaction
+from django.core.files import File
+import tempfile
+import subprocess
+import os
 from ckeditor.fields import RichTextField
 from django.conf import settings
 # Create your models here.
