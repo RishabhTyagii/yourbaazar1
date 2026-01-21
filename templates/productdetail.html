@@ -85,30 +85,30 @@
 <!-- 💎 Main Product Section -->
 <div class="product-container animate__animated animate__fadeIn">
     <!-- Image Gallery with Zoom -->
-<div class="image-gallery" id="product-gallery">
+<!-- Image Gallery without PhotoSwipe links -->
+<div class="image-gallery">
     <div class="main-image-container" id="zoomContainer">
         {% if color_images %}
-            <a href="{{ color_images.0.url|to_webp }}" data-pswp-width="1200" data-pswp-height="1600">
-                <img id="mainImage" src="{{ color_images.0.url|to_webp }}" class="main-image" 
-                     data-zoom-image="{{ color_images.0.url|to_webp }}">
-            </a>
+            <!-- PhotoSwipe link हटाएं, केवल image रखें -->
+            <img id="mainImage" src="{{ color_images.0.url|to_webp }}" class="main-image" 
+                 data-zoom-image="{{ color_images.0.url|to_webp }}">
             <div class="zoom-lens" id="zoomLens"></div>
             <div class="zoom-result" id="zoomResult"></div>
         {% else %}
             <div class="alert alert-warning">No images available</div>
         {% endif %}
-    </div>    <div class="thumbnail-container">
+    </div>
+    
+    <div class="thumbnail-container">
         {% for image in color_images %}
-            <a href="{{ image.url|to_webp }}" data-pswp-width="1200" data-pswp-height="1600">
-                <img src="{{ image.url|to_webp }}" 
-                     class="thumbnail {% if forloop.first %}active{% endif %}" 
-                     onclick="changeImage(this, '{{ image.url|to_webp }}')"
-                     alt="{{ product.name }}">
-            </a>
+            <!-- PhotoSwipe link हटाएं, केवल image रखें -->
+            <img src="{{ image.url|to_webp }}" 
+                 class="thumbnail {% if forloop.first %}active{% endif %}" 
+                 onclick="changeImage(this, '{{ image.url|to_webp }}')"
+                 alt="{{ product.name }}">
         {% endfor %}
     </div>
 </div>
-
     
     <!-- Product Info -->
     <div class="product-info">
@@ -1130,7 +1130,7 @@ document.getElementById('check-pincode-btn').addEventListener('click', function(
         });
     });
 </script>
-<script type="module">
+<!-- <script type="module">
     import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
 
     const lightbox = new PhotoSwipeLightbox({
@@ -1139,18 +1139,11 @@ document.getElementById('check-pincode-btn').addEventListener('click', function(
         pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.min.js')
     });
     lightbox.init();
-</script>
+</script> -->
 <script type="module">
     import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
 
-    // Product gallery
-    const productLightbox = new PhotoSwipeLightbox({
-        gallery: '#product-gallery',
-        children: 'a',
-        pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.min.js')
-    });
-    productLightbox.init();
-
+  
     // Review gallery
     const reviewLightbox = new PhotoSwipeLightbox({
         gallery: '#review-gallery',
