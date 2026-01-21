@@ -696,7 +696,22 @@
                 font-size: 0.8rem;
             }
         }
-      
+            .hero-video {
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-video video {
+  width: 100%;
+  max-height: 85vh;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .hero-video video {
+    max-height: 55vh;
+  }
+}
 
         </style>
 
@@ -747,6 +762,22 @@
     <span class="visually-hidden">Loading...</span>
   </div>
 </div>
+
+
+
+{% if home_video %}
+<section class="hero-video">
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+  >
+    <source src="{{ home_video.video.url }}" type="video/mp4">
+  </video>
+</section>
+{% endif %}
 
 
 <!-- === product type section start  from here -->

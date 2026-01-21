@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FestivalSlide
+from .models import FestivalSlide, HomeVideo
 
 # Register your models here.
 from .models import NavImage, footer, social_media, contact_us,HeroImage, collection_card, shop_sale
@@ -23,3 +23,7 @@ admin.site.register(shop_sale)
 class FestivalSlideAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_active', 'order')
     list_editable = ('is_active', 'order')
+@admin.register(HomeVideo)
+class HomeVideoAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_active", "created_at")
+    list_editable = ("is_active",)

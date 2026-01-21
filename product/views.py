@@ -106,6 +106,7 @@ def indexpage(request):
         'new_coupons': new_coupons,
         'kitchen_appliances': kitchen_category,
         'products': products,
+        'home_video': home_video,
         'product_types':product_types,
         
     })

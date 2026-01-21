@@ -169,3 +169,94 @@ def convert_images_to_webp(sender, instance, **kwargs):
 
     convert_and_replace("desktop_image")
     convert_and_replace("mobile_image")
+
+class HomeVideo(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    video = models.FileField(upload_to="home_videos/")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title or "Homepage Video"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        # ✅ convert ONLY first time upload
+        if is_new and self.video:
+            transaction.on_commit(self._convert_video_s3_safe)
+
+    def _convert_video_s3_safe(self):
+        """
+        S3-safe conversion:
+        S3 → temp file → ffmpeg → mp4 → upload → delete original
+        """
+
+        # already converted
+        if self.video.name.endswith("_h264.mp4"):
+            return
+
+        original_name = self.video.name
+
+        # ---------- 1️⃣ DOWNLOAD FROM S3 TO TEMP ----------
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".input") as temp_input:
+            for chunk in self.video.chunks():
+                temp_input.write(chunk)
+            input_path = temp_input.name
+
+        output_path = input_path.replace(".input", "_h264.mp4")
+
+        try:
+            # ---------- 2️⃣ FFMPEG CONVERT (REAL COMPRESSION) ----------
+            subprocess.run([
+                "ffmpeg", "-y",
+                "-i", input_path,
+
+                # 🔻 force 720p
+                "-vf", "scale=1280:-2",
+
+                # 🎥 H.264
+                "-vcodec", "libx264",
+                "-preset", "slow",
+                "-crf", "26",
+
+                # 📉 bitrate cap (important)
+                "-maxrate", "2000k",
+                "-bufsize", "4000k",
+
+                # 🌈 compatibility
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
+
+                # 🔇 remove audio
+                "-an",
+
+                output_path
+            ], check=True)
+
+            # ---------- 3️⃣ FORCE .mp4 NAME ----------
+            base_name = os.path.splitext(os.path.basename(original_name))[0]
+            new_name = f"{base_name}_h264.mp4"
+
+            with open(output_path, "rb") as f:
+                self.video.save(new_name, File(f), save=False)
+
+            super().save(update_fields=["video"])
+
+            # ---------- 4️⃣ DELETE ORIGINAL FILE FROM S3 ----------
+            self.video.storage.delete(original_name)
+
+        finally:
+            # ---------- 5️⃣ CLEAN TEMP FILES ----------
+            if os.path.exists(input_path):
+                os.remove(input_path)
+            if os.path.exists(output_path):
+                os.remove(output_path)
+
+
+# 🔥 DELETE FROM S3 (ADMIN / QUERYSET / CASCADE SAFE)
+@receiver(post_delete, sender=HomeVideo)
+def delete_video_from_s3(sender, instance, **kwargs):
+    if instance.video:
+        instance.video.delete(save=False)
