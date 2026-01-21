@@ -214,7 +214,7 @@ class HomeVideo(models.Model):
         try:
             # ---------- 2️⃣ FFMPEG CONVERT (REAL COMPRESSION) ----------
             subprocess.run([
-                "ffmpeg", "-y",
+                "/usr/bin/ffmpeg", "-y",
                 "-i", input_path,
 
                 # 🔻 force 720p
