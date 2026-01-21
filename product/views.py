@@ -19,7 +19,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import product as Product, product_type, ProductVariant, ProductColor
 from product_review.models import ReviewImage
 from django.db.models import Sum
-from basicinfo.models import NavImage,collection_card,shop_sale,HeroImage
+from basicinfo.models import HomeVideo, NavImage,collection_card,shop_sale,HeroImage
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -79,6 +79,8 @@ def indexpage(request):
     hero_image_obj = NavImage.objects.first()
     collection = collection_card.objects.first()
     sales = shop_sale.objects.all()
+    home_video = HomeVideo.objects.filter(is_active=True).last()
+
     # suggested product 
     all_products = list(product.objects.all())
     random_products = random.sample(all_products, min(len(all_products), 10))
