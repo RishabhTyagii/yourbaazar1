@@ -79,7 +79,7 @@ def indexpage(request):
     hero_image_obj = NavImage.objects.first()
     collection = collection_card.objects.first()
     sales = shop_sale.objects.all()
-    home_video = HomeVideo.objects.filter(is_active=True).order_by("created_at")
+    home_video = HomeVideo.objects.filter(is_active=True).last() 
 
     # suggested product 
     all_products = list(product.objects.all())
