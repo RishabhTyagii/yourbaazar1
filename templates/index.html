@@ -765,25 +765,20 @@
 
 
 
+{% if home_video %}
 <section class="hero-video">
   <video
-    id="heroVideo"
     autoplay
     muted
+    loop
     playsinline
     preload="metadata"
   >
-    <source src="{{ videos.0.video.url }}" type="video/mp4">
+    <source src="{{ home_video.video.url }}" type="video/mp4">
+    Your browser does not support the video tag.
   </video>
 </section>
-
-<script>
-  const videoList = [
-    {% for v in videos %}
-      "{{ v.video.url }}",
-    {% endfor %}
-  ];
-</script>
+{% endif %}
 
 
 <!-- === product type section start  from here -->
