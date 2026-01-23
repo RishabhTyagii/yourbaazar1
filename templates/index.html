@@ -765,20 +765,7 @@
 
 
 
-{% if home_video %}
-<section class="hero-video">
-  <video
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-  >
-    <source src="{{ home_video.video.url }}" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</section>
-{% endif %}
+
 
 
 <!-- === product type section start  from here -->
@@ -824,7 +811,20 @@
     </section>
 
 
-
+{% if home_video %}
+<section class="hero-video">
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+  >
+    <source src="{{ home_video.video.url }}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</section>
+{% endif %}
 
 <!-- product type section ends here -->
 <section class="xxx-course-carousel-section " style="background: linear-gradient(135deg, #b30000, #ff4d00, #ffd700);">
