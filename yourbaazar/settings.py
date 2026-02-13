@@ -140,10 +140,18 @@ RATELIMIT_VIEW = "yourapp.views.ratelimit_handler"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'yourbaazardb',  # same as schema you created
+        'USER': 'admin',
+        'PASSWORD': 'tarun231',
+        'HOST': 'database-2.c3skesa0esud.ap-south-1.rds.amazonaws.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -295,9 +303,6 @@ SHIPROCKET_DEFAULT_HEIGHT_CM = 5
 #         "BACKEND": "yourbaazar.storages_backends.StaticStorage",
 #     },
 # }
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # agar tumhara project root me static folder hai
-]
 
 
 # URL settings
@@ -305,11 +310,40 @@ STATICFILES_DIRS = [
 # MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 # Optional local fallback (sirf development ke liye)
+# AWS Credentials
+AWS_ACCESS_KEY_ID = "#"
+AWS_SECRET_ACCESS_KEY = "#"
+AWS_STORAGE_BUCKET_NAME = "yourbaazar-bucket"
+AWS_S3_REGION_NAME = "ap-south-1"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+
+AWS_S3_CUSTOM_DOMAIN = "cdn.yourbaazar.com"
+
+# Custom Storages
+STORAGES = {
+    "default": {
+        "BACKEND": "yourbaazar.storages_backends.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "yourbaazar.storages_backends.StaticStorage",
+    },
+}
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # agar tumhara project root me static folder hai
+]
+
+
+# URL settings
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
+# Optional local fallback (sirf development ke liye)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
-STATIC_URL = "/static/"
-MEDIA_URL = "/media/"
+
+
 
 
 
