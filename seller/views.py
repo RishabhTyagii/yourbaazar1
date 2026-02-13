@@ -1,4 +1,4 @@
-# app/views.py
+# seller/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse

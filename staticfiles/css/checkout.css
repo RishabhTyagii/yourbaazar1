@@ -1,0 +1,37 @@
+.container {
+  max-width: 960px;
+  margin: 20px auto 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; color: #3a3a3a; }
+.form-group { margin-bottom: 1.2rem; }
+label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: #4a4a4a; }
+input[type=text], input[type=email], input[type=tel], select {
+  width: 100%; padding: 10px 12px; border-radius: 5px;
+  border: 1px solid #c6c6c6; font-size: 1rem;
+}
+input[type=submit], button[type=submit], button#rzp-pay-btn {
+  background-color: #5f42a0; color: white; padding: 15px 20px; border: none;
+  border-radius: 6px; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+  transition: background-color 0.3s ease; width: 100%; margin-bottom: 11px;
+}
+input[type=submit]:hover, button[type=submit]:hover, button#rzp-pay-btn:hover {
+  background-color: #3a2172;
+}
+.order-summary {
+  border: 1px solid #dcdcdc; border-radius: 8px; padding: 20px;
+  margin-bottom: 30px; background-color: #fafafa;
+}
+.order-summary h3 { font-size: 1.4rem; margin-bottom: 1rem; font-weight: 700; color: #5f42a0; }
+.order-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem; }
+.order-item .details { flex-grow: 1; }
+.order-item .price { font-weight: 600; }
+.total-price { font-weight: 700; font-size: 1.25rem; margin-top: 12px; text-align: right; color: #5f42a0; }
+@media (max-width: 600px) {
+  .order-item { flex-direction: column; }
+  .order-item .price { text-align: right; margin-top: 5px; }
+}

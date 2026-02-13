@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'dal',
+    # 'ratelimit',
     'dal_select2',
     'cart',
     'product',
@@ -78,7 +79,11 @@ INSTALLED_APPS = [
     'seller_reviews',
     'storages',
     'seller_reports',
+     'seller_api',
 ]
+
+# INSTALLED_APPS += ["ratelimit"]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,26 +118,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'yourbaazar.wsgi.application'
 
-
+RATELIMIT_VIEW = "yourapp.views.ratelimit_handler"
 
 #jazzmin
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'yourbaazardb',  # same as schema you created
+#         'USER': 'admin',
+#         'PASSWORD': 'tarun231',
+#         'HOST': 'database-2.c3skesa0esud.ap-south-1.rds.amazonaws.com',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'yourbaazardb',  # same as schema you created
-        'USER': 'admin',
-        'PASSWORD': 'tarun231',
-        'HOST': 'database-2.c3skesa0esud.ap-south-1.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -265,38 +276,40 @@ SHIPROCKET_DEFAULT_HEIGHT_CM = 5
 
 
 
-# AWS Credentials
-AWS_ACCESS_KEY_ID = "AKIA5OUQZGJ76IBP32WS"
-AWS_SECRET_ACCESS_KEY = "GsnLc3HN7pKRqKCpNKwCI1A6hdXEg1U5IhEukZNA"
-AWS_STORAGE_BUCKET_NAME = "yourbaazar-bucket"
-AWS_S3_REGION_NAME = "ap-south-1"
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+# # AWS Credentials
+# AWS_ACCESS_KEY_ID = "AKIA5OUQZGJ76IBP32WS"
+# AWS_SECRET_ACCESS_KEY = "GsnLc3HN7pKRqKCpNKwCI1A6hdXEg1U5IhEukZNA"
+# AWS_STORAGE_BUCKET_NAME = "yourbaazar-bucket"
+# AWS_S3_REGION_NAME = "ap-south-1"
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
 
-AWS_S3_CUSTOM_DOMAIN = "cdn.yourbaazar.com"
+# AWS_S3_CUSTOM_DOMAIN = "cdn.yourbaazar.com"
 
-# Custom Storages
-STORAGES = {
-    "default": {
-        "BACKEND": "yourbaazar.storages_backends.MediaStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "yourbaazar.storages_backends.StaticStorage",
-    },
-}
+# # Custom Storages
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "yourbaazar.storages_backends.MediaStorage",
+#     },
+#     "staticfiles": {
+#         "BACKEND": "yourbaazar.storages_backends.StaticStorage",
+#     },
+# }
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # agar tumhara project root me static folder hai
 ]
 
 
 # URL settings
-STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+# STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+# MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 # Optional local fallback (sirf development ke liye)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
 
 

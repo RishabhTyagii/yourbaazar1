@@ -37,7 +37,9 @@ urlpatterns = [
     path('seller_products/', include('seller_products.urls', namespace='seller_products')),
     path('wallet/', include('wallet.urls', namespace='wallet')),
     path("seller-reviews/", include("seller_reviews.urls", namespace="seller_reviews")),
-    path("seller_reports/",include('seller_reports.urls', namespace="seller_reports"))
+    path("seller_reports/",include('seller_reports.urls', namespace="seller_reports")),
+    path("api/", include("seller_api.urls")), 
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

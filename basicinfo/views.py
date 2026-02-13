@@ -19,6 +19,7 @@ from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, ExtractW
 # from django.core.paginator import Paginator
 
 from django.db.models import Q
+@login_required
 def contactus(request):
     if request.method == 'POST':
         name = request.POST.get('name')

@@ -1,3 +1,4 @@
+# seller_products/forms.py
 from django import forms
 from django.forms import inlineformset_factory, BaseInlineFormSet
 
@@ -140,6 +141,28 @@ ProductVariantSimpleFormSet = formset_factory(ProductVariantForm, extra=0, can_d
 
 
 
+# seller_products/forms.py
+from django import forms
+from dal import autocomplete
+from .models import SellerProductDraft
+
+class SellerProductDraftAdminForm(forms.ModelForm):
+    class Meta:
+        model = SellerProductDraft
+        fields = '__all__'
+        widgets = {
+            'category': autocomplete.ModelSelect2(
+                url='product:category-autocomplete'
+            ),
+            'subcategory': autocomplete.ModelSelect2(
+                url='product:subcategory-autocomplete',
+                forward=['category'],
+            ),
+            'product_type': autocomplete.ModelSelect2(
+                url='product:product-type-autocomplete',
+                forward=['category', 'subcategory'],
+            ),
+        }
 
 
 

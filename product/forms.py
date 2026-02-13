@@ -1,3 +1,4 @@
+# product/forms.py
 from django import forms
 from dal import autocomplete
 from .models import product, product_type

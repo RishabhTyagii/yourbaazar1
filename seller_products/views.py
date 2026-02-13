@@ -1,3 +1,4 @@
+#seller_products/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction
@@ -979,3 +980,46 @@ def admin_seller_order_detail(request, order_id, seller_id):
     }
     return render(request, "seller_products/admin/seller_order_detail.html", context)
 
+from dal import autocomplete
+
+
+# ---------- Category ----------
+class CategoryAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return category.objects.none()
+        qs = category.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+
+# ---------- Subcategory (filtered by category) ----------
+
+class SubcategoryAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return subcategory.objects.none()
+        qs = subcategory.objects.all()
+        cat_id = self.forwarded.get('category')
+        if cat_id:
+            qs = qs.filter(category_id=cat_id)
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+
+# ---------- NEW: ProductType (filtered by category + subcategory) ----------
+class ProductTypeAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return product_type.objects.none()
+        qs = product_type.objects.all()
+        cat_id = self.forwarded.get('category')
+        subcat_id = self.forwarded.get('subcategory')
+        if cat_id:
+            qs = qs.filter(category_id=cat_id)
+        if subcat_id:
+            qs = qs.filter(subcategory_id=subcat_id)
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+    

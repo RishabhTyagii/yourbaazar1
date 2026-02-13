@@ -1,0 +1,72 @@
+
+        /* CSS Variables */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #5e72e4;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --accent-light: #ff6b9e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --dark-light: #343a40;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --info: #4895ef;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.05);
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-fast: all 0.15s ease-in-out;
+        }
+        
+        /* Base Styles */
+               .gradient-icon {
+  background: linear-gradient(45deg, #f72585, #4361ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+*{
+  /* border: 2px solid red */
+}
+
+ a{
+        text-decoration: none;
+    }
+        
+      ::-webkit-scrollbar {
+    width: 10px;
+    height: 1px;
+}
+::-webkit-scrollbar-track {
+    background: linear-gradient(#f0f0f0, #e0e0e0);
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #6e8efb, #a777e3);
+    border-radius: 10px;
+}
+/* Apply to body or any scrollable container */
+@media (max-width: 768px) {
+  body, .scrollable {
+    /* Safari, Chrome, Edge (WebKit) */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body::-webkit-scrollbar,
+  .scrollable::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  body, .scrollable {
+    scrollbar-width: none;           /* Firefox */
+    -ms-overflow-style: none;        /* IE/Edge */
+  }
+}
+

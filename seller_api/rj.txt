@@ -1,0 +1,16 @@
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/seller/drafts/full-create/" -Method POST -Headers @{Authorization="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWxsZXJfaWQiOjEsImV4cCI6MTc3MDQxMjg1MywiaWF0IjoxNzcwNDA1NjUzLCJzY29wZSI6ImRyYWZ0X3dyaXRlIn0.k6-VXMZfEmXW3DWgYz_rZtBdzuBLMXUvsdvrbJxntbs"} -ContentType "application/json" -Body '{"product":{"name":"API Multi Color Shirtx","sku":"API-MULTI-0025x","category_id":1,"subcategory_id":2,"product_type_id":4},"colors":[{"color_name":"Blue","variants":[{"size":"S","stock":5,"price_before_discount":2000,"discount":10},{"size":"M","stock":10,"price_before_discount":2000,"discount":10},{"size":"L","stock":8,"price_before_discount":2000,"discount":10}]},{"color_name":"Black","variants":[{"size":"S","stock":6,"price_before_discount":2200,"discount":15},{"size":"M","stock":12,"price_before_discount":2200,"discount":15},{"size":"L","stock":9,"price_before_discount":2200,"discount":15}]}]}'
+
+
+
+
+
+
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/api/seller/drafts/colors/10/images/" `
+  -Method POST `
+  -Headers @{ Authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWxsZXJfaWQiOjEsImV4cCI6MTc3MDQxNTU4MywiaWF0IjoxNzcwNDA4MzgzLCJzY29wZSI6ImRyYWZ0X3dyaXRlIn0.B-5_7Po9CuANn8xnkfMYy2NUEhGJV_wSP6zVTI0IZsY" } `
+  -Form @{
+      image_main = Get-Item "C:\Users\risha\Documents\Zoom\track.png"
+      image1     = Get-Item "C:\Users\risha\Documents\Zoom\var.png"
+      image2     = Get-Item "C:\Users\risha\Documents\Zoom\sub.png"
+  }

@@ -14,7 +14,17 @@
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ product.name }} - YourBaazar">
 <meta property="og:description" content="{{ product.short_description }}">
-<meta property="og:image" content="{{ product.image.url|to_webp }}">
+
+
+
+   {% if product.image %}
+                    <meta property="og:image" content="{{ product.image.url|to_webp }}">
+                {% elif  product.thumbnail %}
+                    <meta property="og:image" content="{{ product.thumbnail.url|to_webp }}">
+                {% else %}
+                    <meta property="og:image" content="{{ color.image_main.url|to_webp }}">
+                {% endif %}
+
 
 <!-- JSON-LD Product Schema -->
 <script type="application/ld+json">
@@ -23,7 +33,7 @@
   "@type": "Product",
   "name": "{{ product.name }}{% for variant in variants %} {{ variant.color.color_name }}{% endfor %}",
   "image": [
-    "{{ product.image.url }}"
+    "{{ color.image_main.url|to_webp }}"
   ],
   "description": "{{ product.short_description|truncatechars:200 }}",
   "sku": "{{ product.sku }}",
