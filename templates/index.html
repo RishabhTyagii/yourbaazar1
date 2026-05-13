@@ -999,50 +999,96 @@
 </section>
 
 {% if kitchen_appliances %}
- <section class="fpsc2-product-carousel-section">
+<section class="fpsc2-product-carousel-section">
   <div class="fpsc2-product-carousel-container">
+    
     <h3 class="fpsc2-carousel-title">Kitchen Appliances</h3>
-    
-    <div class="fpsc2-product-carousel fpsc2-owl-theme">
-      
-      <div class="fpsc2-carousel-track">
-    
-          {% for product in products %}
-        <!-- Product 5 -->
-        <div class="fpsc2-product-card">
-          <div class="fpsc2-product-image">
-         
 
-   {% if product.thumbnail %}
-                    <img src="{{ product.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ product.name }}">
+    <div class="fpsc2-product-carousel fpsc2-owl-theme">
+      <div class="fpsc2-carousel-track">
+
+        {% for product in products %}
+        <div class="fpsc2-product-card">
+
+          <div class="fpsc2-product-image">
+
+            {% with first_color=product.colors.first %}
+
+                {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail.url|to_webp }}" 
+                         class="tq12-card-img" 
+                         alt="{{ product.name }}">
+
                 {% elif product.image %}
-                    <img src="{{ product.image.url|to_webp }}" class="tq12-card-img" alt="{{ product.name }}">
+                    <img src="{{ product.image.url|to_webp }}" 
+                         class="tq12-card-img" 
+                         alt="{{ product.name }}">
+
+                {% elif first_color and first_color.image1 %}
+                    <img src="{{ first_color.image1.url|to_webp }}" 
+                         class="tq12-card-img" 
+                         alt="{{ product.name }}">
+
                 {% else %}
-                    <img src="/static/images/no-image.png" class="tq12-card-img" alt="No image available">
+                    <img src="/static/images/no-image.png" 
+                         class="tq12-card-img" 
+                         alt="No image available">
                 {% endif %}
 
+            {% endwith %}
+
           </div>
+
           <div class="fpsc2-product-details">
+
             <h4 class="fpsc2-product-title">{{ product.name }}</h4>
+
             <div class="fpsc2-price-container">
-                  {% with default_variant=product.get_default_variant %}
-                    {% if default_variant %}
-                        {% if default_variant.discount > 0 %}
-              <span class="fpsc2-current-price">₹{{ default_variant.price_before_discount }}</span>
-              <span class="fpsc2-original-price"> ₹{{ default_variant.price_after_discount }}</span>
-            </div> {% else %}
-                            <p>₹{{ default_variant.price_before_discount }}</p>
-                        {% endif %}{% else %}
-                        <p>Price not available</p>
-                    {% endif %}{% endwith %}
-            <a href="{{ product.get_absolute_url }}" class="fpsc2-view-btn" style="text-decoration:none">View Product</a>
+
+              {% with default_variant=product.get_default_variant %}
+
+                  {% if default_variant %}
+
+                      {% if default_variant.discount > 0 %}
+
+                          <span class="fpsc2-current-price">
+                              ₹{{ default_variant.price_after_discount|floatformat:2 }}
+                          </span>
+
+                          <span class="fpsc2-original-price">
+                              ₹{{ default_variant.price_before_discount|floatformat:2 }}
+                          </span>
+
+                      {% else %}
+
+                          <span class="fpsc2-current-price">
+                              ₹{{ default_variant.price_before_discount|floatformat:2 }}
+                          </span>
+
+                      {% endif %}
+
+                  {% else %}
+
+                      <p>Price not available</p>
+
+                  {% endif %}
+
+              {% endwith %}
+
+            </div>
+
+            <a href="{{ product.get_absolute_url }}" 
+               class="fpsc2-view-btn" 
+               style="text-decoration:none">
+               View Product
+            </a>
+
           </div>
+
         </div>
-           
-         {% endfor %}
+        {% endfor %}
+
       </div>
-      
-     
     </div>
   </div>
 
