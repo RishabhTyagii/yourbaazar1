@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -311,12 +312,15 @@ SHIPROCKET_DEFAULT_HEIGHT_CM = 5
 
 # Optional local fallback (sirf development ke liye)
 # AWS Credentials
-AWS_ACCESS_KEY_ID = "#"
-AWS_SECRET_ACCESS_KEY = "#"
-AWS_STORAGE_BUCKET_NAME = "yourbaazar-bucket"
-AWS_S3_REGION_NAME = "ap-south-1"
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
+
+AWS_S3_CUSTOM_DOMAIN = config("AWS_S3_CUSTOM_DOMAIN")
 
 AWS_S3_CUSTOM_DOMAIN = "cdn.yourbaazar.com"
 
