@@ -960,11 +960,20 @@
         <!-- Product 5 -->
         <div class="fpsc1-product-card">
           <div class="fpsc1-product-image">
-           {% if prod.thumbnail %}
-                        <img src="{{ prod.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}">
-                    {% else %}
-                        <img src="{% static 'images/no-image.jpg' %}" class="tq12-card-img" alt="No image">
-                    {% endif %}
+     {% with first_color=prod.colors.first %}
+    {% if prod.thumbnail %}
+        <img src="{{ prod.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}">
+
+    {% elif prod.image %}
+        <img src="{{ prod.image.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}">
+
+    {% elif first_color and first_color.image1 %}
+        <img src="{{ first_color.image1.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}">
+
+    {% else %}
+        <img src="/static/images/no-image.png" class="tq12-card-img" alt="No image">
+    {% endif %}
+{% endwith %}
           </div>
           <div class="fpsc1-product-details">
             <h4 class="fpsc1-product-title">{{ prod.name }}</h4>
