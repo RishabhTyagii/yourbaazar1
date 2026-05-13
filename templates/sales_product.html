@@ -34,64 +34,115 @@
 
 {% block content %}
 <div class="sales-page">
+
     <div class="page-header">
-        <h2><i class="fas fa-bolt fire-icon"></i>Flash Sale Products</h2>
-        <div class="sale-badge">LIMITED TIME OFFEaR</div>
+        <h2>
+            <i class="fas fa-bolt fire-icon"></i>
+            Flash Sale Products
+        </h2>
+
+        <div class="sale-badge">
+            LIMITED TIME OFFER
+        </div>
+
         <div class="flash-sale-timer">
-            <i class="fas fa-clock"></i> Sale Ends in: <span id="countdown">24:00:00</span>
+            <i class="fas fa-clock"></i>
+            Sale Ends in:
+            <span id="countdown">24:00:00</span>
         </div>
     </div>
-    
+
     <div class="product-grid">
+
         {% for variant in sale_products %}
-            <div class="product-card">
-                <div class="product-image-container">
-                    <img src="{{ variant.color.product.image.url|to_webp }}" 
-                         alt="{{ variant.color.product.name }}" 
-                         class="product-image" 
-                         loading="lazy">
-                    <div class="product-badge">{{ variant.discount|floatformat:0 }}% OFF</div>
-                </div>
-                <div class="product-info">
-                    <h3>{{ variant.color.product.name }}</h3>
-                    <div class="product-price">
-                        <span class="current-price">₹{{ variant.price_after_discount|floatformat:2 }}</span>
-                        <span class="original-price">₹{{ variant.price_before_discount|floatformat:2 }}</span>
-                        <span class="discount-percent">{{ variant.discount|floatformat:0 }}% OFF</span>
-                    </div>
-                    <a href="{% url 'product:product_detail' variant.color.product.id %}" class="view-btn">
-                        <i class="fas fa-shopping-cart"></i> Shop Now
-                    </a>
-                </div>
-            </div>
-        {% empty %}
-            <p style="text-align: center;">No sale products available.</p>
-        {% endfor %}
-    </div>
 
-    <!-- Pagination -->
-    <div class="pagination">
-        {% if sale_products.has_other_pages %}
-            <ul class="pagination-list">
-                {% if sale_products.has_previous %}
-                    <li><a href="?page=1">&laquo; First</a></li>
-                    <li><a href="?page={{ sale_products.previous_page_number }}">‹ Prev</a></li>
-                {% endif %}
+        <div class="product-card">
 
-                {% for num in sale_products.paginator.page_range %}
-                    {% if sale_products.number == num %}
-                        <li class="active"><span>{{ num }}</span></li>
-                    {% elif num > sale_products.number|add:'-3' and num < sale_products.number|add:'3' %}
-                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+            <div class="product-image-container">
+
+                {% with product=variant.color.product %}
+                {% with first_color=product.colors.first %}
+
+                    {% if product.thumbnail %}
+
+                        <img src="{{ product.thumbnail.url|to_webp }}"
+                             alt="{{ product.name }}"
+                             class="product-image"
+                             loading="lazy">
+
+                    {% elif product.image %}
+
+                        <img src="{{ product.image.url|to_webp }}"
+                             alt="{{ product.name }}"
+                             class="product-image"
+                             loading="lazy">
+
+                    {% elif first_color and first_color.image1 %}
+
+                        <img src="{{ first_color.image1.url|to_webp }}"
+                             alt="{{ product.name }}"
+                             class="product-image"
+                             loading="lazy">
+
+                    {% else %}
+
+                        <img src="/static/images/no-image.png"
+                             alt="No image available"
+                             class="product-image"
+                             loading="lazy">
+
                     {% endif %}
-                {% endfor %}
 
-                {% if sale_products.has_next %}
-                    <li><a href="?page={{ sale_products.next_page_number }}">Next ›</a></li>
-                    <li><a href="?page={{ sale_products.paginator.num_pages }}">Last &raquo;</a></li>
-                {% endif %}
-            </ul>
-        {% endif %}
+                {% endwith %}
+                {% endwith %}
+
+                <div class="product-badge">
+                    {{ variant.discount|floatformat:0 }}% OFF
+                </div>
+
+            </div>
+
+            <div class="product-info">
+
+                <h3>{{ variant.color.product.name }}</h3>
+
+                <div class="product-price">
+
+                    <span class="current-price">
+                        ₹{{ variant.price_after_discount|floatformat:2 }}
+                    </span>
+
+                    <span class="original-price">
+                        ₹{{ variant.price_before_discount|floatformat:2 }}
+                    </span>
+
+                    <span class="discount-percent">
+                        {{ variant.discount|floatformat:0 }}% OFF
+                    </span>
+
+                </div>
+
+                <a href="{% url 'product:product_detail' variant.color.product.id %}"
+                   class="view-btn">
+
+                    <i class="fas fa-shopping-cart"></i>
+                    Shop Now
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <p style="text-align: center;">
+            No sale products available.
+        </p>
+
+        {% endfor %}
+
     </div>
+
 </div>
 {% endblock %}
