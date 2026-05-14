@@ -1,215 +1,406 @@
+# Modern Product Listing Page (Django Template)
+
+```django
 {% extends 'base.html' %}
 {% load static %}
 {% load webp_filter %}
+
 {% block content %}
-<div class="container-fluid py-3">
-    {% if products %}
-    <!-- Desktop Grid View (hidden on mobile) -->
-    <div class="row g-3 d-none d-md-flex">
-        {% for product in products %}
-            <div class="col-md-3">
-                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
-                    <div class="position-relative" style="height: 200px; overflow: hidden;">
-                        {% if product.thumbnail %}
-                            <img src="{{ product.thumbnail.url|to_webp }}" class="w-100 h-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
-                        {% else %}
-                            <img src="{% static 'images/no-image.jpg' %}" class="w-100 h-100 object-fit-cover" alt="No image" loading="lazy">
-                        {% endif %}
-                        
-                        <!-- Discount badge -->
-                        {% with color=product.colors.first %}
-                            {% if color %}
-                                {% with variant=color.variants.first %}
-                                    {% if variant and variant.discount > 0 %}
-                                        <span class="badge bg-danger position-absolute top-0 start-0 m-2">
-                                            -{{ variant.discount|floatformat:0 }}%
-                                        </span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
 
-                    <div class="card-body p-3 d-flex flex-column">
-                        <h6 class="card-title mb-1 text-truncate-2" title="{{ product.name }}">
-                            {{ product.name }}
-                        </h6>
-                        
-                        {% with color=product.colors.first %}
-                            {% if color %}
-                                {% with variant=color.variants.first %}
-                                    {% if variant %}
-                                        <div class="mt-auto">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <span class="text-dark fw-bold fs-5">
-                                                    ₹{{ variant.price_after_discount|floatformat:0 }}
-                                                </span>
-                                                {% if variant.discount > 0 %}
-                                                    <span class="text-muted text-decoration-line-through small ms-2">
-                                                        ₹{{ variant.price_before_discount|floatformat:0 }}
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                            
-                                            <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
-                                                {% if variant.size %}
-                                                    <span>Size: {{ variant.size }}</span>
-                                                {% endif %}
-                                                {% if color.color_name %}
-                                                    <span class="color-dot" style="background-color: {{ color.hex_code|default:'#ccc' }}"></span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <p class="text-muted small mt-auto">Not available</p>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <p class="text-muted small mt-auto">Not available</p>
-                            {% endif %}
-                        {% endwith %}
-                        
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100 mt-2">
-                            View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+<div class="container-fluid py-4 px-lg-5 product-page-wrapper">
 
-    <!-- Mobile List View (hidden on desktop) -->
-    <div class="d-md-none">
-        {% for product in products %}
-        <div class="card mb-3 border-0 shadow-sm">
-            <div class="row g-0 h-100">
-                <div class="col-4 position-relative">
-                    <div class="h-100 w-100" style="min-height: 120px;">
-                        {% if product.thumbnail %}
-                            <img src="{{ product.thumbnail.url|to_webp }}" class="h-100 w-100 object-fit-cover" alt="{{ product.name }}" loading="lazy">
-                        {% else %}
-                            <img src="{% static 'images/no-image.jpg' %}" class="h-100 w-100 object-fit-cover" alt="No image" loading="lazy">
-                        {% endif %}
-                        
-                        <!-- Discount badge -->
-                        {% with color=product.colors.first %}
-                            {% if color %}
-                                {% with variant=color.variants.first %}
-                                    {% if variant and variant.discount > 0 %}
-                                        <span class="badge bg-danger position-absolute top-0 start-0 m-1">
-                                            -{{ variant.discount|floatformat:0 }}%
-                                        </span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-                </div>
-                <div class="col-8 d-flex flex-column">
-                    <div class="card-body p-3 d-flex flex-column h-100">
-                        <h6 class="card-title mb-1">{{ product.name }}</h6>
-                        
-                        {% with color=product.colors.first %}
-                            {% if color %}
-                                {% with variant=color.variants.first %}
-                                    {% if variant %}
-                                        <div class="mt-auto">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <span class="text-dark fw-bold">
-                                                    ₹{{ variant.price_after_discount|floatformat:0 }}
-                                                </span>
-                                                {% if variant.discount > 0 %}
-                                                    <span class="text-muted text-decoration-line-through small ms-2">
-                                                        ₹{{ variant.price_before_discount|floatformat:0 }}
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                            
-                                            <div class="d-flex justify-content-between small text-muted mb-2">
-                                                {% if variant.size %}
-                                                    <span>Size: {{ variant.size }}</span>
-                                                {% endif %}
-                                                {% if color.color_name %}
-                                                    <span class="color-dot" style="background-color: {{ color.hex_code|default:'#ccc' }}"></span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <p class="text-muted small mt-auto">Not available</p>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <p class="text-muted small mt-auto">Not available</p>
-                            {% endif %}
-                        {% endwith %}
-                        
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100 mt-2">
-                            View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-1 page-title">
+                Explore Products
+            </h2>
+            <p class="text-muted mb-0">
+                Discover trending and premium collections curated for you.
+            </p>
         </div>
+
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+            <span class="product-count-badge">
+                {{ products|length }} Products Available
+            </span>
+        </div>
+    </div>
+
+    {% if products %}
+
+    <!-- Product Grid -->
+    <div class="row g-4">
+
+        {% for product in products %}
+
+        <div class="col-6 col-md-4 col-lg-3">
+
+            <div class="modern-product-card h-100">
+
+                <!-- Product Image -->
+                <div class="product-image-wrapper position-relative overflow-hidden">
+
+                    {% with first_color=product.colors.first %}
+
+                        {% if product.thumbnail %}
+
+                            <img src="{{ product.thumbnail.url|to_webp }}"
+                                 class="product-image"
+                                 alt="{{ product.name }}"
+                                 loading="lazy">
+
+                        {% elif product.image %}
+
+                            <img src="{{ product.image.url|to_webp }}"
+                                 class="product-image"
+                                 alt="{{ product.name }}"
+                                 loading="lazy">
+
+                        {% elif first_color and first_color.image1 %}
+
+                            <img src="{{ first_color.image1.url|to_webp }}"
+                                 class="product-image"
+                                 alt="{{ product.name }}"
+                                 loading="lazy">
+
+                        {% else %}
+
+                            <img src="{% static 'images/no-image.jpg' %}"
+                                 class="product-image"
+                                 alt="No image"
+                                 loading="lazy">
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                    <!-- Discount Badge -->
+                    {% with default_variant=product.get_default_variant %}
+                        {% if default_variant and default_variant.discount > 0 %}
+
+                            <div class="discount-badge">
+                                {{ default_variant.discount|floatformat:0 }}% OFF
+                            </div>
+
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Quick View -->
+                    <div class="quick-view-overlay">
+                        <a href="{{ product.get_absolute_url }}" class="quick-view-btn">
+                            View Product
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Product Content -->
+                <div class="product-content">
+
+                    <h5 class="product-title">
+                        {{ product.name }}
+                    </h5>
+
+                    {% with default_variant=product.get_default_variant %}
+
+                        {% if default_variant %}
+
+                            <div class="price-wrapper">
+
+                                <span class="current-price">
+                                    ₹{{ default_variant.price_after_discount|floatformat:0 }}
+                                </span>
+
+                                {% if default_variant.discount > 0 %}
+
+                                    <span class="old-price">
+                                        ₹{{ default_variant.price_before_discount|floatformat:0 }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="extra-details d-flex justify-content-between align-items-center">
+
+                                {% if default_variant.size %}
+                                    <span class="size-pill">
+                                        {{ default_variant.size }}
+                                    </span>
+                                {% endif %}
+
+                                {% with first_color=product.colors.first %}
+                                    {% if first_color and first_color.color_code %}
+
+                                        <span class="color-circle"
+                                              style="background-color: {{ first_color.color_code }};">
+                                        </span>
+
+                                    {% endif %}
+                                {% endwith %}
+
+                            </div>
+
+                        {% else %}
+
+                            <p class="text-muted small mb-0">
+                                Price not available
+                            </p>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                    <!-- Buttons -->
+                    <div class="d-grid mt-3">
+                        <a href="{{ product.get_absolute_url }}"
+                           class="btn modern-btn">
+                            View Details
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
         {% endfor %}
+
     </div>
+
     {% else %}
-    <div class="text-center py-5">
-        <img src="{% static 'images/no-products.svg' %}" alt="No products" class="img-fluid mb-4" style="max-height: 200px;">
-        <h5 class="text-muted">No products found</h5>
-        <p class="text-muted">We couldn't find any products matching your criteria</p>
-        <a href="/" class="btn btn-primary mt-3">Browse All Products</a>
+
+    <!-- Empty State -->
+    <div class="empty-state text-center py-5">
+
+        <img src="{% static 'images/no-products.svg' %}"
+             class="img-fluid mb-4"
+             style="max-height: 220px;"
+             alt="No products">
+
+        <h3 class="fw-bold mb-2">
+            No Products Found
+        </h3>
+
+        <p class="text-muted mb-4">
+            We couldn't find any matching products right now.
+        </p>
+
+        <a href="/" class="btn modern-btn px-4 py-2">
+            Browse Products
+        </a>
+
     </div>
+
     {% endif %}
+
 </div>
+
 {% endblock %}
+
 
 {% block styles %}
+
 <style>
-    /* Common Styles */
-    .object-fit-cover {
-        object-fit: cover;
-        object-position: center;
+
+.product-page-wrapper {
+    background: #f8f9fb;
+    min-height: 100vh;
+}
+
+.page-title {
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+}
+
+.product-count-badge {
+    background: #111;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.modern-product-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    position: relative;
+}
+
+.modern-product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.product-image-wrapper {
+    height: 280px;
+    background: #f3f3f3;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.modern-product-card:hover .product-image {
+    transform: scale(1.06);
+}
+
+.discount-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff3b30;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.quick-view-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modern-product-card:hover .quick-view-overlay {
+    opacity: 1;
+}
+
+.quick-view-btn {
+    background: #fff;
+    color: #111;
+    padding: 10px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.quick-view-btn:hover {
+    background: #111;
+    color: #fff;
+}
+
+.product-content {
+    padding: 18px;
+}
+
+.product-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    min-height: 48px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.price-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.current-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.95rem;
+}
+
+.extra-details {
+    margin-bottom: 10px;
+}
+
+.size-pill {
+    background: #f1f1f1;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.color-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: inline-block;
+}
+
+.modern-btn {
+    background: #111;
+    color: #fff;
+    border-radius: 14px;
+    padding: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.modern-btn:hover {
+    background: #000;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 50px 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 767px) {
+
+    .product-image-wrapper {
+        height: 200px;
     }
-    
-    .color-dot {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: 1px solid #eee;
+
+    .page-title {
+        font-size: 1.5rem;
     }
-    
-    /* Desktop Grid View Styles */
-    .hover-shadow:hover {
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+
+    .product-title {
+        font-size: 0.9rem;
+        min-height: 40px;
     }
-    
-    .transition-all {
-        transition: all 0.3s ease;
+
+    .current-price {
+        font-size: 1rem;
     }
-    
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+
+    .modern-btn {
+        font-size: 0.85rem;
+        padding: 9px;
     }
-    
-    /* Mobile List View Styles */
-    @media (max-width: 767.98px) {
-        .card-body {
-            padding: 1rem !important;
-        }
-        
-        .card-title {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
-        }
-    }
+
+}
+
 </style>
+
 {% endblock %}
+```
