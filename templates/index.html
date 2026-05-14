@@ -894,44 +894,115 @@
 
 
 {% if recent_products %}
+
 <section class="fpsc-product-carousel-section">
+
   <div class="fpsc-product-carousel-container">
-    <h3 class="fpsc-carousel-title">Recently Viewed</h3>
-    
+
+    <h3 class="fpsc-carousel-title">
+      Recently Viewed
+    </h3>
+
     <div class="fpsc-product-carousel fpsc-owl-theme">
-      
+
       <div class="fpsc-carousel-track">
-    
-               {% for product in recent_products %}
-        <!-- Product 5 -->
+
+        {% for product in recent_products %}
+
         <div class="fpsc-product-card">
+
           <div class="fpsc-product-image">
-          
-                        <!-- <img src="{{ product.thumbnail.url|to_webp }}" class="tq12-card-img" alt="{{ prod.name }}"> -->
-                    
+
+            {% with first_color=product.colors.first %}
+
+                {% if product.thumbnail %}
+
+                    <img src="{{ product.thumbnail.url|to_webp }}"
+                         class="tq12-card-img"
+                         alt="{{ product.name }}">
+
+                {% elif product.image %}
+
+                    <img src="{{ product.image.url|to_webp }}"
+                         class="tq12-card-img"
+                         alt="{{ product.name }}">
+
+                {% elif first_color and first_color.image1 %}
+
+                    <img src="{{ first_color.image1.url|to_webp }}"
+                         class="tq12-card-img"
+                         alt="{{ product.name }}">
+
+                {% else %}
+
+                    <img src="/static/images/no-image.png"
+                         class="tq12-card-img"
+                         alt="No image available">
+
+                {% endif %}
+
+            {% endwith %}
+
           </div>
+
           <div class="fpsc-product-details">
-            <h4 class="fpsc-product-title">{{ product.name }}</h4>
+
+            <h4 class="fpsc-product-title">
+              {{ product.name }}
+            </h4>
+
             <div class="fpsc-price-container">
-                {% if product.get_default_variant %}
-              <span class="fpsc-current-price">  ₹{{ product.get_default_variant.price_after_discount|floatformat:2 }}</span>   {% if product.get_default_variant.discount > 0 %}
-              <span class="fpsc-original-price">₹{{ product.get_default_variant.price_before_discount|floatformat:2 }}</span>
-            </div> {% endif %}
-                        
-            <a href="{{ product.get_absolute_url|to_webp }}" class="fpsc-view-btn" style="text-decoration:none">View Product</a>
+
+              {% with default_variant=product.get_default_variant %}
+
+                  {% if default_variant %}
+
+                      <span class="fpsc-current-price">
+                        ₹{{ default_variant.price_after_discount|floatformat:2 }}
+                      </span>
+
+                      {% if default_variant.discount > 0 %}
+
+                          <span class="fpsc-original-price">
+                            ₹{{ default_variant.price_before_discount|floatformat:2 }}
+                          </span>
+
+                      {% endif %}
+
+                  {% else %}
+
+                      <span class="fpsc-current-price">
+                        Price not available
+                      </span>
+
+                  {% endif %}
+
+              {% endwith %}
+
+            </div>
+
+            <a href="{{ product.get_absolute_url }}"
+               class="fpsc-view-btn"
+               style="text-decoration:none">
+
+               View Product
+
+            </a>
+
           </div>
+
         </div>
-            {% endif %}
-         {% endfor %}
+
+        {% endfor %}
+
       </div>
-      
-     
+
     </div>
+
   </div>
 
-
-
 </section>
+
 {% endif %}
 
 
