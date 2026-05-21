@@ -1,406 +1,650 @@
-# Modern Product Listing Page (Django Template)
-
-```django
 {% extends 'base.html' %}
 {% load static %}
 {% load webp_filter %}
 
-{% block content %}
-
-<div class="container-fluid py-4 px-lg-5 product-page-wrapper">
-
-    <!-- Header -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-6">
-            <h2 class="fw-bold mb-1 page-title">
-                Explore Products
-            </h2>
-            <p class="text-muted mb-0">
-                Discover trending and premium collections curated for you.
-            </p>
-        </div>
-
-        <div class="col-md-6 text-md-end mt-3 mt-md-0">
-            <span class="product-count-badge">
-                {{ products|length }} Products Available
-            </span>
-        </div>
-    </div>
-
-    {% if products %}
-
-    <!-- Product Grid -->
-    <div class="row g-4">
-
-        {% for product in products %}
-
-        <div class="col-6 col-md-4 col-lg-3">
-
-            <div class="modern-product-card h-100">
-
-                <!-- Product Image -->
-                <div class="product-image-wrapper position-relative overflow-hidden">
-
-                    {% with first_color=product.colors.first %}
-
-                        {% if product.thumbnail %}
-
-                            <img src="{{ product.thumbnail.url|to_webp }}"
-                                 class="product-image"
-                                 alt="{{ product.name }}"
-                                 loading="lazy">
-
-                        {% elif product.image %}
-
-                            <img src="{{ product.image.url|to_webp }}"
-                                 class="product-image"
-                                 alt="{{ product.name }}"
-                                 loading="lazy">
-
-                        {% elif first_color and first_color.image1 %}
-
-                            <img src="{{ first_color.image1.url|to_webp }}"
-                                 class="product-image"
-                                 alt="{{ product.name }}"
-                                 loading="lazy">
-
-                        {% else %}
-
-                            <img src="{% static 'images/no-image.jpg' %}"
-                                 class="product-image"
-                                 alt="No image"
-                                 loading="lazy">
-
-                        {% endif %}
-
-                    {% endwith %}
-
-                    <!-- Discount Badge -->
-                    {% with default_variant=product.get_default_variant %}
-                        {% if default_variant and default_variant.discount > 0 %}
-
-                            <div class="discount-badge">
-                                {{ default_variant.discount|floatformat:0 }}% OFF
-                            </div>
-
-                        {% endif %}
-                    {% endwith %}
-
-                    <!-- Quick View -->
-                    <div class="quick-view-overlay">
-                        <a href="{{ product.get_absolute_url }}" class="quick-view-btn">
-                            View Product
-                        </a>
-                    </div>
-
-                </div>
-
-                <!-- Product Content -->
-                <div class="product-content">
-
-                    <h5 class="product-title">
-                        {{ product.name }}
-                    </h5>
-
-                    {% with default_variant=product.get_default_variant %}
-
-                        {% if default_variant %}
-
-                            <div class="price-wrapper">
-
-                                <span class="current-price">
-                                    ₹{{ default_variant.price_after_discount|floatformat:0 }}
-                                </span>
-
-                                {% if default_variant.discount > 0 %}
-
-                                    <span class="old-price">
-                                        ₹{{ default_variant.price_before_discount|floatformat:0 }}
-                                    </span>
-
-                                {% endif %}
-
-                            </div>
-
-                            <div class="extra-details d-flex justify-content-between align-items-center">
-
-                                {% if default_variant.size %}
-                                    <span class="size-pill">
-                                        {{ default_variant.size }}
-                                    </span>
-                                {% endif %}
-
-                                {% with first_color=product.colors.first %}
-                                    {% if first_color and first_color.color_code %}
-
-                                        <span class="color-circle"
-                                              style="background-color: {{ first_color.color_code }};">
-                                        </span>
-
-                                    {% endif %}
-                                {% endwith %}
-
-                            </div>
-
-                        {% else %}
-
-                            <p class="text-muted small mb-0">
-                                Price not available
-                            </p>
-
-                        {% endif %}
-
-                    {% endwith %}
-
-                    <!-- Buttons -->
-                    <div class="d-grid mt-3">
-                        <a href="{{ product.get_absolute_url }}"
-                           class="btn modern-btn">
-                            View Details
-                        </a>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% else %}
-
-    <!-- Empty State -->
-    <div class="empty-state text-center py-5">
-
-        <img src="{% static 'images/no-products.svg' %}"
-             class="img-fluid mb-4"
-             style="max-height: 220px;"
-             alt="No products">
-
-        <h3 class="fw-bold mb-2">
-            No Products Found
-        </h3>
-
-        <p class="text-muted mb-4">
-            We couldn't find any matching products right now.
-        </p>
-
-        <a href="/" class="btn modern-btn px-4 py-2">
-            Browse Products
-        </a>
-
-    </div>
-
-    {% endif %}
-
-</div>
-
-{% endblock %}
-
-
 {% block styles %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* ─── Base Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.product-page-wrapper {
-    background: #f8f9fb;
+/* ─── CSS Variables ──────────────────────────────────────────── */
+:root {
+    --bg-page:     #FBF7F2;
+    --bg-card:     #FFFFFF;
+    --bg-img:      #F2EDE6;
+    --text-dark:   #111111;
+    --text-muted:  #888888;
+    --text-soft:   #444444;
+    --accent-gold: #E8A020;
+    --accent-red:  #D84040;
+    --accent-green:#1A7A4A;
+    --border:      #E8E0D6;
+    --shadow-sm:   0 2px 12px rgba(0,0,0,.06);
+    --shadow-lg:   0 18px 40px rgba(0,0,0,.14);
+    --radius-card: 20px;
+    --radius-pill: 40px;
+    --radius-btn:  13px;
+    --font-head:   'Syne', sans-serif;
+    --font-body:   'Plus Jakarta Sans', sans-serif;
+    --transition:  .32s cubic-bezier(.25,.8,.25,1);
+}
+
+/* ─── Page Wrapper ───────────────────────────────────────────── */
+.ybz-page {
+    background: var(--bg-page);
     min-height: 100vh;
+    font-family: var(--font-body);
 }
 
-.page-title {
-    font-size: 2rem;
-    letter-spacing: -0.5px;
+/* ─── Hero Header ────────────────────────────────────────────── */
+.ybz-hero {
+    background: var(--text-dark);
+    padding: 32px 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
 }
 
-.product-count-badge {
-    background: #111;
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 40px;
-    font-size: 14px;
+.ybz-hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(24px, 5vw, 38px);
+    font-weight: 800;
+    color: var(--bg-page);
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+}
+
+.ybz-hero-title span {
+    color: var(--accent-gold);
+}
+
+.ybz-hero-sub {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+.ybz-count-badge {
+    background: var(--accent-gold);
+    color: var(--text-dark);
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-head);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ─── Category Filter Pills ──────────────────────────────────── */
+.ybz-filter-bar {
+    padding: 16px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-bottom: 1px solid var(--border);
+}
+
+.ybz-filter-bar::-webkit-scrollbar { display: none; }
+
+.ybz-filter-pill {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    padding: 8px 17px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
     font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .22s ease;
+    text-decoration: none;
+    display: inline-block;
 }
 
-.modern-product-card {
-    background: #fff;
-    border-radius: 24px;
+.ybz-filter-pill:hover,
+.ybz-filter-pill.active {
+    background: var(--text-dark);
+    color: var(--bg-page);
+    border-color: var(--text-dark);
+}
+
+/* ─── Section Label ──────────────────────────────────────────── */
+.ybz-section-label {
+    padding: 22px 24px 10px;
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ─── Product Grid ───────────────────────────────────────────── */
+.ybz-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 12px 40px;
+}
+
+@media (min-width: 576px) {
+    .ybz-grid { gap: 14px; padding: 0 16px 40px; }
+}
+
+@media (min-width: 768px) {
+    .ybz-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 20px 40px;
+    }
+}
+
+@media (min-width: 1100px) {
+    .ybz-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        padding: 0 28px 48px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .ybz-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ─── Product Card ───────────────────────────────────────────── */
+.ybz-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
     overflow: hidden;
-    transition: all 0.35s ease;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
     position: relative;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+
+    /* Staggered entrance */
+    animation: ybzCardIn .55s ease both;
 }
 
-.modern-product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+.ybz-card:nth-child(1)  { animation-delay: .04s }
+.ybz-card:nth-child(2)  { animation-delay: .08s }
+.ybz-card:nth-child(3)  { animation-delay: .12s }
+.ybz-card:nth-child(4)  { animation-delay: .16s }
+.ybz-card:nth-child(5)  { animation-delay: .20s }
+.ybz-card:nth-child(6)  { animation-delay: .24s }
+.ybz-card:nth-child(7)  { animation-delay: .28s }
+.ybz-card:nth-child(8)  { animation-delay: .32s }
+.ybz-card:nth-child(n+9){ animation-delay: .36s }
+
+@keyframes ybzCardIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0);    }
 }
 
-.product-image-wrapper {
-    height: 280px;
-    background: #f3f3f3;
+.ybz-card:hover {
+    transform: translateY(-7px);
+    box-shadow: var(--shadow-lg);
 }
 
-.product-image {
+/* ─── Card Image ─────────────────────────────────────────────── */
+.ybz-img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-img);
+    height: 190px;
+}
+
+@media (min-width: 576px) { .ybz-img-wrap { height: 210px; } }
+@media (min-width: 768px) { .ybz-img-wrap { height: 230px; } }
+@media (min-width: 1100px){ .ybz-img-wrap { height: 250px; } }
+
+.ybz-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    display: block;
+    transition: transform .5s ease;
 }
 
-.modern-product-card:hover .product-image {
-    transform: scale(1.06);
+.ybz-card:hover .ybz-img {
+    transform: scale(1.07);
 }
 
-.discount-badge {
+/* ─── Badges ─────────────────────────────────────────────────── */
+.ybz-badge-disc {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #ff3b30;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 30px;
-    font-size: 12px;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-red);
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 11px;
     font-weight: 700;
+    padding: 5px 11px;
+    border-radius: var(--radius-pill);
     z-index: 2;
+    letter-spacing: .3px;
+    pointer-events: none;
 }
 
-.quick-view-overlay {
+.ybz-badge-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--text-dark);
+    color: var(--accent-gold);
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    z-index: 2;
+    letter-spacing: .6px;
+    pointer-events: none;
+}
+
+/* ─── Quick View Overlay ─────────────────────────────────────── */
+.ybz-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.35);
+    background: rgba(10, 10, 10, .42);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     opacity: 0;
-    transition: all 0.3s ease;
+    z-index: 3;
+    transition: opacity .3s ease;
 }
 
-.modern-product-card:hover .quick-view-overlay {
-    opacity: 1;
-}
+.ybz-card:hover .ybz-overlay { opacity: 1; }
 
-.quick-view-btn {
-    background: #fff;
-    color: #111;
-    padding: 10px 18px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-.quick-view-btn:hover {
-    background: #111;
-    color: #fff;
-}
-
-.product-content {
-    padding: 18px;
-}
-
-.product-title {
-    font-size: 1rem;
+.ybz-qv-btn {
+    background: var(--bg-page);
+    color: var(--text-dark);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
     font-weight: 700;
-    margin-bottom: 10px;
-    min-height: 48px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transform: translateY(10px);
+    transition: transform .3s ease, background .2s, color .2s;
+}
+
+.ybz-card:hover .ybz-qv-btn { transform: translateY(0); }
+
+.ybz-qv-btn:hover {
+    background: var(--accent-gold);
+    color: var(--text-dark);
+}
+
+/* ─── Card Body ──────────────────────────────────────────────── */
+.ybz-body {
+    padding: 13px 13px 15px;
+}
+
+@media (min-width: 576px) { .ybz-body { padding: 14px 15px 16px; } }
+
+.ybz-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.35;
+    min-height: 36px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    margin-bottom: 9px;
 }
 
-.price-wrapper {
+@media (min-width: 768px) { .ybz-name { font-size: 14px; min-height: 38px; } }
+
+/* ─── Price Row ──────────────────────────────────────────────── */
+.ybz-price-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 9px;
 }
 
-.current-price {
-    font-size: 1.2rem;
+.ybz-price {
+    font-family: var(--font-head);
+    font-size: 16px;
     font-weight: 700;
-    color: #111;
+    color: var(--text-dark);
 }
 
-.old-price {
-    color: #999;
-    text-decoration: line-through;
-    font-size: 0.95rem;
-}
+@media (min-width: 768px) { .ybz-price { font-size: 17px; } }
 
-.extra-details {
-    margin-bottom: 10px;
-}
-
-.size-pill {
-    background: #f1f1f1;
-    padding: 5px 12px;
-    border-radius: 30px;
+.ybz-old-price {
     font-size: 12px;
-    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    font-weight: 500;
 }
 
-.color-circle {
-    width: 18px;
-    height: 18px;
+.ybz-save-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-green);
+    background: #E4F6ED;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* ─── Meta Row (swatches + size) ─────────────────────────────── */
+.ybz-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 11px;
+    min-height: 22px;
+}
+
+.ybz-swatches {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ybz-swatch {
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 2px solid rgba(0,0,0,.13);
     display: inline-block;
+    transition: transform .2s;
+    cursor: pointer;
 }
 
-.modern-btn {
-    background: #111;
-    color: #fff;
-    border-radius: 14px;
-    padding: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.ybz-swatch:hover { transform: scale(1.35); }
+
+.ybz-size-pill {
+    background: var(--bg-img);
+    color: var(--text-soft);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: .3px;
+    flex-shrink: 0;
+}
+
+/* ─── CTA Button ─────────────────────────────────────────────── */
+.ybz-cta {
+    display: block;
+    width: 100%;
+    background: var(--text-dark);
+    color: var(--bg-page);
     border: none;
+    border-radius: var(--radius-btn);
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-body);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: .2px;
+    transition: background var(--transition), transform .2s;
 }
 
-.modern-btn:hover {
-    background: #000;
-    color: #fff;
-    transform: translateY(-2px);
+@media (min-width: 576px) { .ybz-cta { font-size: 13px; padding: 11px; } }
+
+.ybz-cta:hover {
+    background: var(--accent-gold);
+    color: var(--text-dark);
+    transform: translateY(-1px);
 }
 
-.empty-state {
-    background: white;
-    border-radius: 24px;
-    padding: 50px 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+/* ─── Empty State ────────────────────────────────────────────── */
+.ybz-empty {
+    text-align: center;
+    padding: 60px 20px;
+    margin: 24px;
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    animation: ybzCardIn .5s ease both;
 }
 
-@media (max-width: 767px) {
-
-    .product-image-wrapper {
-        height: 200px;
-    }
-
-    .page-title {
-        font-size: 1.5rem;
-    }
-
-    .product-title {
-        font-size: 0.9rem;
-        min-height: 40px;
-    }
-
-    .current-price {
-        font-size: 1rem;
-    }
-
-    .modern-btn {
-        font-size: 0.85rem;
-        padding: 9px;
-    }
-
+.ybz-empty img {
+    max-height: 200px;
+    width: auto;
+    margin-bottom: 24px;
+    opacity: .85;
 }
 
+.ybz-empty h3 {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    letter-spacing: -.5px;
+}
+
+.ybz-empty p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.ybz-empty .ybz-cta {
+    display: inline-block;
+    width: auto;
+    padding: 12px 28px;
+    font-size: 14px;
+}
+
+/* ─── Utility ────────────────────────────────────────────────── */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+}
 </style>
+{% endblock %}
+
+
+{% block content %}
+
+<main class="ybz-page">
+
+    <!-- ── Hero Header ───────────────────────────────────────── -->
+    <header class="ybz-hero">
+        <div>
+            <h1 class="ybz-hero-title">
+                Explore <span>Products</span>
+            </h1>
+            <p class="ybz-hero-sub">
+                Trending &amp; premium collections curated for you
+            </p>
+        </div>
+        <span class="ybz-count-badge" aria-live="polite">
+            {{ products|length }} Products
+        </span>
+    </header>
+
+    <!-- ── Category Filter Bar ───────────────────────────────── -->
+    <nav class="ybz-filter-bar" aria-label="Category filters">
+        <a href="?category=all"   class="ybz-filter-pill {% if not request.GET.category or request.GET.category == 'all' %}active{% endif %}">All</a>
+        <a href="?category=men"   class="ybz-filter-pill {% if request.GET.category == 'men' %}active{% endif %}">Men's Wear</a>
+        <a href="?category=women" class="ybz-filter-pill {% if request.GET.category == 'women' %}active{% endif %}">Women's Wear</a>
+        <a href="?category=new"   class="ybz-filter-pill {% if request.GET.category == 'new' %}active{% endif %}">New Arrivals</a>
+        <a href="?category=foot"  class="ybz-filter-pill {% if request.GET.category == 'foot' %}active{% endif %}">Footwear</a>
+        <a href="?category=acc"   class="ybz-filter-pill {% if request.GET.category == 'acc' %}active{% endif %}">Accessories</a>
+        <a href="?category=sale"  class="ybz-filter-pill {% if request.GET.category == 'sale' %}active{% endif %}">Sale 🔥</a>
+    </nav>
+
+    {% if products %}
+
+        <p class="ybz-section-label" aria-hidden="true">Featured</p>
+
+        <!-- ── Product Grid ──────────────────────────────────── -->
+        <section class="ybz-grid" aria-label="Product listing">
+
+            {% for product in products %}
+
+            {% with default_variant=product.get_default_variant first_color=product.colors.first %}
+
+            <article class="ybz-card">
+
+                <!-- Image -->
+                <div class="ybz-img-wrap">
+
+                    {% if product.thumbnail %}
+                        <img src="{{ product.thumbnail.url|to_webp }}"
+                             class="ybz-img"
+                             alt="{{ product.name }}"
+                             loading="lazy"
+                             decoding="async"
+                             width="400" height="400">
+                    {% elif product.image %}
+                        <img src="{{ product.image.url|to_webp }}"
+                             class="ybz-img"
+                             alt="{{ product.name }}"
+                             loading="lazy"
+                             decoding="async"
+                             width="400" height="400">
+                    {% elif first_color and first_color.image1 %}
+                        <img src="{{ first_color.image1.url|to_webp }}"
+                             class="ybz-img"
+                             alt="{{ product.name }}"
+                             loading="lazy"
+                             decoding="async"
+                             width="400" height="400">
+                    {% else %}
+                        <img src="{% static 'images/no-image.jpg' %}"
+                             class="ybz-img"
+                             alt="No image available"
+                             loading="lazy"
+                             decoding="async"
+                             width="400" height="400">
+                    {% endif %}
+
+                    <!-- Discount Badge -->
+                    {% if default_variant and default_variant.discount > 0 %}
+                        <span class="ybz-badge-disc" aria-label="{{ default_variant.discount|floatformat:0 }} percent off">
+                            {{ default_variant.discount|floatformat:0 }}% OFF
+                        </span>
+                    {% endif %}
+
+                    <!-- New Badge (optional — add is_new field on Product model) -->
+                    {% if product.is_new %}
+                        <span class="ybz-badge-new">NEW</span>
+                    {% endif %}
+
+                    <!-- Quick View Overlay -->
+                    <div class="ybz-overlay" aria-hidden="true">
+                        <a href="{{ product.get_absolute_url }}" class="ybz-qv-btn">
+                            Quick View
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Body -->
+                <div class="ybz-body">
+
+                    <h2 class="ybz-name">{{ product.name }}</h2>
+
+                    {% if default_variant %}
+
+                        <!-- Price Row -->
+                        <div class="ybz-price-row">
+                            <span class="ybz-price">
+                                ₹{{ default_variant.price_after_discount|floatformat:0 }}
+                            </span>
+                            {% if default_variant.discount > 0 %}
+                                <span class="ybz-old-price">
+                                    ₹{{ default_variant.price_before_discount|floatformat:0 }}
+                                </span>
+                                <span class="ybz-save-tag">
+                                    {{ default_variant.discount|floatformat:0 }}% off
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Meta: Color Swatches + Size -->
+                        <div class="ybz-meta">
+
+                            <!-- Color Swatches -->
+                            <div class="ybz-swatches" aria-label="Available colors">
+                                {% for color in product.colors.all|slice:":4" %}
+                                    {% if color.color_code %}
+                                        <span class="ybz-swatch"
+                                              style="background-color: {{ color.color_code }};"
+                                              title="{{ color.name|default:'Color' }}"
+                                              aria-label="{{ color.name|default:'Color option' }}">
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- Size Pill -->
+                            {% if default_variant.size %}
+                                <span class="ybz-size-pill">
+                                    {{ default_variant.size }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    {% else %}
+                        <p class="ybz-price" style="color: var(--text-muted); font-size: 13px; font-family: var(--font-body);">
+                            Price not available
+                        </p>
+                        <div style="height: 43px;"></div>
+                    {% endif %}
+
+                    <!-- CTA -->
+                    <a href="{{ product.get_absolute_url }}" class="ybz-cta">
+                        View Details
+                    </a>
+
+                </div>
+
+            </article>
+
+            {% endwith %}
+
+            {% endfor %}
+
+        </section>
+
+    {% else %}
+
+        <!-- ── Empty State ───────────────────────────────────── -->
+        <div class="ybz-empty" role="status">
+            <img src="{% static 'images/no-products.svg' %}"
+                 alt="No products found illustration">
+            <h3>No Products Found</h3>
+            <p>We couldn't find any matching products right now.</p>
+            <a href="/" class="ybz-cta">Browse All Products</a>
+        </div>
+
+    {% endif %}
+
+</main>
 
 {% endblock %}
-```
